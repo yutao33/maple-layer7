@@ -5,15 +5,16 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+package org.snlab.maple.tracetree;
 
-package org.snlab.maple.api.packet;
+public class PayLoadAndPort {
 
-public class PacketParsingException extends Exception {
+    public byte[] payLoad;
 
-    private static final long serialVersionUID = -1177841297678875573L;
+    public Port port;
 
-    public PacketParsingException(String msg) {
-        super(msg);
+    public PayLoadAndPort(byte[] payLoad, Port port) {
+        this.payLoad = payLoad;
+        this.port = port;
     }
-
 }

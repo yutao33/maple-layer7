@@ -11,7 +11,6 @@ package org.snlab.maple.api.packet; // net.floodlightcontroller.packet;
 import java.util.Arrays;
 
 /**
- *
  * @author David Erickson (daviderickson@cs.stanford.edu)
  */
 public class DHCPOption {

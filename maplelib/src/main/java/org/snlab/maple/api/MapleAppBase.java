@@ -6,14 +6,14 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple.api.packet;
+package org.snlab.maple.api;
 
-public class PacketParsingException extends Exception {
+public abstract class MapleAppBase {
 
-    private static final long serialVersionUID = -1177841297678875573L;
 
-    public PacketParsingException(String msg) {
-        super(msg);
+    public boolean onPacket(MaplePacket pkt) {
+        return false;
     }
+
 
 }

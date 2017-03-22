@@ -14,11 +14,10 @@ package org.snlab.maple.api.packet;
 
 
 /**
-*
-* @author David Erickson (daviderickson@cs.stanford.edu)
-*/
+ * @author David Erickson (daviderickson@cs.stanford.edu)
+ */
 public abstract class BasePacket implements IPacket {
-  // public static final Logger log = LoggerFactory.getLogger(BasePacket.class);
+    // public static final Logger log = LoggerFactory.getLogger(BasePacket.class);
     protected IPacket parent;
     protected IPacket payload;
 
@@ -109,4 +108,14 @@ public abstract class BasePacket implements IPacket {
         pkt.setParent(this.parent);
         return pkt;
     }
+
+    public byte[] serialize() {
+        return new byte[0];
+    }
+
+    public IPacket deserialize(byte[] data, int offset, int length) throws PacketParsingException {
+        return null;
+    }
+
+
 }

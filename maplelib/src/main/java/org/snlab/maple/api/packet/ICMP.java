@@ -14,21 +14,16 @@ import java.util.Map;
 
 /**
  * Implements ICMP packet format
+ *
  * @author shudong.zhou@bigswitch.com
  */
 public class ICMP extends BasePacket {
-    protected byte icmpType;
-    protected byte icmpCode;
-    protected short checksum;
-
     // The value is the number of bytes of padding
     public static final Map<Byte, Short> paddingMap;
-
     public static final byte ECHO_REPLY = 0x0;
     public static final byte ECHO_REQUEST = 0x8;
     public static final byte TIME_EXCEEDED = 0xB;
     public static final byte DESTINATION_UNREACHABLE = 0x3;
-
     public static final byte CODE_PORT_UNREACHABLE = 0x3;
 
     static {
@@ -38,6 +33,10 @@ public class ICMP extends BasePacket {
         ICMP.paddingMap.put(ICMP.TIME_EXCEEDED, (short) 4);
         ICMP.paddingMap.put(ICMP.DESTINATION_UNREACHABLE, (short) 4);
     }
+
+    protected byte icmpType;
+    protected byte icmpCode;
+    protected short checksum;
 
     /**
      * @return the icmpType
@@ -87,8 +86,8 @@ public class ICMP extends BasePacket {
     /**
      * Serializes the packet. Will compute and set the following fields if they
      * are set to specific values at the time serialize is called:
-     *      -checksum : 0
-     *      -length : 0
+     * -checksum : 0
+     * -length : 0
      */
     @Override
     public byte[] serialize() {
@@ -117,7 +116,7 @@ public class ICMP extends BasePacket {
             bb.put(payloadData);
 
         if (this.parent != null && this.parent instanceof IPv4)
-            ((IPv4)this.parent).setProtocol(IPv4.PROTOCOL_ICMP);
+            ((IPv4) this.parent).setProtocol(IPv4.PROTOCOL_ICMP);
 
         // compute checksum if needed
         if (this.checksum == 0) {
@@ -189,7 +188,7 @@ public class ICMP extends BasePacket {
         bb.position(bb.position() + padding);
 
         this.payload = new Data();
-        this.payload = payload.deserialize(data, bb.position(), bb.limit()-bb.position());
+        this.payload = payload.deserialize(data, bb.position(), bb.limit() - bb.position());
         this.payload.setParent(this);
         return this;
     }

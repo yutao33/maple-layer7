@@ -14,14 +14,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
  * @author David Erickson (daviderickson@cs.stanford.edu)
  */
 public class UDP extends BasePacket {
     public static Map<Short, Class<? extends IPacket>> decodeMap;
-    public static short DHCP_SERVER_PORT = (short)67;
-    public static short DHCP_CLIENT_PORT = (short)68;
-  public static short DNS_SERVER_PORT = (short) 53;
+    public static short DHCP_SERVER_PORT = (short) 67;
+    public static short DHCP_CLIENT_PORT = (short) 68;
+    public static short DNS_SERVER_PORT = (short) 53;
 
     static {
         decodeMap = new HashMap<Short, Class<? extends IPacket>>();
@@ -100,8 +99,8 @@ public class UDP extends BasePacket {
     /**
      * Serializes the packet. Will compute and set the following fields if they
      * are set to specific values at the time serialize is called:
-     *      -checksum : 0
-     *      -length : 0
+     * -checksum : 0
+     * -length : 0
      */
     public byte[] serialize() {
         byte[] payloadData = null;
@@ -124,7 +123,7 @@ public class UDP extends BasePacket {
             bb.put(payloadData);
 
         if (this.parent != null && this.parent instanceof IPv4)
-            ((IPv4)this.parent).setProtocol(IPv4.PROTOCOL_UDP);
+            ((IPv4) this.parent).setProtocol(IPv4.PROTOCOL_UDP);
 
         // compute checksum if needed
         if (this.checksum == 0) {
@@ -218,7 +217,7 @@ public class UDP extends BasePacket {
         } else {
             this.payload = new Data();
         }
-        this.payload = payload.deserialize(data, bb.position(), bb.limit()-bb.position());
+        this.payload = payload.deserialize(data, bb.position(), bb.limit() - bb.position());
         this.payload.setParent(this);
         return this;
     }

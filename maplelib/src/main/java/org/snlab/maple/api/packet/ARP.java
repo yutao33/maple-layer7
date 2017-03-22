@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 /**
- *
  * @author David Erickson (daviderickson@cs.stanford.edu)
  */
 public class ARP extends BasePacket {
@@ -132,16 +131,16 @@ public class ARP extends BasePacket {
         return senderProtocolAddress;
     }
 
+    public ARP setSenderProtocolAddress(int address) {
+        this.senderProtocolAddress = ByteBuffer.allocate(4).putInt(address).array();
+        return this;
+    }
+
     /**
      * @param senderProtocolAddress the senderProtocolAddress to set
      */
     public ARP setSenderProtocolAddress(byte[] senderProtocolAddress) {
         this.senderProtocolAddress = senderProtocolAddress;
-        return this;
-    }
-
-    public ARP setSenderProtocolAddress(int address) {
-        this.senderProtocolAddress = ByteBuffer.allocate(4).putInt(address).array();
         return this;
     }
 
@@ -167,11 +166,16 @@ public class ARP extends BasePacket {
         return targetProtocolAddress;
     }
 
+    public ARP setTargetProtocolAddress(int address) {
+        this.targetProtocolAddress = ByteBuffer.allocate(4).putInt(address).array();
+        return this;
+    }
+
     /**
      * @return True if gratuitous ARP (SPA = TPA), false otherwise
      */
     public boolean isGratuitous() {
-        assert(senderProtocolAddress.length == targetProtocolAddress.length);
+        assert (senderProtocolAddress.length == targetProtocolAddress.length);
 
         int indx = 0;
         while (indx < senderProtocolAddress.length) {
@@ -189,11 +193,6 @@ public class ARP extends BasePacket {
      */
     public ARP setTargetProtocolAddress(byte[] targetProtocolAddress) {
         this.targetProtocolAddress = targetProtocolAddress;
-        return this;
-    }
-
-    public ARP setTargetProtocolAddress(int address) {
-        this.targetProtocolAddress = ByteBuffer.allocate(4).putInt(address).array();
         return this;
     }
 
@@ -223,12 +222,12 @@ public class ARP extends BasePacket {
         this.protocolAddressLength = bb.get();
         if (this.hardwareAddressLength != 6) {
             String msg = "Incorrect ARP hardware address length: " +
-                        hardwareAddressLength;
+                    hardwareAddressLength;
             throw new PacketParsingException(msg);
         }
         if (this.protocolAddressLength != 4) {
             String msg = "Incorrect ARP protocol address length: " +
-                        protocolAddressLength;
+                    protocolAddressLength;
             throw new PacketParsingException(msg);
         }
         this.opCode = bb.getShort();

@@ -18,7 +18,6 @@ import java.util.List;
 
 /**
  * @author David Erickson (daviderickson@cs.stanford.edu)
- *
  */
 public class LLDP extends BasePacket {
     protected LLDPTLV chassisId;
@@ -94,8 +93,8 @@ public class LLDP extends BasePacket {
 
     @Override
     public byte[] serialize() {
-        int length = 2+this.chassisId.getLength() + 2+this.portId.getLength() +
-            2+this.ttl.getLength() + 2;
+        int length = 2 + this.chassisId.getLength() + 2 + this.portId.getLength() +
+                2 + this.ttl.getLength() + 2;
         for (LLDPTLV tlv : this.optionalTLVList) {
             if (tlv != null)
                 length += 2 + tlv.getLength();
@@ -112,7 +111,7 @@ public class LLDP extends BasePacket {
         bb.putShort((short) 0); // End of LLDPDU
 
         if (this.parent != null && this.parent instanceof Ethernet)
-            ((Ethernet)this.parent).setEtherType(ethType);
+            ((Ethernet) this.parent).setEtherType(ethType);
 
         return data;
     }

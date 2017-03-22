@@ -12,8 +12,6 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 /**
- *
- *
  * @author David Erickson (daviderickson@cs.stanford.edu)
  */
 public class LLDPTLV {
@@ -71,7 +69,7 @@ public class LLDPTLV {
         // info string length 9 bits, each value == byte
         // info string
         short scratch = (short) (((0x7f & this.type) << 9) | (0x1ff & this.length));
-        byte[] data = new byte[2+this.length];
+        byte[] data = new byte[2 + this.length];
         ByteBuffer bb = ByteBuffer.wrap(data);
         bb.putShort(scratch);
         if (this.value != null)
@@ -132,10 +130,10 @@ public class LLDPTLV {
     @Override
     public String toString() {
         String str = "type=" + Integer.toString(this.type, 16).toUpperCase()
-               + " length=" + this.length
-               + " value=";
+                + " length=" + this.length
+                + " value=";
         for (byte b : this.value)
-            str+= Integer.toString(b, 16).toUpperCase();
+            str += Integer.toString(b, 16).toUpperCase();
         return str;
     }
 }

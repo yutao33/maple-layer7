@@ -5,15 +5,13 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+package org.snlab.maple.tracetree;
 
-package org.snlab.maple.api.packet;
+public class Route {
 
-public class PacketParsingException extends Exception {
+    public static final String DROP = "drop";
 
-    private static final long serialVersionUID = -1177841297678875573L;
+    public static final String FLOOD = "flood";
 
-    public PacketParsingException(String msg) {
-        super(msg);
-    }
-
+    public static final String PUNT = "punt";
 }

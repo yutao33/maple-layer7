@@ -5,30 +5,61 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+package org.snlab.maple.tracetree;
 
-package org.snlab.maple.api;
-
-import org.snlab.maple.api.packet.Ethernet;
-import org.snlab.maple.api.packet.IPv4;
-import org.snlab.maple.api.packet.TCP;
-import org.snlab.maple.tracetree.*;
+import org.opendaylight.maple.core.increment.packet.Ethernet;
+import org.opendaylight.maple.core.increment.packet.IPv4;
+import org.opendaylight.maple.core.increment.packet.TCP;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+/* A Maple onPacketIn method computes the Instruction on how to process a packet, 
+where the Instruction consists of a set of actions, including 0 to multiple set-packet-header actions, 
+one and only one route action (drop, a path on the topology, punt, flood):
+- The set-packet-header actions will be inferred from the setHEADER() method calls on the pkt, and 
+- The route action should be set explicitly by the user, otherwise, it is DROP as default.
 
+====The user’s intent should be the following====:
+(1) The packet should take the path specified by the route action;
+(2) When the packet leaves the network, the set-packet-headers actions should 
+lead to a result that for each packet header, the exit packet will have the last write value of the 
+header according to the program.
+ 
+Our design: We achieve the intent, and we are not obliged to conduct the actions at anywhere.
+PROOF: your generated rules will achieve the intent.
+
+There should be an Instruction to Flow Rules method, which will achieve the intent. The mapping from 
+the Instruction to the Flow Rules may not be unique.
+
+
+The implication:
+ - getInstruction() method, which will construct the set of actions (from the route action, and 
+		the set of modified packet headers)
+ - No setInstruction() unless we want some kind of overriding
+ - setRouteAction() method
+ - getRouteAction() method
+ - getSetPacketHeaderActions()
+ - instruction2FlowRules() */
 
 public class MaplePacket {
 
 
     public Ethernet frame;
     public List<TraceItem> itemList = new LinkedList<TraceItem>();
+    public boolean isReadTopo;
     //private MapleCore mapleCore;
     //private Trace trace;
-    public boolean isReadTopo;
     private Port ingressPort;
     private Instruction instruction;
+
+    /**
+     * Temp constructor for unit test
+     **/
+    public MaplePacket() {
+
+    }
 
     public MaplePacket(Ethernet frame, Port ingressPort) {
         this.frame = frame;
@@ -67,7 +98,7 @@ public class MaplePacket {
     		return Long.parseLong(modifiedFieldValues.get(Match.Field.ETH_SRC));
     	}*/
         long addr = Ethernet.toLong(frame.getSourceMACAddress());
-
+        
         /*TraceItem item = new TraceItem();
         item.setType("V");
         item.setField("ETH_SRC");
@@ -216,6 +247,12 @@ public class MaplePacket {
         TraceItem item = constructT("ETH_TYPE", String.valueOf(exp), ethType == exp ? "1" : "0");
         this.itemList.add(item);
         return (ethType == exp);
+    }
+
+    public final boolean ingressPortIs(Port exp) {
+        // TraceItem item = constructT("IN_PORT", exp.id, ingressPort.id.equals(exp.id)?"1":"0");
+        // this.itemList.add(item);
+        return (ingressPort.id.equals(exp.id));
     }
 
     public final boolean IPv4SrcIs(int exp) {
@@ -419,4 +456,3 @@ public class MaplePacket {
     }
 
 }
-
