@@ -26,10 +26,10 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <bean id="provider"
     class="org.opendaylight.maple.impl.ODLMapleProvider"
     init-method="init" destroy-method="close">
-    <argument ref="dataBroker" />
-    <argument ref="rpcRegistry" />
-    <argument ref="notificationService"/>
-    <argument ref="notificationPublishService"/>
+    <property name="dataBroker" ref="dataBroker" />
+    <property name="registry" ref="rpcRegistry" />
+    <property name="notificationService" ref="notificationService"/>
+    <property name="publishService" ref="notificationPublishService"/>
   </bean>
 
 </blueprint>

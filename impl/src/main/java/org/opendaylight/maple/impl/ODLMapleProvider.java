@@ -20,30 +20,47 @@ public class ODLMapleProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(ODLMapleProvider.class);
 
-    private final DataBroker dataBroker;
-    private final RpcProviderRegistry registry;
-    private final NotificationService notificationService;
-    private final NotificationPublishService publishService;
+    private NotificationPublishService publishService;
+    private DataBroker dataBroker;
+    private RpcProviderRegistry registry;
+    private NotificationService notificationService;
 
     ListenerRegistration<PacketHandler> packetHandlerListenerRegistration;
 
-    public ODLMapleProvider(final DataBroker dataBroker,
-                            RpcProviderRegistry registry,
-                            NotificationService notificationService,
-                            NotificationPublishService publishService) {
-        this.dataBroker = dataBroker;
-        this.registry = registry;
-        this.notificationService = notificationService;
+//    public ODLMapleProvider(DataBroker dataBroker,
+//                            RpcProviderRegistry registry,
+//                            NotificationService notificationService,
+//                            NotificationPublishService publishService) {
+//        this.dataBroker = dataBroker;
+//        this.registry = registry;
+//        this.notificationService = notificationService;
+//        this.publishService = publishService;
+//    }
+    public ODLMapleProvider(){}
+
+    public void setPublishService(NotificationPublishService publishService) {
         this.publishService = publishService;
+    }
+
+    public void setDataBroker(DataBroker dataBroker) {
+        this.dataBroker = dataBroker;
+    }
+
+    public void setRegistry(RpcProviderRegistry registry) {
+        this.registry = registry;
+    }
+
+    public void setNotificationService(NotificationService notificationService) {
+        this.notificationService = notificationService;
     }
 
     /**
      * Method called when the blueprint container is created.
      */
     public void init() {
-        ODLMapleSystemAdaptor odlMapleSystemAdaptor = new ODLMapleSystemAdaptor(this.dataBroker);
+        ODLMapleAdaptor odlMapleAdaptor = new ODLMapleAdaptor(this.dataBroker);
 
-        MapleSystem mapleSystem = new MapleSystem(odlMapleSystemAdaptor);
+        MapleSystem mapleSystem = new MapleSystem(odlMapleAdaptor);
 
         PacketHandler packetHandler = new PacketHandler(mapleSystem.getHandler());
 

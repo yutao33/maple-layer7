@@ -11,11 +11,11 @@ package org.opendaylight.maple.impl;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.snlab.maple.MapleAdaptor;
 
-public class ODLMapleSystemAdaptor implements MapleAdaptor{
+public class ODLMapleAdaptor implements MapleAdaptor{
 
     private final DataBroker dataBroker;
 
-    public ODLMapleSystemAdaptor(DataBroker dataBroker){
+    public ODLMapleAdaptor(DataBroker dataBroker){
         this.dataBroker = dataBroker;
     }
 
