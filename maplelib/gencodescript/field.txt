@@ -1,0 +1,183 @@
+CONJUNCTIVE MATCH FIELDS
+   Summary:
+       Name      Bytes   Mask   RW?   Prereqs   NXM/OXM Support
+       ────────  ──────  ─────  ────  ────────  ────────────────
+       conj_id   4       no     no    none      OVS 2.4
+
+
+TUNNEL FIELDS
+   Summary:
+       Name                   Bytes            Mask   RW?   Prereqs   NXM/OXM Support
+       ─────────────────────  ───────────────  ─────  ────  ────────  ─────────────────────
+
+       tun_id aka tunnel_id   8                yes    yes   none      OF 1.3+ and OVS 1.1+
+       tun_src                4                yes    yes   none      OVS 2.0+
+       tun_dst                4                yes    yes   none      OVS 2.0+
+       tun_ipv6_src           16               yes    yes   none      OVS 2.5+
+       tun_ipv6_dst           16               yes    yes   none      OVS 2.5+
+
+       tun_gbp_id             2                yes    yes   none      OVS 2.4+
+       tun_gbp_flags          1                yes    yes   none      OVS 2.4+
+       tun_metadata0          124              yes    yes   none      OVS 2.5+
+       tun_metadata1          124              yes    yes   none      OVS 2.5+
+       ....
+       tun_metadata63         124              yes    yes   none      OVS 2.5+
+       tun_flags              2 (low 1 bits)   yes    yes   none      OVS 2.5+
+
+METADATA FIELDS
+   Summary:
+       Name            Bytes   Mask   RW?   Prereqs   NXM/OXM Support
+
+       ──────────────  ──────  ─────  ────  ────────  ─────────────────────
+       in_port         2       no     yes   none      OVS 1.1+
+       in_port_oxm     4       no     yes   none      OF 1.2+ and OVS 1.7+
+       skb_priority    4       no     no    none
+
+       pkt_mark        4       yes    yes   none      OVS 2.0+
+       actset_output   4       no     no    none      OF 1.3+ and OVS 2.4+
+
+CONNECTION TRACKING FIELDS
+   Summary:
+       Name       Bytes   Mask   RW?   Prereqs   NXM/OXM Support
+
+       ─────────  ──────  ─────  ────  ────────  ────────────────
+       ct_state   4       yes    no    none      OVS 2.5+
+       ct_zone    2       no     no    none      OVS 2.5+
+       ct_mark    4       yes    yes   none      OVS 2.5+
+
+       ct_label   16      yes    yes   none      OVS 2.5+
+
+
+
+REGISTER FIELDS
+   Summary:
+       Name       Bytes   Mask   RW?   Prereqs   NXM/OXM Support
+
+       ─────────  ──────  ─────  ────  ────────  ─────────────────────
+       metadata   8       yes    yes   none      OF 1.2+ and OVS 1.8+
+       reg0       4       yes    yes   none      OVS 1.1+
+       reg1       4       yes    yes   none      OVS 1.1+
+
+       reg2       4       yes    yes   none      OVS 1.1+
+       reg3       4       yes    yes   none      OVS 1.1+
+       reg4       4       yes    yes   none      OVS 1.3+
+       reg5       4       yes    yes   none      OVS 1.7+
+
+       reg6       4       yes    yes   none      OVS 1.7+
+       reg7       4       yes    yes   none      OVS 1.7+
+       reg8       4       yes    yes   none      OVS 2.6+
+       reg9       4       yes    yes   none      OVS 2.6+
+
+       reg10      4       yes    yes   none      OVS 2.6+
+       reg11      4       yes    yes   none      OVS 2.6+
+       reg12      4       yes    yes   none      OVS 2.6+
+       reg13      4       yes    yes   none      OVS 2.6+
+
+       reg14      4       yes    yes   none      OVS 2.6+
+       reg15      4       yes    yes   none      OVS 2.6+
+       xreg0      8       yes    yes   none      OF 1.3+ and OVS 2.4+
+       xreg1      8       yes    yes   none      OF 1.3+ and OVS 2.4+
+
+       xreg2      8       yes    yes   none      OF 1.3+ and OVS 2.4+
+       xreg3      8       yes    yes   none      OF 1.3+ and OVS 2.4+
+       xreg4      8       yes    yes   none      OF 1.3+ and OVS 2.4+
+       xreg5      8       yes    yes   none      OF 1.3+ and OVS 2.4+
+
+       xreg6      8       yes    yes   none      OF 1.3+ and OVS 2.4+
+       xreg7      8       yes    yes   none      OF 1.3+ and OVS 2.4+
+       xxreg0     16      yes    yes   none      OVS 2.6+
+       xxreg1     16      yes    yes   none      OVS 2.6+
+
+       xxreg2     16      yes    yes   none      OVS 2.6+
+       xxreg3     16      yes    yes   none      OVS 2.6+
+
+LAYER 2 (ETHERNET) FIELDS
+   Summary:
+       Name                   Bytes   Mask   RW?   Prereqs   NXM/OXM Support
+
+       ─────────────────────  ──────  ─────  ────  ────────  ─────────────────────
+       eth_src aka dl_src     6       yes    yes   none      OF 1.2+ and OVS 1.1+
+       eth_dst aka dl_dst     6       yes    yes   none      OF 1.2+ and OVS 1.1+
+       eth_type aka dl_type   2       no     no    none      OF 1.2+ and OVS 1.1+
+
+VLAN FIELDS
+   Summary:
+       Name          Bytes             Mask   RW?   Prereqs    NXM/OXM Support
+
+       ────────────  ────────────────  ─────  ────  ─────────  ─────────────────────
+       dl_vlan       2 (low 12 bits)   no     yes   none
+       dl_vlan_pcp   1 (low 3 bits)    no     yes   none
+
+       vlan_vid      2 (low 12 bits)   yes    yes   none       OF 1.2+ and OVS 1.7+
+       vlan_pcp      1 (low 3 bits)    no     yes   VLAN VID   OF 1.2+ and OVS 1.7+
+       vlan_tci      2                 yes    yes   none       OVS 1.1+
+
+LAYER 2.5: MPLS FIELDS
+   Summary:
+       Name         Bytes             Mask   RW?   Prereqs   NXM/OXM Support
+
+       ───────────  ────────────────  ─────  ────  ────────  ──────────────────────
+       mpls_label   4 (low 20 bits)   no     yes   MPLS      OF 1.2+ and OVS 1.11+
+       mpls_tc      1 (low 3 bits)    no     yes   MPLS      OF 1.2+ and OVS 1.11+
+
+       mpls_bos     1 (low 1 bits)    no     no    MPLS      OF 1.3+ and OVS 1.11+
+       mpls_ttl     1                 no     yes   MPLS      OVS 2.6+
+
+LAYER 3: IPV4 AND IPV6 FIELDS
+   Summary:
+       Name                    Bytes             Mask   RW?   Prereqs     NXM/OXM Support
+
+       ──────────────────────  ────────────────  ─────  ────  ──────────  ─────────────────────
+       ip_src aka nw_src       4                 yes    yes   IPv4        OF 1.2+ and OVS 1.1+
+       ip_dst aka nw_dst       4                 yes    yes   IPv4        OF 1.2+ and OVS 1.1+
+
+       ipv6_src                16                yes    yes   IPv6        OF 1.2+ and OVS 1.1+
+       ipv6_dst                16                yes    yes   IPv6        OF 1.2+ and OVS 1.1+
+       ipv6_label              4 (low 20 bits)   yes    yes   IPv6        OF 1.2+ and OVS 1.4+
+
+       nw_proto aka ip_proto   1                 no     no    IPv4/IPv6   OF 1.2+ and OVS 1.1+
+       nw_ttl                  1                 no     yes   IPv4/IPv6   OVS 1.4+
+       ip_frag                 1 (low 2 bits)    yes    no    IPv4/IPv6   OVS 1.3+
+
+       nw_tos                  1                 no     yes   IPv4/IPv6   OVS 1.1+
+       ip_dscp                 1 (low 6 bits)    no     yes   IPv4/IPv6   OF 1.2+ and OVS 1.7+
+       nw_ecn aka ip_ecn       1 (low 2 bits)    no     yes   IPv4/IPv6   OF 1.2+ and OVS 1.4+
+
+LAYER 3: ARP FIELDS
+   Summary:
+       Name      Bytes   Mask   RW?   Prereqs   NXM/OXM Support
+       ────────  ──────  ─────  ────  ────────  ─────────────────────
+
+       arp_op    2       no     yes   ARP       OF 1.2+ and OVS 1.1+
+       arp_spa   4       yes    yes   ARP       OF 1.2+ and OVS 1.1+
+       arp_tpa   4       yes    yes   ARP       OF 1.2+ and OVS 1.1+
+       arp_sha   6       yes    yes   ARP       OF 1.2+ and OVS 1.1+
+       arp_tha   6       yes    yes   ARP       OF 1.2+ and OVS 1.1+
+
+LAYER 4: TCP, UDP, AND SCTP FIELDS
+   Summary:
+       Name                 Bytes             Mask   RW?   Prereqs   NXM/OXM Support
+
+       ───────────────────  ────────────────  ─────  ────  ────────  ─────────────────────
+       tcp_src aka tp_src   2                 yes    yes   TCP       OF 1.2+ and OVS 1.1+
+       tcp_dst aka tp_dst   2                 yes    yes   TCP       OF 1.2+ and OVS 1.1+
+       tcp_flags            2 (low 12 bits)   yes    no    TCP       OF 1.3+ and OVS 2.1+
+
+       udp_src              2                 yes    yes   UDP       OF 1.2+ and OVS 1.1+
+       udp_dst              2                 yes    yes   UDP       OF 1.2+ and OVS 1.1+
+       sctp_src             2                 yes    yes   SCTP      OF 1.2+ and OVS 2.0+
+       sctp_dst             2                 yes    yes   SCTP      OF 1.2+ and OVS 2.0+
+
+LAYER 4: ICMPV4 AND ICMPV6 FIELDS
+   Summary:
+       Name          Bytes   Mask   RW?   Prereqs      NXM/OXM Support
+       ────────────  ──────  ─────  ────  ───────────  ─────────────────────
+
+       icmp_type     1       no     yes   ICMPv4       OF 1.2+ and OVS 1.1+
+       icmp_code     1       no     yes   ICMPv4       OF 1.2+ and OVS 1.1+
+       icmpv6_type   1       no     yes   ICMPv6       OF 1.2+ and OVS 1.1+
+       icmpv6_code   1       no     yes   ICMPv6       OF 1.2+ and OVS 1.1+
+       nd_target     16      yes    yes   ND           OF 1.2+ and OVS 1.1+
+
+       nd_sll        6       yes    yes   ND solicit   OF 1.2+ and OVS 1.1+
+       nd_tll        6       yes    yes   ND advert    OF 1.2+ and OVS 1.1+
