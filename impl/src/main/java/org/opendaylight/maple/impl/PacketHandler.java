@@ -26,14 +26,16 @@ public class PacketHandler implements PacketProcessingListener {
     @Override
     public void onPacketReceived(PacketReceived packetReceived) {
         Class<? extends PacketInReason> packetInReason = packetReceived.getPacketInReason();
-        if(packetInReason.isInstance(InvalidTtl.class)){
+        if(packetInReason.equals(InvalidTtl.class)){
 
-        } else if (packetInReason.isInstance(SendToController.class)){
+        } else if (packetInReason.equals(SendToController.class)){
 
-        } else if(packetInReason.isInstance(NoMatch.class)){
+        } else if(packetInReason.equals(NoMatch.class)){
 
         } else {
             LOG.error("unknown packetinreason");
         }
+
+        LOG.info("reason={}, ingress={}",packetInReason,packetReceived.getIngress());
     }
 }

@@ -22,5 +22,5 @@ public interface TraceMaplePacket {
 
     boolean ethTypeIs(int exp);
 
-    
+    void setRoute(String[] path);
 }

@@ -8,9 +8,62 @@
 
 package org.snlab.maple.api.route;
 
+import java.util.List;
+
 public class Forward {
 
     public Forward(String inport,String output,int bandwidth){
 
     }
+}
+
+
+
+enum MapleMatchField{
+    ETH_SRC("eth_src"),
+    ETH_DST("eth_dst");
+
+    private String field;
+    private MapleMatchField(String str){
+        this.field =str;
+    }
+
+    @Override
+    public String toString() {
+        return "MapleMatchField{" +
+                "field='" + field + '\'' +
+                '}';
+    }
+}
+
+class MapleNetworkPort{
+    MapleNetworkNode owner;
+    String id;//  1 2 3 4 internel
+    MapleNetworkPort end;
+
+}
+
+
+class MapleNetworkNode{
+    List<MapleNetworkPort> ports;
+}
+
+class MapleNetworkTopology{
+    List<MapleNetworkNode> nodes;
+}
+
+class MapleNetworkLink{
+
+}
+
+
+class MapleMatch{
+    MapleMatchField field;
+
+}
+
+
+
+class TraceTree{
+
 }

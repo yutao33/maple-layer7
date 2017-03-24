@@ -15,8 +15,10 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,29 +43,28 @@ public class TopologyListener implements DataTreeChangeListener<NetworkTopology>
 
             System.out.println(i+":"+type);
 
-            switch(type){
-                case WRITE:
-
-                    break;
-                case SUBTREE_MODIFIED:
-
-                    break;
-                case DELETE:
-
-                    break;
-            }
 
             if(type.equals(DataObjectModification.ModificationType.SUBTREE_MODIFIED)){
                 TopologyKey topologyKey = new TopologyKey(new TopologyId("flow:1"));
                 DataObjectModification<Topology> topo = rootNode.getModifiedChildListItem(Topology.class, topologyKey);
+
                 if(topo!=null){
                     DataObjectModification.ModificationType type1 = topo.getModificationType();
+                    System.out.println("type1:"+type1);
                     switch(type1){
                         case WRITE:
                             break;
                         case SUBTREE_MODIFIED:
-                            Topology dataAfter = topo.getDataAfter();
 
+                            Collection<DataObjectModification<? extends DataObject>> topochildren = topo.getModifiedChildren();
+                            for (DataObjectModification<? extends DataObject> mc : topochildren) {
+                                Class<? extends DataObject> mctype = mc.getIdentifier().getType();
+                                if(mctype.equals(Node.class)){
+                                    System.out.println("Node: type=" +mc.getModificationType());
+                                } else if(mctype.equals(Link.class)){
+                                    System.out.println("Link: type="+mc.getModificationType());
+                                }
+                            }
 
                             break;
                         case DELETE:
@@ -73,9 +74,27 @@ public class TopologyListener implements DataTreeChangeListener<NetworkTopology>
                     LOG.error("Topology changed but not flow:1");
                 }
             }
+            LOG.warn(rootNode.getDataAfter().toString());
         }
         System.out.println(new Date().toString()+"\n");
 
+    }
+
+    private void nodeModified(DataObjectModification<Node> node) {
+        DataObjectModification.ModificationType type = node.getModificationType();
+        System.out.println("node modified type:"+type);
+        switch(type){
+            case DELETE:
+                break;
+            case SUBTREE_MODIFIED:
+                Collection<DataObjectModification<? extends DataObject>> modifiednodes = node.getModifiedChildren();
+                for (DataObjectModification<? extends DataObject> mn : modifiednodes) {
+
+                }
+                break;
+            case WRITE:
+                break;
+        }
     }
 
 }
