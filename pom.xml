@@ -28,24 +28,15 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
     <url>https://wiki.opendaylight.org/view/odlmaple:Main</url>
   </scm>
 
-  <!--<modules>-->
-    <!--<module>maplelib</module>-->
-    <!--<module>api</module>-->
-    <!--<module>impl</module>-->
-    <!--<module>karaf</module>-->
-    <!--<module>features</module>-->
-    <!--<module>artifacts</module>-->
-    <!--<module>cli</module>-->
-    <!--<module>it</module>-->
-  <!--</modules>-->
-
   <modules>
     <module>maplelib</module>
     <module>api</module>
     <module>impl</module>
+    <module>karaf</module>
     <module>features</module>
     <module>artifacts</module>
     <module>cli</module>
+    <!--<module>it</module>-->
   </modules>
 
 

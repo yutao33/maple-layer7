@@ -6,25 +6,21 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
+package org.snlab.maple.api;
 
-package org.snlab.maple;
+public interface TraceMaplePacket {
 
+    long ethSrc();
 
-public interface MapleAdaptor {
-    void sendPacket();
+    long ethDst();
 
-    void installPath();
+    int ethType();
 
-    void deletePath();
+    boolean ethSrcIs(long exp);
 
-    void installRule();
+    boolean ethDstIs(long exp);
 
-    void deleteRule();
+    boolean ethTypeIs(int exp);
 
-    void resetWriteTransaction();
-
-    void submitTransaction();
-
-    void outputtracetree();
-
+    
 }

@@ -6,7 +6,11 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple.route;
+package org.snlab.maple.api.route;
 
 public class Forward {
+
+    public Forward(String inport,String output,int bandwidth){
+
+    }
 }

@@ -9,6 +9,11 @@
 package org.opendaylight.maple.impl;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.snlab.maple.MapleAdaptor;
 
 public class ODLMapleAdaptor implements MapleAdaptor{
@@ -21,6 +26,12 @@ public class ODLMapleAdaptor implements MapleAdaptor{
 
     @Override
     public void sendPacket() {
+
+        InstanceIdentifier<FlowCapableNodeConnectorStatisticsData> iid = InstanceIdentifier
+                .builder(Nodes.class)
+                .child(Node.class)
+                .child(NodeConnector.class).augmentation(FlowCapableNodeConnectorStatisticsData.class).build();
+
 
     }
 

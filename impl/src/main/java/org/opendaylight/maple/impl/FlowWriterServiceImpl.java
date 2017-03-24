@@ -1,18 +1,14 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright © 2017 SNLab and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.l2switch.flow;
+package org.opendaylight.maple.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import java.math.BigInteger;
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicLong;
-import org.opendaylight.l2switch.util.InstanceIdentifierUtils;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
@@ -41,6 +37,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
+
+
+
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
@@ -55,13 +54,10 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Implementation of
- * FlowWriterService{@link org.opendaylight.l2switch.flow.FlowWriterService},
- * that builds required flow and writes to configuration data store using
- * provided DataBrokerService
- * {@link org.opendaylight.controller.sal.binding.api.data.DataBrokerService}
- */
+import java.math.BigInteger;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicLong;
+
 public class FlowWriterServiceImpl implements FlowWriterService {
     private static final Logger LOG = LoggerFactory.getLogger(FlowWriterServiceImpl.class);
     private final String FLOW_ID_PREFIX = "L2switch-";
@@ -194,7 +190,7 @@ public class FlowWriterServiceImpl implements FlowWriterService {
      *         builds flow that forwards all packets with destMac to given port
      */
     private Flow createMacToMacFlow(Short tableId, int priority, MacAddress sourceMac, MacAddress destMac,
-            NodeConnectorRef destPort) {
+                                    NodeConnectorRef destPort) {
 
         // start building flow
         FlowBuilder macToMacFlow = new FlowBuilder() //
