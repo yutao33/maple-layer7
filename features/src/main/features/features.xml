@@ -16,13 +16,19 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <repository>mvn:org.opendaylight.netconf/features-restconf/{{VERSION}}/xml/features</repository>
   <repository>mvn:org.opendaylight.dluxapps/features-dluxapps/{{VERSION}}/xml/features</repository>
   <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin/{{VERSION}}/xml/features</repository>
+  <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin-extension/{{VERSION}}/xml/features</repository>
   <feature name='odl-odlmaple-api' version='${project.version}' description='OpenDaylight :: odlmaple :: api'>
     <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
     <bundle>mvn:org.opendaylight.maple/odlmaple-api/{{VERSION}}</bundle>
   </feature>
   <feature name='odl-odlmaple' version='${project.version}' description='OpenDaylight :: odlmaple'>
     <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+
     <feature version="${openflowplugin.version}">odl-openflowplugin-flow-services</feature>
+    <feature version="${openflowplugin.version}">odl-openflowplugin-app-table-miss-enforcer</feature>
+    <feature version="${openflowplugin.version}">odl-openflowplugin-nxm-extensions</feature>
+    <feature version="${openflowplugin.version}">odl-openflowplugin-onf-extensions</feature>
+
     <feature version='${project.version}'>odl-odlmaple-api</feature>
     <bundle>mvn:org.opendaylight.maple/odlmaple-impl/{{VERSION}}</bundle>
   </feature>

@@ -8,6 +8,7 @@
 
 package org.opendaylight.maple.impl;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,9 @@ public class PacketHandler implements PacketProcessingListener {
             LOG.error("unknown packetinreason");
         }
 
-        LOG.info("reason={}, ingress={}",packetInReason,packetReceived.getIngress());
+        NodeConnectorRef ingress = packetReceived.getIngress();
+
+
+        LOG.info("packetReceived={}",packetReceived.toString());
     }
 }

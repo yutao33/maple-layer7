@@ -26,6 +26,8 @@ public class Forward {
 }
 
 //setRoute()
+//setFath()
+//addPath()
 
 class MapleSetAction{
 
@@ -49,6 +51,8 @@ enum MapleMatchField{
     }
 }
 
+
+
 class MapleNetworkPort{
     MapleNetworkNode owner;
     String id;//  1 2 3 4 internel
@@ -56,18 +60,21 @@ class MapleNetworkPort{
 
 }
 
-
 class MapleNetworkNode{
     List<MapleNetworkPort> ports;
 }
 
+class MapleNetworkLink{
+    MapleNetworkPort p1;
+    MapleNetworkPort p2;
+}
+
 class MapleNetworkTopology{
     List<MapleNetworkNode> nodes;
+    List<MapleNetworkTopology>links;
 }
 
-class MapleNetworkLink{
 
-}
 
 
 class MapleMatch{
@@ -80,6 +87,78 @@ class TraceItem{
 
 }
 
-class TraceTree{
+abstract class TraceTreeNode{
 
 }
+
+class TTN_TNode extends TraceTreeNode{
+    class TNodeEntry{
+        MapleMatch match;
+        TraceTreeNode branch;
+    }
+    List<TNodeEntry> list;
+    TraceTreeNode nomatchbranch;
+}
+
+class TTN_VNode extends TraceTreeNode{
+    class VNodeEntry{
+
+    }
+}
+
+
+
+class TraceTree{
+    TraceTreeNode treeroot;
+}
+
+
+interface TraceMaplePacket {
+
+    long ethSrc();
+
+    long ethDst();
+
+    int ethType();
+
+    boolean ethSrcIs(long exp);
+
+    boolean ethDstIs(long exp);
+
+    boolean ethTypeIs(int exp);
+
+    void setRoute(String[] path);
+}
+
+class MaplePacket implements TraceMaplePacket{
+
+    public long ethSrc() {
+        return 0;
+    }
+
+    public long ethDst() {
+        return 0;
+    }
+
+    public int ethType() {
+        return 0;
+    }
+
+    public boolean ethSrcIs(long exp) {
+        return false;
+    }
+
+    public boolean ethDstIs(long exp) {
+        return false;
+    }
+
+    public boolean ethTypeIs(int exp) {
+        return false;
+    }
+
+    public void setRoute(String[] path) {
+
+    }
+}
+
+
