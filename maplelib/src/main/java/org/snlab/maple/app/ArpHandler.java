@@ -6,10 +6,18 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple;
+package org.snlab.maple.app;
 
-public interface MapleHandler {
-    void onPacket();
+import org.snlab.maple.api.MapleAppBase;
+import org.snlab.maple.api.MaplePacket;
 
-//    void setupMapleApp();
+public class ArpHandler extends MapleAppBase {
+    @Override
+    public boolean onPacket(MaplePacket pkt) {
+
+
+
+        return false;
+
+    }
 }

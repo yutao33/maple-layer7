@@ -22,5 +22,9 @@ public interface TraceMaplePacket {
 
     boolean ethTypeIs(int exp);
 
+    /**
+     * path can be an endpoint-endpoint path or a tree without loop
+     * @param path
+     */
     void setRoute(String[] path);
 }

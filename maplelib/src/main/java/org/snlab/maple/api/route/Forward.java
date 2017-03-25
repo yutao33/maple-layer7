@@ -91,7 +91,13 @@ abstract class TraceTreeNode{
 
 }
 
-class TTN_TNode extends TraceTreeNode{
+
+
+class TT_MatchEntry{
+
+}
+
+class TT_TNode extends TraceTreeNode{
     class TNodeEntry{
         MapleMatch match;
         TraceTreeNode branch;
@@ -100,7 +106,7 @@ class TTN_TNode extends TraceTreeNode{
     TraceTreeNode nomatchbranch;
 }
 
-class TTN_VNode extends TraceTreeNode{
+class TT_VNode extends TraceTreeNode{
     class VNodeEntry{
 
     }
@@ -132,7 +138,12 @@ interface TraceMaplePacket {
 
 class MaplePacket implements TraceMaplePacket{
 
+    public MaplePacket(){
+
+    }
+
     public long ethSrc() {
+
         return 0;
     }
 
@@ -159,6 +170,10 @@ class MaplePacket implements TraceMaplePacket{
     public void setRoute(String[] path) {
 
     }
+}
+
+class PacketOut{
+
 }
 
 
