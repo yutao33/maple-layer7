@@ -12,11 +12,24 @@ import java.util.List;
 
 public class Forward {
 
-    public Forward(String inport,String output,int bandwidth){
+    public Forward(String output){
+
+    }
+
+    public Forward(String output,String inport,String actions){
+
+    }
+
+    public Forward(String output,String inport,String Actions,int bandwidth){
 
     }
 }
 
+//setRoute()
+
+class MapleSetAction{
+
+}
 
 
 enum MapleMatchField{
@@ -59,10 +72,13 @@ class MapleNetworkLink{
 
 class MapleMatch{
     MapleMatchField field;
-
+    byte[] value;
+    byte[] mask;
 }
 
+class TraceItem{
 
+}
 
 class TraceTree{
 
