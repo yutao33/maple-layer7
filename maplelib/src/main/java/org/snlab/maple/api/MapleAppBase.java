@@ -8,12 +8,10 @@
 
 package org.snlab.maple.api;
 
-import com.sun.istack.internal.Nullable;
-
 public abstract class MapleAppBase {
 
 
-    public @Nullable Object oncommand(Object parm){
+    public Object oncommand(Object parm){
         return null;
     }
 

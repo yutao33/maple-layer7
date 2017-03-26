@@ -9,7 +9,6 @@
 package org.snlab.maple;
 
 
-import com.sun.istack.internal.Nullable;
 import org.snlab.maple.api.MapleAppBase;
 import org.snlab.maple.api.MaplePacket;
 import org.snlab.maple.tracetree.TraceTree;
@@ -81,7 +80,7 @@ public class MapleSystem {
         return true;
     }
 
-    private @Nullable Object command(Class<? extends MapleAppBase> appclass, Object parm){
+    private Object command(Class<? extends MapleAppBase> appclass, Object parm){
         for (MapleAppBase app : mapleAppList) {
             if(app.getClass().equals(appclass)){
                 return app.oncommand(parm);  // 'return' is safe

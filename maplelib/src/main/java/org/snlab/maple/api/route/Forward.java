@@ -20,9 +20,11 @@ public class Forward {
 
     }
 
-    public Forward(String output,String inport,String Actions,int bandwidth){
+    public Forward(String output,String inport,String Actions,int bandwidthlimit){
 
     }
+
+
 }
 
 //setRoute()
