@@ -8,7 +8,12 @@
 
 package org.snlab.maple.api.route;
 
+import java.util.ArrayList;
 import java.util.List;
+
+
+
+//
 
 public class Forward {
 
@@ -27,31 +32,10 @@ public class Forward {
 
 }
 
-//setRoute()
-//setFath()
-//addPath()
-
 class MapleSetAction{
 
 }
 
-
-enum MapleMatchField{
-    ETH_SRC("eth_src"),
-    ETH_DST("eth_dst");
-
-    private String field;
-    private MapleMatchField(String str){
-        this.field =str;
-    }
-
-    @Override
-    public String toString() {
-        return "MapleMatchField{" +
-                "field='" + field + '\'' +
-                '}';
-    }
-}
 
 
 
@@ -78,6 +62,23 @@ class MapleNetworkTopology{
 
 
 
+enum MapleMatchField{
+    ETH_SRC("eth_src"),
+    ETH_DST("eth_dst"),
+    IP_SRC("ip_src");
+
+    private String field;
+    private MapleMatchField(String str){
+        this.field =str;
+    }
+
+    @Override
+    public String toString() {
+        return "MapleMatchField{" +
+                "field='" + field + '\'' +
+                '}';
+    }
+}
 
 class MapleMatch{
     MapleMatchField field;
@@ -85,9 +86,6 @@ class MapleMatch{
     byte[] mask;
 }
 
-class TraceItem{
-
-}
 
 abstract class TraceTreeNode{
 
@@ -109,73 +107,165 @@ class TT_TNode extends TraceTreeNode{
 }
 
 class TT_VNode extends TraceTreeNode{
-    class VNodeEntry{
+    //field
+    //matchentrys
+}
 
-    }
+class TT_LNode extends TraceTreeNode{
+
 }
 
 
 
 class TraceTree{
-    TraceTreeNode treeroot;
+    private TraceTreeNode treeroot;
+
+    public void update(List<TraceItem> items){
+
+    }
+
+    public void generateRules(){
+
+    }
+
+
 }
 
 
-interface TraceMaplePacket {
 
-    long ethSrc();
+class TraceItem{
 
-    long ethDst();
-
-    int ethType();
-
-    boolean ethSrcIs(long exp);
-
-    boolean ethDstIs(long exp);
-
-    boolean ethTypeIs(int exp);
-
-    void setRoute(String[] path);
 }
 
-class MaplePacket implements TraceMaplePacket{
+
+class MaplePacket{
+
+    private List<TraceItem> traceList=new ArrayList<TraceItem>();
 
     public MaplePacket(){
 
     }
 
-    public long ethSrc() {
-
-        return 0;
+    public List<TraceItem> getTraceList() {
+        return traceList;
     }
 
-    public long ethDst() {
-        return 0;
+    public byte[] ethSrc() {
+
+        return null;
     }
 
-    public int ethType() {
-        return 0;
+    public byte[] ethSrc_mask(){
+        return null;
     }
 
-    public boolean ethSrcIs(long exp) {
+    public boolean ethSrcIs(byte[] mac) {
+
         return false;
     }
 
-    public boolean ethDstIs(long exp) {
+    public boolean ethSrc_mask_is(){
         return false;
     }
 
-    public boolean ethTypeIs(int exp) {
-        return false;
+
+    /**
+     * this is a special function.
+     * @return
+     */
+    public MapleNetworkPort getIngress(){
+        return null;
     }
+
+
+    public MatchFieldMaskable ipSrc(){
+        return new MatchFieldMaskable(MapleMatchField.IP_SRC);
+    }
+
+    public class MatchFieldNoMask{
+        private MapleMatchField field;
+        private MatchFieldNoMask(MapleMatchField field){
+            this.field=field;
+        }
+        public boolean is(byte[] context){
+            return false;
+        }
+        public boolean in(List<byte[]> set){
+            return false;
+        }
+        public byte[] getValue(){
+            return null;
+        }
+    }
+
+    public class MatchFieldMaskable {
+
+        private MapleMatchField field;
+        private byte[] mask;
+
+        private MatchFieldMaskable(MapleMatchField field){
+            this.field=field;
+        }
+        public MatchFieldMaskable mask(byte[] context){
+            return this;
+        }
+        public boolean is(byte[] context){
+            return false;
+        }
+        public boolean in(List<byte[]> set){
+            return false;
+        }
+        public byte[] getValue(){
+            return null;
+        }
+    }
+
 
     public void setRoute(String[] path) {
 
     }
 }
 
-class PacketOut{
+class PacketOutMaplePacket{
 
+
+    void setRoute(){
+
+    }
+
+    void sendOut(){
+
+    }
+}
+
+
+class MapleSystem{
+
+    private TraceTree traceTree;
+
+    void onPacket(MaplePacket pkt){
+
+        //app chain
+        //...
+        //app chain
+
+        List<TraceItem> traceList = pkt.getTraceList();
+        traceTree.update(traceList);
+
+    }
+}
+
+
+class App{
+    boolean onPacket(MaplePacket pkt){
+        if(pkt.ipSrc().is(new byte[]{33})){
+            pkt.setRoute(null);
+            return true;
+        } else {
+            pkt.setRoute(null);
+            return true;
+        }
+    }
 }
 
 
