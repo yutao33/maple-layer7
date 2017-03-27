@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple.api.packet; //net.floodlightcontroller.packet;
+package org.snlab.maple.api.packet;
 
 
 
@@ -17,12 +17,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-// import net.floodlightcontroller.util.MACAddress;
-// import org.openflow.util.HexString;
 
-/**
- * @author David Erickson (daviderickson@cs.stanford.edu)
- */
 public class Ethernet extends BasePacket {
     public static final short TYPE_ARP = 0x0806;
     public static final short TYPE_RARP = (short) 0x8035;
@@ -55,95 +50,6 @@ public class Ethernet extends BasePacket {
     public Ethernet() {
         super();
         this.vlanID = VLAN_UNTAGGED;
-    }
-
-    /**
-     * Checks to see if a string is a valid MAC address.
-     *
-     * @param macAddress
-     * @return True if macAddress is a valid MAC, False otherwise
-     */
-    public static boolean isMACAddress(String macAddress) {
-        String[] macBytes = macAddress.split(":");
-        if (macBytes.length != 6)
-            return false;
-        for (int i = 0; i < 6; ++i) {
-            if (HEXES.indexOf(macBytes[i].toUpperCase().charAt(0)) == -1 ||
-                    HEXES.indexOf(macBytes[i].toUpperCase().charAt(1)) == -1) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Accepts a MAC address of the form 00:aa:11:bb:22:cc, case does not
-     * matter, and returns a corresponding byte[].
-     *
-     * @param macAddress The MAC address to convert into a bye array
-     * @return The macAddress as a byte array
-     */
-    public static byte[] toMACAddress(String macAddress) {
-        return MACAddress.valueOf(macAddress).toBytes();
-    }
-
-    /**
-     * Accepts a MAC address and returns the corresponding long, where the
-     * MAC bytes are set on the lower order bytes of the long.
-     *
-     * @param macAddress
-     * @return a long containing the mac address bytes
-     */
-    public static long toLong(byte[] macAddress) {
-        return MACAddress.valueOf(macAddress).toLong();
-    }
-
-    /**
-     * Convert a long MAC address to a byte array
-     *
-     * @param macAddress
-     * @return the bytes of the mac address
-     */
-    public static byte[] toByteArray(long macAddress) {
-        return MACAddress.valueOf(macAddress).toBytes();
-    }
-
-    static public Ethernet arpReply(long ethSrc, int ipSrc, long ethDst, int ipDst) {
-        Ethernet frame = new Ethernet();
-        frame.setSourceMACAddress(Ethernet.toByteArray(ethSrc));
-        frame.setDestinationMACAddress(Ethernet.toByteArray(ethDst));
-        frame.setEtherType(Ethernet.TYPE_ARP);
-        ARP arp = new ARP();
-        arp.setOpCode(ARP.OP_REPLY);
-        arp.setHardwareType(ARP.HW_TYPE_ETHERNET);
-        arp.setProtocolType(ARP.PROTO_TYPE_IP);
-        arp.setHardwareAddressLength((byte) 6);
-        arp.setProtocolAddressLength((byte) 4);
-        arp.setSenderHardwareAddress(Ethernet.toByteArray(ethSrc));
-        arp.setTargetHardwareAddress(Ethernet.toByteArray(ethDst));
-        arp.setSenderProtocolAddress(ipSrc);
-        arp.setTargetProtocolAddress(ipDst);
-        frame.setPayload(arp);
-        return frame;
-    }
-
-    static public Ethernet arpQuery(long ethSrc, int ipSrc, int ipDst) {
-        Ethernet frame = new Ethernet();
-        frame.setSourceMACAddress(Ethernet.toByteArray(ethSrc));
-        frame.setDestinationMACAddress(Ethernet.toByteArray(0xffffffffffffL));
-        frame.setEtherType(Ethernet.TYPE_ARP);
-        ARP arp = new ARP();
-        arp.setOpCode(ARP.OP_REQUEST);
-        arp.setHardwareType(ARP.HW_TYPE_ETHERNET);
-        arp.setProtocolType(ARP.PROTO_TYPE_IP);
-        arp.setHardwareAddressLength((byte) 6);
-        arp.setProtocolAddressLength((byte) 4);
-        arp.setSenderHardwareAddress(Ethernet.toByteArray(ethSrc));
-        arp.setTargetHardwareAddress(Ethernet.toByteArray(0L));
-        arp.setSenderProtocolAddress(ipSrc);
-        arp.setTargetProtocolAddress(ipDst);
-        frame.setPayload(arp);
-        return frame;
     }
 
     /**
@@ -251,20 +157,6 @@ public class Ethernet extends BasePacket {
         return this;
     }
 
-    /**
-     * @return True if the Ethernet frame is broadcast, false otherwise
-     */
-    public boolean isBroadcast() {
-        assert (destinationMACAddress.length() == 6);
-        return destinationMACAddress.isBroadcast();
-    }
-
-    /**
-     * @return True is the Ethernet frame is multicast, False otherwise
-     */
-    public boolean isMulticast() {
-        return destinationMACAddress.isMulticast();
-    }
 
     /**
      * Pad this packet to 60 bytes minimum, filling with zeros?

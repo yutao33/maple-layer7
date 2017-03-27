@@ -1,0 +1,198 @@
+
+
+
+
+
+//ovs-field
+
+
+Shorthands
+    ip     eth_type=0x0800
+    ipv6   eth_type=0x86dd
+    icmp   eth_type=0x0800,ip_proto=1
+    icmp6  eth_type=0x86dd,ip_proto=58
+    tcp    eth_type=0x0800,ip_proto=6
+    tcp6   eth_type=0x86dd,ip_proto=6
+    udp    eth_type=0x0800,ip_proto=17
+    udp6   eth_type=0x86dd,ip_proto=17
+    sctp   eth_type=0x0800,ip_proto=132
+    sctp6  eth_type=0x86dd,ip_proto=132
+    arp    eth_type=0x0806
+    rarp   eth_type=0x8035
+    mpls   eth_type=0x8847
+    mplsm  eth_type=0x8848
+
+
+
+
+//L2
+
+
+ethsrc	     6     m    rw
+ethdst	     6     m    rw
+(eth_type)	 2     nm   ro
+dl_vlan_pcp	 3b    nm   rw
+dl_vlan	     12b   nm   rw
+eth_type	 2     nm   ro
+
+          Ethernet
+        <---------->
+        48  48   16
+       +---+---+----+
+       |dst|src|type| ...
+       +---+---+----+
+
+        Ethernet     802.1Q     Ethertype
+        <------>   <-------->   <-------->
+         48  48      16   16        16
+       +----+---+ +------+---+ +----------+
+       |dst |src| | TPID |TCI| |   type   | ...
+       +----+---+ +------+---+ +----------+
+                   0x8100       ≥0x600
+
+        Ethernet     802.1Q     Ethertype        LLC                SNAP
+        <------>   <-------->   <------->   <------------>   <----------------->
+         48  48      16   16       16        8    8    8        24        16
+       +----+---+ +------+---+ +---------+ +----+----+----+ +--------+----------+
+       |dst |src| | TPID |TCI| |  type   | |DSAP|SSAP|cntl| |  org   |   type   | ...
+       +----+---+ +------+---+ +---------+ +----+----+----+ +--------+----------+
+                   0x8100        <0x600     0xaa 0xaa 0x03   0x000000 ≥0x600
+
+
+
+
+
+
+
+
+//L2.5
+
+mpls_label    20b   nm  rw
+mpls_tc       3b    nm  rw
+mols_bos      1b    nm  ro
+mpls_ttl      1     nm  rw
+
+
+       One  or  more MPLS headers (more commonly called MPLS labels) follow an
+       Ethernet type field that specifies an MPLS Ethernet  type  [RFC  3032].
+       Ethertype  0x8847  is  used  for all unicast. Multicast MPLS is divided
+       into two specific classes, one of which uses Ethertype 0x8847  and  the
+       other 0x8848 [RFC 5332].
+
+
+              Label, 20 bits.
+                     An identifier.
+
+              Traffic control (TC), 3 bits.
+                     Used for quality of service.
+
+              Bottom of stack (BOS), 1 bit (labeled just ``S’’ above).
+                     0 indicates that another MPLS label follows this one.
+
+                     1 indicates that this MPLS label is the last one  in  the
+                     stack, so that some other protocol follows this one.
+
+              Time to live (TTL), 8 bits.
+                     Each  hop across an MPLS network decrements the TTL by 1.
+                     If it reaches 0, the packet is discarded.
+
+                     OpenFlow does not make the MPLS TTL available as a  match
+                     field, but actions are available to set and decrement the
+                     TTL. Open vSwitch 2.6 and later makes the MPLS TTL avail‐
+                     able as an extension.
+
+
+       Open  vSwitch  and  OpenFlow  do  not infer the inner protocol, even if
+       reserved label values are in use. Instead, the flow table must  specify
+       the inner protocol at the time it pops the bottommost MPLS label, using
+       the Ethertype argument to the pop_mpls action.
+
+
+//L3
+
+IPv4
+
+version         4b    x
+ihl             4b    x
+dscp            6b        nm  rw
+ecn             2b        nm  rw
+totlen          2     x
+identification  2     x
+flags           3b        m   ro
+fragmentoffset  13b   x
+ttl             1         nm  rw
+proto           1         nm  ro
+checksum        2     x
+srcip           4         m   rw
+dstip           4         m   rw
+options(if ihl>5)     x
+
+
+IPv6
+
+version                   4b    x
+:Trafficclass              8b
+FlowLabel (ipv6_label)    20b      m   rw
+payloadlength             2     x
+NextHeader (ip_proto)     1        nm   ro
+HopLimit (ttl)            1        nm  rw
+srcip                     16       m   rw
+dstip                     16       m   rw
+
+
+ARP
+
+arp_op   2    nm  rw
+arp_spa  4    m   rw
+arp_tpa  4    m   rw
+arp_sha  6    m   rw
+arp_tha  6    m   rw
+
+
+//L4
+
+TCP
+
+
+
+UDP
+
+
+
+STCP
+
+
+
+ICMPV4
+
+
+
+ICMPV6
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

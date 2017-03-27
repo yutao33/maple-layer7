@@ -140,6 +140,8 @@ class TraceItem{
 
 class MaplePacket{
 
+    private MapleNetworkPort ingress;
+
     private List<TraceItem> traceList=new ArrayList<TraceItem>();
 
     public MaplePacket(){
@@ -174,7 +176,7 @@ class MaplePacket{
      * @return
      */
     public MapleNetworkPort getIngress(){
-        return null;
+        return this.ingress;
     }
 
 
