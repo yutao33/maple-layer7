@@ -172,11 +172,19 @@ class MaplePacket{
 
 
     /**
-     * this is a special function.
+     * special function.
      * @return
      */
     public MapleNetworkPort getIngress(){
         return this.ingress;
+    }
+
+    /**
+     * special function
+     * @return
+     */
+    public boolean isTunnel(){
+        return false;
     }
 
 

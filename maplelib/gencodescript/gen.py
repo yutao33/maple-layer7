@@ -19,7 +19,7 @@ import sys
 
 
 
-fp = open('field.txt')
+fp = open('field.txt',encoding='utf-8')
 str=fp.read();
 
 pattern=re.compile(r'\s+(.+?)\s+(\d+?)\s+(yes|no)\s+(yes|no)\s+(.+?)\s*(.*?)\n')
