@@ -8,6 +8,6 @@
 
 package org.snlab.maple.tracetree;
 
-public class TraceItem{
+class TT_MatchEntry{
 
 }

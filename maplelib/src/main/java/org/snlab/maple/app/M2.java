@@ -32,67 +32,67 @@ public class M2 extends MapleAppBase {
 	private static final String[] H21_HIGH_PATH = { H2, "openflow:4:4", "openflow:2:1", "openflow:1:1" };
 	private static final String[] H21_LOW_PATH  = { H2, "openflow:4:5", "openflow:3:1", "openflow:1:1" };
 
-	public void staticRoute(MaplePacket pkt) {
-		// H1 (client) -> H2 (server)
-		if ( pkt.IPv4SrcIs(H1_IP) && pkt.IPv4DstIs(H2_IP) ) {
-
-			String[] path = null;
-
-			if ( ! pkt.TCPDstPortIs(HTTP_PORT) ) {  // All non HTTP IP, e.g., UDP, PING, SSH
-				path = H12_LOW_PATH; 
-			} else {                                // Only HTTP traffic
-				path = H12_HIGH_PATH;
-			}
-
-			// ***TODO***: Need to agree on either Route or Path, not both
-			pkt.setRoute(path);
-
-			// Reverse: H2 -> H1
-		} else if ( pkt.IPv4SrcIs(H2_IP) && pkt.IPv4DstIs(H1_IP) ) {
-
-				String[] path = null;
-
-				if ( ! pkt.TCPSrcPortIs(HTTP_PORT) ) {
-					path = H21_LOW_PATH;
-				} else {
-					path = H21_HIGH_PATH;
-				}
-				pkt.setRoute(path);
-
-			// Other host pairs
-			} 
-	} // end of staticRoute
-
-	@Override
-	public boolean onPacket(MaplePacket pkt) {
-
-		int ethType = pkt.ethType();
-
-		// For IPv4 traffic only
-		if ( ethType == Ethernet.TYPE_IPv4 ) {
-			staticRoute( pkt );
-			
-			if (pkt.route() == null) {
-//				if (pkt.TCPDstPortIs(80) || pkt.TCPSrcPortIs(80)) {
-//					int srcIP = pkt.IPv4Src();
-//					int dstIP = pkt.IPv4Dst();
+//	public void staticRoute(MaplePacket pkt) {
+//		// H1 (client) -> H2 (server)
+//		if ( pkt.IPv4SrcIs(H1_IP) && pkt.IPv4DstIs(H2_IP) ) {
 //
-//					Topology topo = (Topology) readData(TOPO_URL);
-//					Map<Integer, Port> hostTable = (Map<Integer, Port>) readData(HOST_TABLE_URL);
-//					Port srcPort = hostTable.get(srcIP);
-//					Port dstPort = hostTable.get(dstIP);
+//			String[] path = null;
 //
-//					pkt.setRoute(MapleUtil.shortestPath(topo.getLink(), srcPort, dstPort));
+//			if ( ! pkt.TCPDstPortIs(HTTP_PORT) ) {  // All non HTTP IP, e.g., UDP, PING, SSH
+//				path = H12_LOW_PATH;
+//			} else {                                // Only HTTP traffic
+//				path = H12_HIGH_PATH;
+//			}
+//
+//			// ***TODO***: Need to agree on either Route or Path, not both
+//			pkt.setRoute(path);
+//
+//			// Reverse: H2 -> H1
+//		} else if ( pkt.IPv4SrcIs(H2_IP) && pkt.IPv4DstIs(H1_IP) ) {
+//
+//				String[] path = null;
+//
+//				if ( ! pkt.TCPSrcPortIs(HTTP_PORT) ) {
+//					path = H21_LOW_PATH;
 //				} else {
-//					pkt.setRoute(Route.DROP);
+//					path = H21_HIGH_PATH;
 //				}
-			}
-
-		}
-
-		return false;
-
-	}
+//				pkt.setRoute(path);
+//
+//			// Other host pairs
+//			}
+//	} // end of staticRoute
+//
+//	@Override
+//	public boolean onPacket(MaplePacket pkt) {
+//
+//		int ethType = pkt.ethType();
+//
+//		// For IPv4 traffic only
+//		if ( ethType == Ethernet.TYPE_IPv4 ) {
+//			staticRoute( pkt );
+//
+//			if (pkt.route() == null) {
+////				if (pkt.TCPDstPortIs(80) || pkt.TCPSrcPortIs(80)) {
+////					int srcIP = pkt.IPv4Src();
+////					int dstIP = pkt.IPv4Dst();
+////
+////					Topology topo = (Topology) readData(TOPO_URL);
+////					Map<Integer, Port> hostTable = (Map<Integer, Port>) readData(HOST_TABLE_URL);
+////					Port srcPort = hostTable.get(srcIP);
+////					Port dstPort = hostTable.get(dstIP);
+////
+////					pkt.setRoute(MapleUtil.shortestPath(topo.getLink(), srcPort, dstPort));
+////				} else {
+////					pkt.setRoute(Route.DROP);
+////				}
+//			}
+//
+//		}
+//
+//		return false;
+//
+//	}
 	
 }
 

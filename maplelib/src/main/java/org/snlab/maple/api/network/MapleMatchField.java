@@ -5,26 +5,23 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.snlab.maple.tracetree;
 
-public class Port {
+package org.snlab.maple.api.network;
 
-    String id;
+public enum MapleMatchField{
+    ETH_SRC("eth_src"),
+    ETH_DST("eth_dst"),
+    IP_SRC("ip_src");
 
-    public Port(String id) {
-        this.id = id;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+    private String field;
+    private MapleMatchField(String str){
+        this.field =str;
     }
 
     @Override
     public String toString() {
-        return id;
+        return "MapleMatchField{" +
+                "field='" + field + '\'' +
+                '}';
     }
 }

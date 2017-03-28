@@ -5,16 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.snlab.maple.tracetree;
 
-public class PayLoadAndPort {
+package org.snlab.maple.api;
 
-    public byte[] payLoad;
+public interface TracePacket {
 
-    public Port port;
-
-    public PayLoadAndPort(byte[] payLoad, Port port) {
-        this.payLoad = payLoad;
-        this.port = port;
-    }
+    MaplePacket.MatchFieldMaskable ethSrc();
 }

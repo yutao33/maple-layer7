@@ -5,13 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.snlab.maple.tracetree;
 
-public class Route {
+package org.snlab.maple.api.network;
 
-    public static final String DROP = "drop";
-
-    public static final String FLOOD = "flood";
-
-    public static final String PUNT = "punt";
+public class MapleMatch{
+    MapleMatchField field;
+    byte[] value;
+    byte[] mask;
 }

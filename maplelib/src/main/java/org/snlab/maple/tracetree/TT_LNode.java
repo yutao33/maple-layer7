@@ -5,12 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+
 package org.snlab.maple.tracetree;
 
-public class Punt extends RouteAction {
+class TT_LNode extends TraceTreeNode{
 
-    @Override
-    public String toString() {
-        return "punt";
-    }
 }

@@ -6,8 +6,16 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple.tracetree;
+package org.snlab.maple.api.network;
 
-public class TraceItem{
+public class PacketOutMaplePacket{
 
+
+    void setRoute(){
+
+    }
+
+    void sendOut(){
+
+    }
 }
