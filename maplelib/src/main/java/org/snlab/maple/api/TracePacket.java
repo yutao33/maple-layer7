@@ -10,5 +10,5 @@ package org.snlab.maple.api;
 
 public interface TracePacket {
 
-    MaplePacket.MatchFieldMaskable ethSrc();
+
 }

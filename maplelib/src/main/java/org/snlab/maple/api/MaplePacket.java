@@ -11,7 +11,6 @@ package org.snlab.maple.api;
 
 import org.snlab.maple.api.network.MapleMatchField;
 import org.snlab.maple.api.network.MapleTopology;
-import org.snlab.maple.api.packet.MACAddress;
 import org.snlab.maple.tracetree.TraceItem;
 
 import java.util.ArrayList;
@@ -21,7 +20,7 @@ public class MaplePacket implements TracePacket{
 
     private MapleTopology.Port ingress;
 
-    private List<TraceItem> traceList=new ArrayList<TraceItem>();
+    private List<TraceItem> traceList =new ArrayList<TraceItem>();
 
     public MaplePacket(){
 
@@ -29,28 +28,6 @@ public class MaplePacket implements TracePacket{
 
     public List<TraceItem> getTraceList() {
         return traceList;
-    }
-
-//    public byte[] ethSrc() {
-//
-//        return null;
-//    }
-//
-//    public byte[] ethSrc_mask(){
-//        return null;
-//    }
-//
-//    public boolean ethSrcIs(byte[] mac) {
-//
-//        return false;
-//    }
-//
-//    public boolean ethSrc_mask_is(){
-//        return false;
-//    }
-
-    public MACAddress getEthSrc_0(){
-        return null;
     }
 
     public MaplePacket.MatchFieldMaskable ethSrc(){
@@ -120,9 +97,6 @@ public class MaplePacket implements TracePacket{
             return null;
         }
     }
-
-
-
 
     public void setRoute(String[] path) {
 

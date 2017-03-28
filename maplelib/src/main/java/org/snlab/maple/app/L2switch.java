@@ -11,33 +11,26 @@ package org.snlab.maple.app;
 import org.snlab.maple.api.MapleAppBase;
 import org.snlab.maple.api.MaplePacket;
 import org.snlab.maple.api.network.MapleTopology.Port;
-import org.snlab.maple.api.packet.MACAddress;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class L2switch extends MapleAppBase {
 
-    Map<MACAddress,Port> hostTable=new HashMap<MACAddress,Port>();
+    Map<Long,Port> hostTable =new HashMap<>();
+
+
 
     @Override
     public boolean onPacket(MaplePacket pkt) {
 
-        MACAddress ethSrc = pkt.ethSrc().getValue();
+        long ethSrc=0;
 
         if(!hostTable.containsKey(ethSrc)){
             hostTable.put(ethSrc,pkt.getIngress_0());
         }
 
-        if (pkt.ipSrc().is(new byte[]{33})) {
-            pkt.setRoute(null);
-            return true;
-        } else {
-            pkt.setRoute(null);
-            return true;
-        }
-
-
+        return false;
     }
 
 }
