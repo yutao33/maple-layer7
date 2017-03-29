@@ -9,7 +9,7 @@
 package org.snlab.maple.api;
 
 
-import org.snlab.maple.api.network.MapleMatchField;
+import org.snlab.maple.tracetree.MapleMatchField;
 import org.snlab.maple.api.network.MapleTopology;
 import org.snlab.maple.tracetree.TraceItem;
 
@@ -71,6 +71,7 @@ public class MaplePacket implements TracePacket{
         public boolean in(List<byte[]> set){
             return false;
         }
+
         public byte[] getValue(){
             return null;
         }

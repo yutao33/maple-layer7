@@ -10,46 +10,46 @@ package org.snlab.maple.api.route;
 
 import org.snlab.maple.api.network.MapleTopology;
 
-public class MapleActionSet{
+public class MapleAction {
 
     public static class OutPut{
 
     }
 
-    public static MapleActionSet.OutPut output(MapleTopology.Port port){
-        return new MapleActionSet.OutPut();
+    public static MapleAction.OutPut output(MapleTopology.Port port){
+        return new MapleAction.OutPut();
     }
 
     public static class ToController{
 
     }
 
-    public static MapleActionSet.ToController toController(){
-        return new MapleActionSet.ToController();
+    public static MapleAction.ToController toController(){
+        return new MapleAction.ToController();
     }
 
     public static class SetField{
 
     }
 
-    public static MapleActionSet.SetField setField(){
-        return new MapleActionSet.SetField();
+    public static MapleAction.SetField setField(){
+        return new MapleAction.SetField();
     }
 
     public static class PushVlan{
 
     }
 
-    public static MapleActionSet.PushVlan pushVlan(){
-        return new MapleActionSet.PushVlan();
+    public static MapleAction.PushVlan pushVlan(){
+        return new MapleAction.PushVlan();
     }
 
     public static class PopVlan{
 
     }
 
-    public static MapleActionSet.PopVlan popVlan(){
-        return new MapleActionSet.PopVlan();
+    public static MapleAction.PopVlan popVlan(){
+        return new MapleAction.PopVlan();
     }
 
 }

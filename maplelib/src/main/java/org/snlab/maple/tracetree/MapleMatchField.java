@@ -6,16 +6,23 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple.api.network;
+package org.snlab.maple.tracetree;
 
 public enum MapleMatchField{
-    ETH_SRC("eth_src"),
-    ETH_DST("eth_dst"),
-    IP_SRC("ip_src");
+    ETH_SRC("eth_src",48),
+    ETH_DST("eth_dst",48),
+    IP_SRC("ip_src",48);
 
     private String field;
-    private MapleMatchField(String str){
+    private int bitlength;
+
+    MapleMatchField(String str,int len){
         this.field =str;
+        this.bitlength=len;
+    }
+
+    public int getBitLength(){
+        return bitlength;
     }
 
     @Override

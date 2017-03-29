@@ -45,13 +45,7 @@ public class AppTest
     {
         assertTrue( true );
         List<Integer> test = new ArrayList<Integer>(Arrays.asList(1, 2, 3,2,2, 4, 5, 6, 7));
-        Iterator<Integer> iter = test.iterator();
-        while (iter.hasNext()) {
-            Integer next = iter.next();
-            if(next==2){
-                iter.remove();
-            }
-        }
-        System.out.println(test);
+        List<Integer> unmodifiableList = Collections.unmodifiableList(test);
+
     }
 }

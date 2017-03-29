@@ -8,6 +8,18 @@
 
 package org.snlab.maple.tracetree;
 
+import java.util.List;
+
 public class TraceItem{
+
+    private MapleMatchField field;
+
+    private byte[] mask;
+
+    private byte[] value;
+
+    public TraceItem(){
+
+    }
 
 }
