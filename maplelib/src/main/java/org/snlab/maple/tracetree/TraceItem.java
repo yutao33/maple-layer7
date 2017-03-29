@@ -8,7 +8,7 @@
 
 package org.snlab.maple.tracetree;
 
-import java.util.List;
+
 
 public class TraceItem{
 
@@ -18,8 +18,35 @@ public class TraceItem{
 
     private byte[] value;
 
-    public TraceItem(){
+    private TraceItem.Type type;
 
+    private boolean testresult;
+
+    public TraceItem(MapleMatchField field, byte[] mask, byte[] value,Type type,boolean testresult) {
+        assert value!=null;//TODO:
+        this.field = field;
+        if(mask!=null){
+            this.mask = mask.clone();
+        }
+        this.value = value.clone();
+        this.type=type;
+        this.testresult=testresult;
     }
 
+    public MapleMatchField getField() {
+        return field;
+    }
+
+    public byte[] getMask() {
+        return mask;
+    }
+
+    public byte[] getValue() {
+        return value;
+    }
+
+    public enum Type{
+        TEST,
+        VALUE;
+    }
 }

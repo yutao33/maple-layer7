@@ -58,11 +58,12 @@ public class TraceTree{
         }
 
         public byte[] getMask() {
-            return Arrays.copyOf(mask,mask.length);
+            return mask.clone();
         }
 
         public Map<MapleMatch,TraceTreeNode> getMatchEntrys(){
             return Collections.unmodifiableMap(matchentrys);
         }
     }
+
 }

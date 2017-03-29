@@ -9,6 +9,8 @@
 package org.snlab.maple.tracetree;
 
 public enum MapleMatchField{
+
+    INGRESS("ingress",0),  //special field
     ETH_SRC("eth_src",48),
     ETH_DST("eth_dst",48),
     IP_SRC("ip_src",48);

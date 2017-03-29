@@ -15,10 +15,9 @@ import org.snlab.maple.api.network.MapleTopology.Port;
 import java.util.HashMap;
 import java.util.Map;
 
-public class L2switch extends MapleAppBase {
+public class L2Switch extends MapleAppBase {
 
     Map<Long,Port> hostTable =new HashMap<>();
-
 
 
     @Override
@@ -27,7 +26,7 @@ public class L2switch extends MapleAppBase {
         long ethSrc=0;
 
         if(!hostTable.containsKey(ethSrc)){
-            hostTable.put(ethSrc,pkt.getIngress_0());
+
         }
 
         return false;

@@ -9,6 +9,7 @@
 package org.snlab.maple.api;
 
 
+import org.snlab.maple.tracetree.MapleMatch;
 import org.snlab.maple.tracetree.MapleMatchField;
 import org.snlab.maple.api.network.MapleTopology;
 import org.snlab.maple.tracetree.TraceItem;
@@ -43,13 +44,10 @@ public class MaplePacket implements TracePacket{
     }
 
 
-    public MaplePacket.MatchFieldNoMask ingress(){
-        return null;
+    public MaplePacket.Ingress ingress(){
+        return new Ingress();
     }
 
-    public MapleTopology.Port getIngress_0(){
-        return this.ingress;
-    }
 
     public boolean isTunnel(){
         return false;
@@ -58,6 +56,39 @@ public class MaplePacket implements TracePacket{
 
     public MaplePacket.MatchFieldMaskable ipSrc(){
         return new MaplePacket.MatchFieldMaskable(MapleMatchField.IP_SRC);
+    }
+
+    public class Node{
+
+    }
+
+    public class Ingress{
+        private Ingress(){
+
+        }
+
+        /**  ingress : 'openflow:1:1' **/
+        public boolean is(String ingress){
+            boolean ret= MaplePacket.this.ingress.getId().equals(ingress);
+            TraceItem ti = new TraceItem(MapleMatchField.INGRESS, null, ingress.getBytes(), TraceItem.Type.TEST, ret);
+            MaplePacket.this.traceList.add(ti);
+            return ret;
+        }
+
+        public boolean in(String[] ingresses){
+            return false;
+        }
+
+        public boolean belongto(String node){
+            boolean ret = MaplePacket.this.ingress.getOwner().getId().equals(node);
+            TraceItem ti = new TraceItem(MapleMatchField.INGRESS, null, node.getBytes(), TraceItem.Type.VALUE, ret);
+            MaplePacket.this.traceList.add(ti);
+            return ret;
+        }
+
+        public MapleTopology.Port getValue(){
+            return MaplePacket.this.ingress;
+        }
     }
 
     public class MatchFieldNoMask{
@@ -79,8 +110,8 @@ public class MaplePacket implements TracePacket{
 
     public class MatchFieldMaskable {
 
-        protected MapleMatchField field;
-        protected byte[] mask;
+        private MapleMatchField field;
+        private byte[] mask;
 
         private MatchFieldMaskable(MapleMatchField field){
             this.field=field;
@@ -99,7 +130,12 @@ public class MaplePacket implements TracePacket{
         }
     }
 
-    public void setRoute(String[] path) {
+    /**
+     * setRoute in String format.
+     * @param ingress the ingress of the packet, when it is null, it means not to match in_port field at the begin node;
+     * @param path a continuous forwarding path
+     */
+    public void setRoute(String ingress,String[] path) {
 
     }
 }

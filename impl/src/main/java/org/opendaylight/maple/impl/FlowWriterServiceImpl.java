@@ -60,7 +60,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class FlowWriterServiceImpl implements FlowWriterService {
     private static final Logger LOG = LoggerFactory.getLogger(FlowWriterServiceImpl.class);
-    private final String FLOW_ID_PREFIX = "L2switch-";
+    private final String FLOW_ID_PREFIX = "L2Switch-";
     private SalFlowService salFlowService;
     private short flowTableId;
     private int flowPriority;

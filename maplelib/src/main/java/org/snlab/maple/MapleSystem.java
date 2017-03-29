@@ -51,6 +51,10 @@ public class MapleSystem {
                 break;
             }
         }
+
+        traceTree.update(pkt.getTraceList());
+
+        //TODO: flow rules
     }
 
     private boolean setupMapleApp(Class<? extends MapleAppBase> appclass,MapleAppSetup opt) {
