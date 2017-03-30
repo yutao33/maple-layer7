@@ -35,9 +35,6 @@ public class MapleSystem {
         return handler;
     }
 
-    private void updateTrace() {
-
-    }
 
     private void updateFlowRules() {
 
@@ -87,7 +84,7 @@ public class MapleSystem {
     private Object command(Class<? extends MapleAppBase> appclass, Object parm){
         for (MapleAppBase app : mapleAppList) {
             if(app.getClass().equals(appclass)){
-                return app.oncommand(parm);  // 'return' is safe
+                return app.onCommand(parm);  // 'return' is safe
             }
         }
         return null;

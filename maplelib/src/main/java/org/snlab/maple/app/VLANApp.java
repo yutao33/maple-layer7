@@ -14,13 +14,13 @@ import org.snlab.maple.api.MaplePacket;
 import java.util.List;
 import java.util.Map;
 
-class VLANApp{
+public class VLANApp{
 
     Map<MapleTopology.Port,Short> Port2VlanidTable;
     Map<MapleTopology.Port,byte[]> Port2MacaddrTable;
 
 
-    List<byte[]> boundaryport(){
+    String[] boundaryport(){
         return null;
     }
 

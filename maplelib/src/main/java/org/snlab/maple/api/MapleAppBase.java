@@ -8,10 +8,16 @@
 
 package org.snlab.maple.api;
 
+import org.snlab.maple.datastore.MapleDataStore;
+
 public abstract class MapleAppBase {
 
+    private MapleDataStore mapleDataStore;
+    public final void setUpDataStore(MapleDataStore dataStore){
+        mapleDataStore=dataStore;
+    }
 
-    public Object oncommand(Object parm){
+    public Object onCommand(Object parm){
         return null;
     }
 

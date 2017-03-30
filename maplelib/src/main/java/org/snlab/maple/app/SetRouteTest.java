@@ -11,13 +11,13 @@ package org.snlab.maple.app;
 import org.snlab.maple.api.MapleAppBase;
 import org.snlab.maple.api.MaplePacket;
 
-public class IngressTest extends MapleAppBase {
-    private static final String[] path1={""};
-    private static final String[] path2={""};
-
+public class SetRouteTest extends MapleAppBase{
+    public static final String[] path1={"openflow:2:1","openflow:1:1"};
+    public static final String[] path2={"openflow:3:1","openflow:2:2"};
     @Override
     public boolean onPacket(MaplePacket pkt) {
-
-        return false;
+        pkt.setRoute(path1);
+        pkt.addRoute(path2);
+        return true;
     }
 }

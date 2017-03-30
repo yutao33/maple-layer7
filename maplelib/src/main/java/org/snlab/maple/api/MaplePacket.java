@@ -68,27 +68,25 @@ public class MaplePacket implements TracePacket{
     //-------------------------------setRoute functions-----------------------------
 
     /**
-     * setRoute in String format.
-     * @param ingress the ingress of the packet, when it is null, it means not to match in_port field at the begin node;
-     * @param path a continuous forwarding path
+     * setRoute
+     * @param path  path which can include ingress at the beginning
      */
-    public void setRoute(String ingress,String[] path) {
+    public void setRoute(String... path){
+
+    }
+
+    public void addRoute(String... path){
 
     }
 
 
     //-------------------------------inner class-----------------------------
 
-    public class Node{
-
-    }
-
     public class Ingress{
         private Ingress(){
 
         }
 
-        /**  ingress : 'openflow:1:1' **/
         public boolean is(String ingress){
             boolean ret= MaplePacket.this.ingress.getId().equals(ingress);
             TraceItem ti = new TraceItem(MapleMatchField.INGRESS, null, ingress.getBytes(), TraceItem.Type.TEST, ret);
@@ -96,7 +94,18 @@ public class MaplePacket implements TracePacket{
             return ret;
         }
 
-        public boolean in(String[] ingresses){
+        public boolean is(MapleTopology.Port port){
+            boolean ret=MaplePacket.this.ingress.equals(port);
+            TraceItem ti = new TraceItem(MapleMatchField.INGRESS, null, port.toString().getBytes(), TraceItem.Type.TEST, ret);
+            MaplePacket.this.traceList.add(ti);
+            return ret;
+        }
+
+        public boolean in(String... ingresses){
+            return false;
+        }
+
+        public boolean in(MapleTopology.Port ...ports){
             return false;
         }
 

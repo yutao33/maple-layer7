@@ -58,6 +58,21 @@ public class MapleTopology {
         public void setId(String id) {
             this.id = id;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Node node = (Node) o;
+
+            return id.equals(node.id);
+        }
+
+        @Override
+        public int hashCode() {
+            return id.hashCode();
+        }
     }
 
     public static class Port {
@@ -96,6 +111,24 @@ public class MapleTopology {
 
         public void setLink(Link link) {
             this.link = link;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Port port = (Port) o;
+
+            if (!owner.equals(port.owner)) return false;
+            return id.equals(port.id);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = owner.hashCode();
+            result = 31 * result + id.hashCode();
+            return result;
         }
     }
 }
