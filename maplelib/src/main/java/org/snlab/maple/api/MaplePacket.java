@@ -9,7 +9,6 @@
 package org.snlab.maple.api;
 
 
-import org.snlab.maple.tracetree.MapleMatch;
 import org.snlab.maple.tracetree.MapleMatchField;
 import org.snlab.maple.api.network.MapleTopology;
 import org.snlab.maple.tracetree.TraceItem;
@@ -17,29 +16,36 @@ import org.snlab.maple.tracetree.TraceItem;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * MaplePacket.
+ */
 public class MaplePacket implements TracePacket{
 
     private MapleTopology.Port ingress;
 
     private List<TraceItem> traceList =new ArrayList<TraceItem>();
 
-    public MaplePacket(){
-
+    public MaplePacket(byte[] data, MapleTopology.Port ingress){
+        this.ingress=ingress;
     }
 
     public List<TraceItem> getTraceList() {
         return traceList;
     }
 
-    public MaplePacket.MatchFieldMaskable ethSrc(){
+
+
+    //-------------------------------trace functions-----------------------------
+
+    public PktFieldMaskable ethSrc(){
         return null;
     }
 
-    public MaplePacket.MatchFieldMaskable ethDst(){
+    public PktFieldMaskable ethDst(){
         return null;
     }
 
-    public MaplePacket.MatchFieldMaskable vlanid(){
+    public PktFieldMaskable vlanid(){
         return null;
     }
 
@@ -54,9 +60,24 @@ public class MaplePacket implements TracePacket{
     }
 
 
-    public MaplePacket.MatchFieldMaskable ipSrc(){
-        return new MaplePacket.MatchFieldMaskable(MapleMatchField.IP_SRC);
+    public PktFieldMaskable ipSrc(){
+        return new PktFieldMaskable(MapleMatchField.IP_SRC);
     }
+
+
+    //-------------------------------setRoute functions-----------------------------
+
+    /**
+     * setRoute in String format.
+     * @param ingress the ingress of the packet, when it is null, it means not to match in_port field at the begin node;
+     * @param path a continuous forwarding path
+     */
+    public void setRoute(String ingress,String[] path) {
+
+    }
+
+
+    //-------------------------------inner class-----------------------------
 
     public class Node{
 
@@ -91,51 +112,58 @@ public class MaplePacket implements TracePacket{
         }
     }
 
-    public class MatchFieldNoMask{
-        private MapleMatchField field;
-        private MatchFieldNoMask(MapleMatchField field){
+    public class PktField {
+
+        protected MapleMatchField field;
+
+        private PktField(MapleMatchField field){
             this.field=field;
         }
+
         public boolean is(byte[] context){
             return false;
         }
+
         public boolean in(List<byte[]> set){
             return false;
         }
 
-        public byte[] getValue(){
+        public boolean range(byte[] value1,byte[] value2){
+            return false;
+        }
+
+        public byte[] get(){
             return null;
         }
+
     }
 
-    public class MatchFieldMaskable {
+    public class PktFieldMaskable extends PktField {
 
-        private MapleMatchField field;
         private byte[] mask;
 
-        private MatchFieldMaskable(MapleMatchField field){
-            this.field=field;
+        private PktFieldMaskable(MapleMatchField field){
+            super(field);
         }
-        public MaplePacket.MatchFieldMaskable mask(byte[] context){
+        public PktFieldMaskable mask(byte[] context){
             return this;
         }
+
+        @Override
         public boolean is(byte[] context){
             return false;
         }
+
+        @Override
         public boolean in(List<byte[]> set){
             return false;
         }
-        public byte[] getValue(){
+
+        @Override
+        public byte[] get(){
             return null;
         }
-    }
-
-    /**
-     * setRoute in String format.
-     * @param ingress the ingress of the packet, when it is null, it means not to match in_port field at the begin node;
-     * @param path a continuous forwarding path
-     */
-    public void setRoute(String ingress,String[] path) {
 
     }
+
 }

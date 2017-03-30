@@ -8,8 +8,15 @@
 
 package org.snlab.maple.tracetree;
 
-import java.util.*;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+
+/**
+ * TraceTree.
+ */
 public class TraceTree{
     private TraceTreeNode treeroot;
 
@@ -37,23 +44,22 @@ public class TraceTree{
 
 
     public static class TNode extends TraceTreeNode {
-//        class TNodeEntry{
-//            MapleMatch match;
-//            TraceTreeNode branch;
-//        }
-//        List<TNodeEntry> list;
-//        TraceTreeNode nomatchbranch;
         //field
-        //mask
-        //value set
+        //mask value set
         //truebranch
         //falsebranch
+        private MapleMatchField field;
+
+
+
+        private TraceTreeNode branchtrue;
+        private TraceTreeNode branchfalse;
     }
 
 
 
     public static class VNode extends TraceTreeNode {
-        private MapleMatchField field; // write only inner class TraceTree
+        private MapleMatchField field;
         private byte[] mask;
         private Map<byte[],TraceTreeNode> matchentrys;
 
@@ -69,10 +75,7 @@ public class TraceTree{
         public byte[] getMask() {
             return mask.clone();
         }
-//
-//        public Map<MapleMatch,TraceTreeNode> getMatchEntrys(){
-//            return Collections.unmodifiableMap(matchentrys);
-//        }
+
     }
 
 }
