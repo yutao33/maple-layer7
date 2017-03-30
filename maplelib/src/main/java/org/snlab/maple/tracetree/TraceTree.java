@@ -25,28 +25,37 @@ public class TraceTree{
 
 
     public abstract static class TraceTreeNode{
-
+        protected int priority;
     }
 
     public static class LNode extends TraceTreeNode{
+        //action
+        //genrule
 
     }
 
+
+
     public static class TNode extends TraceTreeNode {
-        class TNodeEntry{
-            MapleMatch match;
-            TraceTreeNode branch;
-        }
-        List<TNodeEntry> list;
-        TraceTreeNode nomatchbranch;
+//        class TNodeEntry{
+//            MapleMatch match;
+//            TraceTreeNode branch;
+//        }
+//        List<TNodeEntry> list;
+//        TraceTreeNode nomatchbranch;
+        //field
+        //mask
+        //value set
+        //truebranch
+        //falsebranch
     }
 
 
 
     public static class VNode extends TraceTreeNode {
-        private MapleMatchField field; // !!! class TraceTree can access
-        private byte[] mask;  // !!! class TraceTree can access
-        private Map<MapleMatch,TraceTreeNode> matchentrys;  // !!! class TraceTree can access
+        private MapleMatchField field; // write only inner class TraceTree
+        private byte[] mask;
+        private Map<byte[],TraceTreeNode> matchentrys;
 
         public VNode(MapleMatchField field) {
             this.field=field;
@@ -60,10 +69,10 @@ public class TraceTree{
         public byte[] getMask() {
             return mask.clone();
         }
-
-        public Map<MapleMatch,TraceTreeNode> getMatchEntrys(){
-            return Collections.unmodifiableMap(matchentrys);
-        }
+//
+//        public Map<MapleMatch,TraceTreeNode> getMatchEntrys(){
+//            return Collections.unmodifiableMap(matchentrys);
+//        }
     }
 
 }
