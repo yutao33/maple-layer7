@@ -6,8 +6,8 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple.api.packet;
-// package net.floodlightcontroller.packet;
+package org.snlab.maple.packet.parser;
+// package net.floodlightcontroller.parser;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;

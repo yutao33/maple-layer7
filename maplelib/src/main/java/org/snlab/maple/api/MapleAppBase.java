@@ -9,8 +9,6 @@
 package org.snlab.maple.api;
 
 
-import org.snlab.maple.packet.MaplePacket;
-
 public abstract class MapleAppBase {
 
     public boolean init(MapleEnv env){

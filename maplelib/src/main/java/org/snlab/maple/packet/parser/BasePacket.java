@@ -6,8 +6,8 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-// package net.floodlightcontroller.packet;
-package org.snlab.maple.api.packet;
+// package net.floodlightcontroller.parser;
+package org.snlab.maple.packet.parser;
 
 // import org.slf4j.Logger;
 // import org.slf4j.LoggerFactory;
@@ -93,7 +93,7 @@ public abstract class BasePacket implements IPacket {
         try {
             pkt = this.getClass().newInstance();
         } catch (Exception e) {
-            throw new RuntimeException("Could not clone packet");
+            throw new RuntimeException("Could not clone parser");
         }
         // TODO: we are using serialize()/deserialize() to perform the
         // cloning. Not the most efficient way but simple. We can revisit

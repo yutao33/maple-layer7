@@ -9,8 +9,8 @@
 /**
  *
  */
-package org.snlab.maple.api.packet;
-// package net.floodlightcontroller.packet;
+package org.snlab.maple.packet.parser;
+// package net.floodlightcontroller.parser;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;

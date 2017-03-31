@@ -6,8 +6,8 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple.api.packet;
-//package net.floodlightcontroller.packet;
+package org.snlab.maple.packet.parser;
+//package net.floodlightcontroller.parser;
 
 /**
  * @author David Erickson (daviderickson@cs.stanford.edu)
@@ -41,15 +41,15 @@ public interface IPacket {
     public void resetChecksum();
 
     /**
-     * Sets all payloads parent packet if applicable, then serializes this
-     * packet and all payloads
+     * Sets all payloads parent parser if applicable, then serializes this
+     * parser and all payloads
      *
-     * @return a byte[] containing this packet and payloads
+     * @return a byte[] containing this parser and payloads
      */
     public byte[] serialize();
 
     /**
-     * Deserializes this packet layer and all possible payloads
+     * Deserializes this parser layer and all possible payloads
      *
      * @param data
      * @param offset offset to start deserializing from
@@ -60,7 +60,7 @@ public interface IPacket {
             throws PacketParsingException;
 
     /**
-     * Clone this packet and its payload packet but not its parent.
+     * Clone this parser and its payload parser but not its parent.
      *
      * @return
      */

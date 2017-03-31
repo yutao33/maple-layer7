@@ -9,9 +9,9 @@
 package org.snlab.maple.packet;
 
 
-import org.snlab.maple.api.TracePacket;
+import org.snlab.maple.api.MaplePacket;
+import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.tracetree.MapleMatchField;
-import org.snlab.maple.api.network.MapleTopology;
 import org.snlab.maple.tracetree.TraceItem;
 
 import java.util.ArrayList;
@@ -20,13 +20,13 @@ import java.util.List;
 /**
  * MaplePacket.
  */
-public class MaplePacket implements TracePacket {
+public class MaplePacketImpl implements MaplePacket {
 
     private MapleTopology.Port ingress;
 
     private List<TraceItem> traceList =new ArrayList<TraceItem>();
 
-    public MaplePacket(byte[] data, MapleTopology.Port ingress){
+    public MaplePacketImpl(byte[] data, MapleTopology.Port ingress){
         this.ingress=ingress;
     }
 
@@ -51,7 +51,7 @@ public class MaplePacket implements TracePacket {
     }
 
 
-    public MaplePacket.Ingress ingress(){
+    public MaplePacketImpl.Ingress ingress(){
         return new Ingress();
     }
 
@@ -72,10 +72,12 @@ public class MaplePacket implements TracePacket {
      * setRoute
      * @param path  path which can include ingress at the beginning
      */
+    @Override
     public void setRoute(String... path){
 
     }
 
+    @Override
     public void addRoute(String... path){
 
     }
@@ -89,16 +91,16 @@ public class MaplePacket implements TracePacket {
         }
 
         public boolean is(String ingress){
-            boolean ret= MaplePacket.this.ingress.getId().equals(ingress);
+            boolean ret= MaplePacketImpl.this.ingress.getId().equals(ingress);
             TraceItem ti = new TraceItem(MapleMatchField.INGRESS, null, ingress.getBytes(), TraceItem.Type.TEST, ret);
-            MaplePacket.this.traceList.add(ti);
+            MaplePacketImpl.this.traceList.add(ti);
             return ret;
         }
 
         public boolean is(MapleTopology.Port port){
-            boolean ret=MaplePacket.this.ingress.equals(port);
+            boolean ret=MaplePacketImpl.this.ingress.equals(port);
             TraceItem ti = new TraceItem(MapleMatchField.INGRESS, null, port.toString().getBytes(), TraceItem.Type.TEST, ret);
-            MaplePacket.this.traceList.add(ti);
+            MaplePacketImpl.this.traceList.add(ti);
             return ret;
         }
 
@@ -111,14 +113,14 @@ public class MaplePacket implements TracePacket {
         }
 
         public boolean belongto(String node){
-            boolean ret = MaplePacket.this.ingress.getOwner().getId().equals(node);
+            boolean ret = MaplePacketImpl.this.ingress.getOwner().getId().equals(node);
             TraceItem ti = new TraceItem(MapleMatchField.INGRESS, null, node.getBytes(), TraceItem.Type.VALUE, ret);
-            MaplePacket.this.traceList.add(ti);
+            MaplePacketImpl.this.traceList.add(ti);
             return ret;
         }
 
         public MapleTopology.Port getValue(){
-            return MaplePacket.this.ingress;
+            return MaplePacketImpl.this.ingress;
         }
     }
 

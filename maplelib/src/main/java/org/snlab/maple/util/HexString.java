@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple.api.util;
+package org.snlab.maple.util;
 // package org.openflow.util;
 
 import java.math.BigInteger;

@@ -8,7 +8,7 @@
 
 package org.snlab.maple.api.route;
 
-import org.snlab.maple.api.network.MapleTopology;
+import org.snlab.maple.env.MapleTopology;
 
 
 //

@@ -5,8 +5,8 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.snlab.maple.api.packet;
-//package net.floodlightcontroller.packet;
+package org.snlab.maple.packet.parser;
+//package net.floodlightcontroller.parser;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;

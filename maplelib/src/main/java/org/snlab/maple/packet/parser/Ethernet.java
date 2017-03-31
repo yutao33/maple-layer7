@@ -6,11 +6,11 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple.api.packet;
+package org.snlab.maple.packet.parser;
 
 
 
-import org.snlab.maple.api.util.HexString;
+import org.snlab.maple.util.HexString;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -159,7 +159,7 @@ public class Ethernet extends BasePacket {
 
 
     /**
-     * Pad this packet to 60 bytes minimum, filling with zeros?
+     * Pad this parser to 60 bytes minimum, filling with zeros?
      *
      * @return the pad
      */
@@ -168,7 +168,7 @@ public class Ethernet extends BasePacket {
     }
 
     /**
-     * Pad this packet to 60 bytes minimum, filling with zeros?
+     * Pad this parser to 60 bytes minimum, filling with zeros?
      *
      * @param pad the pad to set
      */
@@ -206,7 +206,7 @@ public class Ethernet extends BasePacket {
     }
 
     public IPacket deserialize(byte[] data, int offset, int length) {
-        if (length <= 16)  // Ethernet packet minium should be 60, this is reasonable
+        if (length <= 16)  // Ethernet parser minium should be 60, this is reasonable
             return null;
         ByteBuffer bb = ByteBuffer.wrap(data, offset, length);
         if (this.destinationMACAddress == null)
@@ -339,7 +339,7 @@ public class Ethernet extends BasePacket {
             sb.append("\nnw_dst: ");
             sb.append(IPv4.fromIPv4Address(IPv4.toIPv4Address(p.getTargetProtocolAddress())));
         } else if (pkt instanceof LLDP) {
-            sb.append("lldp packet");
+            sb.append("lldp parser");
         } else if (pkt instanceof ICMP) {
             ICMP icmp = (ICMP) pkt;
             sb.append("\nicmp_type: ");
@@ -365,10 +365,10 @@ public class Ethernet extends BasePacket {
                 sb.append(pTCP.getDestinationPort());
             }
         } else if (pkt instanceof DHCP) {
-            sb.append("\ndhcp packet");
+            sb.append("\ndhcp parser");
         } else if (pkt instanceof Data) {
-            sb.append("\ndata packet");
-        } else sb.append("\nunknwon packet");
+            sb.append("\ndata parser");
+        } else sb.append("\nunknwon parser");
 
         return sb.toString();
     }

@@ -8,7 +8,7 @@
 
 package org.snlab.maple.tracetree;
 
-import org.snlab.maple.api.network.MapleTopology;
+import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.api.route.MapleAction;
 
 public class MapleRule {

@@ -9,8 +9,8 @@
 /**
  *
  */
-package org.snlab.maple.api.packet;
-// package net.floodlightcontroller.packet;
+package org.snlab.maple.packet.parser;
+// package net.floodlightcontroller.parser;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -413,7 +413,7 @@ public class IPv4 extends BasePacket {
     }
 
     /**
-     * Serializes the packet. Will compute and set the following fields if they
+     * Serializes the parser. Will compute and set the following fields if they
      * are set to specific values at the time serialize is called:
      * -checksum : 0
      * -headerLength : 0
@@ -480,7 +480,7 @@ public class IPv4 extends BasePacket {
         this.version = (byte) ((this.version >> 4) & 0xf);
         if (this.version != 4) {
             throw new PacketParsingException(
-                    "Invalid version for IPv4 packet: " +
+                    "Invalid version for IPv4 parser: " +
                             this.version);
         }
         this.diffServ = bb.get();
@@ -510,7 +510,7 @@ public class IPv4 extends BasePacket {
             try {
                 payload = clazz.newInstance();
             } catch (Exception e) {
-                throw new RuntimeException("Error parsing payload for IPv4 packet", e);
+                throw new RuntimeException("Error parsing payload for IPv4 parser", e);
             }
         } else {
             payload = new Data();

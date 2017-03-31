@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple.api.network;
+package org.snlab.maple.env;
 
 import java.util.List;
 

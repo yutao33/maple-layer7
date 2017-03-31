@@ -8,6 +8,14 @@
 
 package org.snlab.maple.env;
 
-public class MapleEnvImpl {
+import org.snlab.maple.api.MapleEnv;
 
+public class MapleEnvImpl implements MapleEnv {
+
+    private MapleTopology topology=new MapleTopology();
+
+    @Override
+    public MapleTopology getTopo() {
+        return topology;
+    }
 }

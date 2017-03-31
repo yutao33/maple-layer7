@@ -11,13 +11,13 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 
 /**
- * Service that adds packet forwarding flows to configuration data store.
+ * Service that adds parser forwarding flows to configuration data store.
  */
 public interface FlowWriterService {
 
     /**
      * Writes a flow that forwards packets to destPort if destination mac in
-     * packet is destMac and source Mac in packet is sourceMac. If sourceMac is
+     * parser is destMac and source Mac in parser is sourceMac. If sourceMac is
      * null then flow would not set any source mac, resulting in all packets
      * with destMac being forwarded to destPort.
      *

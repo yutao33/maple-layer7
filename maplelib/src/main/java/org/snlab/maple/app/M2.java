@@ -10,7 +10,7 @@ package org.snlab.maple.app;
 
 
 import org.snlab.maple.api.MapleAppBase;
-import org.snlab.maple.api.packet.IPv4;
+import org.snlab.maple.packet.parser.IPv4;
 
 public class M2 extends MapleAppBase {
 

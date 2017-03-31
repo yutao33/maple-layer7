@@ -8,7 +8,7 @@
 
 package org.snlab.maple.api.route;
 
-import org.snlab.maple.api.packet.Ethernet;
+import org.snlab.maple.packet.parser.Ethernet;
 
 public interface PuntPktListener {
     void onPunt(Ethernet originPkt);

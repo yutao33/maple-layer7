@@ -97,7 +97,7 @@ public class FlowWriterServiceImpl implements FlowWriterService {
 
     /**
      * Writes a flow that forwards packets to destPort if destination mac in
-     * packet is destMac and source Mac in packet is sourceMac. If sourceMac is
+     * parser is destMac and source Mac in parser is sourceMac. If sourceMac is
      * null then flow would not set any source mac, resulting in all packets
      * with destMac being forwarded to destPort.
      *

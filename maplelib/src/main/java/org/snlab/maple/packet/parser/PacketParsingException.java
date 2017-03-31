@@ -6,9 +6,14 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple.api;
+package org.snlab.maple.packet.parser;
 
-public interface TracePacket {
+public class PacketParsingException extends Exception {
 
+    private static final long serialVersionUID = -1177841297678875573L;
+
+    public PacketParsingException(String msg) {
+        super(msg);
+    }
 
 }

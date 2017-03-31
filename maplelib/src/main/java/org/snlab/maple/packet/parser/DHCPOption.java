@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple.api.packet; // net.floodlightcontroller.packet;
+package org.snlab.maple.packet.parser; // net.floodlightcontroller.parser;
 
 import java.util.Arrays;
 

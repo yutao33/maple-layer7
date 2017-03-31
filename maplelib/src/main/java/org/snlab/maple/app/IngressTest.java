@@ -9,14 +9,21 @@
 package org.snlab.maple.app;
 
 import org.snlab.maple.api.MapleAppBase;
-import org.snlab.maple.packet.MaplePacket;
+import org.snlab.maple.api.MapleEnv;
+import org.snlab.maple.api.MaplePacket;
 
+
+/**
+ * IngressTest.
+ * mn --topo=tree,fanout=2,depth=2 --controller=remote,port=6653 --switch=ovs,protocols=OpenFlow13 --mac
+ *
+ */
 public class IngressTest extends MapleAppBase {
     private static final String[] path1={""};
     private static final String[] path2={""};
 
     @Override
-    public boolean onPacket(MaplePacket pkt) {
+    public boolean onPacket(MaplePacket pkt, MapleEnv env) {
 
         return false;
     }
