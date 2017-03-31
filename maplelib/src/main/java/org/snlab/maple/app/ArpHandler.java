@@ -9,7 +9,7 @@
 package org.snlab.maple.app;
 
 import org.snlab.maple.api.MapleAppBase;
-import org.snlab.maple.api.MaplePacket;
+import org.snlab.maple.packet.MaplePacket;
 
 public class ArpHandler extends MapleAppBase {
     @Override

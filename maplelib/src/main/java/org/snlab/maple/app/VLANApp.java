@@ -9,9 +9,8 @@
 package org.snlab.maple.app;
 
 import org.snlab.maple.api.network.MapleTopology;
-import org.snlab.maple.api.MaplePacket;
+import org.snlab.maple.packet.MaplePacket;
 
-import java.util.List;
 import java.util.Map;
 
 public class VLANApp{

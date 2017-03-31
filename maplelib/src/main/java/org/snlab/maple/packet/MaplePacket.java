@@ -6,9 +6,10 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple.api;
+package org.snlab.maple.packet;
 
 
+import org.snlab.maple.api.TracePacket;
 import org.snlab.maple.tracetree.MapleMatchField;
 import org.snlab.maple.api.network.MapleTopology;
 import org.snlab.maple.tracetree.TraceItem;
@@ -19,7 +20,7 @@ import java.util.List;
 /**
  * MaplePacket.
  */
-public class MaplePacket implements TracePacket{
+public class MaplePacket implements TracePacket {
 
     private MapleTopology.Port ingress;
 

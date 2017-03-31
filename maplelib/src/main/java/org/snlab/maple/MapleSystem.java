@@ -10,7 +10,7 @@ package org.snlab.maple;
 
 
 import org.snlab.maple.api.MapleAppBase;
-import org.snlab.maple.api.MaplePacket;
+import org.snlab.maple.packet.MaplePacket;
 import org.snlab.maple.tracetree.TraceTree;
 
 import java.util.Iterator;
@@ -42,12 +42,14 @@ public class MapleSystem {
 
 
     private void onPacket(MaplePacket pkt) {
+        pkt.getTraceList().clear();
 
         for (MapleAppBase app : mapleAppList) {
             if (app.onPacket(pkt)) {
                 break;
             }
         }
+
 
         traceTree.update(pkt.getTraceList());
 

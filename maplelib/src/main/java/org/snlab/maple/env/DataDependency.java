@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple.datastore;
+package org.snlab.maple.env;
 
-public class DataTracker {
+public class DataDependency {
 }

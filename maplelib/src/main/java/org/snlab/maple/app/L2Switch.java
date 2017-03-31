@@ -9,7 +9,7 @@
 package org.snlab.maple.app;
 
 import org.snlab.maple.api.MapleAppBase;
-import org.snlab.maple.api.MaplePacket;
+import org.snlab.maple.packet.MaplePacket;
 import org.snlab.maple.api.network.MapleTopology.Port;
 
 import java.util.HashMap;
@@ -18,7 +18,6 @@ import java.util.Map;
 public class L2Switch extends MapleAppBase {
 
     Map<Long,Port> hostTable =new HashMap<>();
-
 
     @Override
     public boolean onPacket(MaplePacket pkt) {

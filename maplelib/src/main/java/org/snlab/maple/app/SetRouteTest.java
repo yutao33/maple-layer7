@@ -9,7 +9,7 @@
 package org.snlab.maple.app;
 
 import org.snlab.maple.api.MapleAppBase;
-import org.snlab.maple.api.MaplePacket;
+import org.snlab.maple.packet.MaplePacket;
 
 public class SetRouteTest extends MapleAppBase{
     public static final String[] path1={"openflow:2:1","openflow:1:1"};

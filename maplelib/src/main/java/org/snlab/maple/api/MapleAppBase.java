@@ -8,20 +8,20 @@
 
 package org.snlab.maple.api;
 
-import org.snlab.maple.datastore.MapleDataStore;
+
+import org.snlab.maple.packet.MaplePacket;
 
 public abstract class MapleAppBase {
 
-    private MapleDataStore mapleDataStore;
-    public final void setUpDataStore(MapleDataStore dataStore){
-        mapleDataStore=dataStore;
+    public boolean init(MapleEnv env){
+        return true;
     }
 
-    public Object onCommand(Object parm){
+    public Object onCommand(Object parm,MapleEnv env){
         return null;
     }
 
-    public boolean onPacket(MaplePacket pkt) {
+    public boolean onPacket(MaplePacket pkt, MapleEnv env) {
         return false;
     }
 
