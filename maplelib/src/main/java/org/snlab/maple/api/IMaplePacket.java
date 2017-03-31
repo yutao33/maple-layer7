@@ -8,7 +8,11 @@
 
 package org.snlab.maple.api;
 
+import org.snlab.maple.packet.MaplePacket;
+
 public interface IMaplePacket {
+
+    MaplePacket.Ingress ingress();
 
     void setRoute(String... path);
 

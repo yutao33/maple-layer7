@@ -40,6 +40,7 @@ public class PacketHandler implements PacketProcessingListener {
         NodeConnectorRef ingress = packetReceived.getIngress();
 
 
-        LOG.info("packetReceived={}",packetReceived.toString());
+
+        LOG.debug("packetReceived={}",packetReceived.toString());
     }
 }

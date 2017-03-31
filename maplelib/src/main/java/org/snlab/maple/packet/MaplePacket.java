@@ -51,6 +51,7 @@ public class MaplePacket implements IMaplePacket {
     }
 
 
+    @Override
     public MaplePacket.Ingress ingress(){
         return new Ingress();
     }

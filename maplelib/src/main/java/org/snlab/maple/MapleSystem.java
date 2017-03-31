@@ -11,6 +11,7 @@ package org.snlab.maple;
 
 import org.snlab.maple.api.MapleAppBase;
 import org.snlab.maple.env.MapleEnv;
+import org.snlab.maple.flowrule.MaplePacketInReason;
 import org.snlab.maple.packet.MaplePacket;
 import org.snlab.maple.tracetree.TraceTree;
 
@@ -105,8 +106,8 @@ public class MapleSystem {
     private class MapleSystemHandlerImpl implements IMapleHandler {
 
         @Override
-        public void onPacket() {
-
+        public void onPacket(String ingress, byte[] payload, MaplePacketInReason reason) {
+            
         }
     }
 }

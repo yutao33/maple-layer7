@@ -6,12 +6,9 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple;
+package org.snlab.maple.flowrule;
 
-import org.snlab.maple.flowrule.MaplePacketInReason;
-
-public interface IMapleHandler {
-
-    void onPacket(String ingress, byte[] payload, MaplePacketInReason reason);
-
+public enum MaplePacketInReason {
+    NOMATCH,
+    TOCONTROLLER;
 }
