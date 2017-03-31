@@ -10,7 +10,8 @@ package org.snlab.maple;
 
 
 import org.snlab.maple.api.MapleAppBase;
-import org.snlab.maple.packet.MaplePacketImpl;
+import org.snlab.maple.env.MapleEnv;
+import org.snlab.maple.packet.MaplePacket;
 import org.snlab.maple.tracetree.TraceTree;
 
 import java.util.Iterator;
@@ -19,16 +20,19 @@ import java.util.List;
 public class MapleSystem {
 
 
-    private final MapleAdaptor mapleAdaptor;
-    private TraceTree traceTree = new TraceTree();
-    private MapleHandler handler;
+    private final IMapleAdaptor mapleAdaptor;
+    private TraceTree traceTree;
+    private MapleEnv mapleEnv;
+    private IMapleHandler handler;
     private List<MapleAppBase> mapleAppList;
 
-    public MapleSystem(MapleAdaptor mapleAdaptor) {
+    public MapleSystem(IMapleAdaptor mapleAdaptor) {
         this.mapleAdaptor = mapleAdaptor;
+        this.traceTree=new TraceTree();
+        this.mapleEnv=new MapleEnv();
     }
 
-    public MapleHandler getHandler() {
+    public IMapleHandler getHandler() {
         if (handler == null) {
             handler = new MapleSystemHandlerImpl();
         }
@@ -41,11 +45,11 @@ public class MapleSystem {
     }
 
 
-    private void onPacket(MaplePacketImpl pkt) {
+    private void onPacket(MaplePacket pkt) {
         pkt.getTraceList().clear();
 
         for (MapleAppBase app : mapleAppList) {
-            if (app.onPacket(pkt)) {
+            if (app.onPacket(pkt,mapleEnv)) {
                 break;
             }
         }
@@ -62,6 +66,7 @@ public class MapleSystem {
             case INSTALL:
                 try {
                     MapleAppBase app = appclass.newInstance();
+                    app.init(mapleEnv);
                     mapleAppList.add(0,app);
                 } catch (InstantiationException e) {
                     e.printStackTrace();
@@ -86,7 +91,7 @@ public class MapleSystem {
     private Object command(Class<? extends MapleAppBase> appclass, Object parm){
         for (MapleAppBase app : mapleAppList) {
             if(app.getClass().equals(appclass)){
-                return app.onCommand(parm);  // 'return' is safe
+                return app.onCommand(parm,mapleEnv);  // 'return' is safe
             }
         }
         return null;
@@ -97,8 +102,9 @@ public class MapleSystem {
         UNINSTALL
     }
 
-    private class MapleSystemHandlerImpl implements MapleHandler {
+    private class MapleSystemHandlerImpl implements IMapleHandler {
 
+        @Override
         public void onPacket() {
 
         }

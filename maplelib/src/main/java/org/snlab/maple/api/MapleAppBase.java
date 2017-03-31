@@ -11,15 +11,15 @@ package org.snlab.maple.api;
 
 public abstract class MapleAppBase {
 
-    public boolean init(MapleEnv env){
+    public boolean init(IMapleEnv env){
         return true;
     }
 
-    public Object onCommand(Object parm,MapleEnv env){
+    public Object onCommand(Object parm,IMapleEnv env){
         return null;
     }
 
-    public boolean onPacket(MaplePacket pkt, MapleEnv env) {
+    public boolean onPacket(IMaplePacket pkt, IMapleEnv env) {
         return false;
     }
 

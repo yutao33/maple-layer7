@@ -6,10 +6,11 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple;
+package org.snlab.maple.api;
 
-public interface MapleHandler {
-    void onPacket();
+public interface IMaplePacket {
 
-//    void setupMapleApp();
+    void setRoute(String... path);
+
+    void addRoute(String... path);
 }

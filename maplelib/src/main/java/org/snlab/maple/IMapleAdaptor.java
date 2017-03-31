@@ -6,16 +6,25 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple.env;
 
-import org.snlab.maple.api.MapleEnv;
+package org.snlab.maple;
 
-public class MapleEnvImpl implements MapleEnv {
 
-    private MapleTopology topology=new MapleTopology();
+public interface IMapleAdaptor {
+    void sendPacket();
 
-    @Override
-    public MapleTopology getTopo() {
-        return topology;
-    }
+    void installPath();
+
+    void deletePath();
+
+    void installRule();
+
+    void deleteRule();
+
+    void resetWriteTransaction();
+
+    void submitTransaction();
+
+    void outputtracetree();
+
 }

@@ -6,11 +6,16 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple.api;
+package org.snlab.maple.env;
 
-public interface MaplePacket {
+import org.snlab.maple.api.IMapleEnv;
 
-    void setRoute(String... path);
+public class MapleEnv implements IMapleEnv {
 
-    void addRoute(String... path);
+    private MapleTopology topology=new MapleTopology();
+
+    @Override
+    public MapleTopology getTopo() {
+        return topology;
+    }
 }

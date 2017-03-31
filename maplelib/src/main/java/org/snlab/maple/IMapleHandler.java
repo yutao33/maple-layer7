@@ -6,25 +6,10 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-
 package org.snlab.maple;
 
+public interface IMapleHandler {
+    void onPacket();
 
-public interface MapleAdaptor {
-    void sendPacket();
-
-    void installPath();
-
-    void deletePath();
-
-    void installRule();
-
-    void deleteRule();
-
-    void resetWriteTransaction();
-
-    void submitTransaction();
-
-    void outputtracetree();
-
+//    void setupMapleApp();
 }

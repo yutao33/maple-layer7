@@ -9,13 +9,12 @@
 package org.snlab.maple.app;
 
 import org.snlab.maple.api.MapleAppBase;
-import org.snlab.maple.api.MapleEnv;
-import org.snlab.maple.api.MaplePacket;
-import org.snlab.maple.packet.MaplePacketImpl;
+import org.snlab.maple.api.IMapleEnv;
+import org.snlab.maple.api.IMaplePacket;
 
 public class ArpHandler extends MapleAppBase {
     @Override
-    public boolean onPacket(MaplePacket pkt,MapleEnv env) {
+    public boolean onPacket(IMaplePacket pkt, IMapleEnv env) {
 
         return false;
 

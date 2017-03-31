@@ -9,7 +9,7 @@
 package org.snlab.maple.app;
 
 import org.snlab.maple.env.MapleTopology;
-import org.snlab.maple.packet.MaplePacketImpl;
+import org.snlab.maple.packet.MaplePacket;
 
 import java.util.Map;
 
@@ -24,7 +24,7 @@ public class VLANApp{
     }
 
 
-    boolean onPacket(MaplePacketImpl pkt){
+    boolean onPacket(MaplePacket pkt){
         if(pkt.ingress().in(boundaryport())){
 
 

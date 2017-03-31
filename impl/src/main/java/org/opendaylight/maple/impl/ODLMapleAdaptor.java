@@ -14,9 +14,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.snlab.maple.MapleAdaptor;
+import org.snlab.maple.IMapleAdaptor;
 
-public class ODLMapleAdaptor implements MapleAdaptor{
+public class ODLMapleAdaptor implements IMapleAdaptor {
 
     private final DataBroker dataBroker;
 

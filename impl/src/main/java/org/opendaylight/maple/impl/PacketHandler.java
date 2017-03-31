@@ -12,15 +12,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeCon
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.snlab.maple.MapleHandler;
+import org.snlab.maple.IMapleHandler;
 
 public class PacketHandler implements PacketProcessingListener {
 
     private final static Logger LOG = LoggerFactory.getLogger(PacketHandler.class);
 
-    private final MapleHandler mapleHandler;
+    private final IMapleHandler mapleHandler;
 
-    public PacketHandler(MapleHandler mapleHandler) {
+    public PacketHandler(IMapleHandler mapleHandler) {
         this.mapleHandler = mapleHandler;
     }
 

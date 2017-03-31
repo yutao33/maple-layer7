@@ -11,6 +11,6 @@ package org.snlab.maple.api;
 import org.snlab.maple.env.MapleTopology;
 
 
-public interface MapleEnv {
+public interface IMapleEnv {
     MapleTopology getTopo();
 }

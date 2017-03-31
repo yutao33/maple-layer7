@@ -9,9 +9,8 @@
 package org.snlab.maple.app;
 
 import org.snlab.maple.api.MapleAppBase;
-import org.snlab.maple.api.MapleEnv;
-import org.snlab.maple.api.MaplePacket;
-import org.snlab.maple.packet.MaplePacketImpl;
+import org.snlab.maple.api.IMapleEnv;
+import org.snlab.maple.api.IMaplePacket;
 
 
 /**
@@ -23,7 +22,7 @@ public class SetRouteTest extends MapleAppBase{
     private static final String[] path1={"openflow:2:3","openflow:1:2"};
     private static final String[] path2={"openflow:3:3","openflow:1:1"};
     @Override
-    public boolean onPacket(MaplePacket pkt, MapleEnv env) {
+    public boolean onPacket(IMaplePacket pkt, IMapleEnv env) {
         pkt.setRoute(path1);
         pkt.addRoute(path2);
         return true;
