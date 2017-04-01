@@ -448,7 +448,7 @@ public class IPv4 extends BasePacket {
         Map<MapleMatchField,byte[]> map=new HashMap<>();
         map.put(MapleMatchField.IP_SRC,sourceAddress.getBytes());
         map.put(MapleMatchField.IP_DST,destinationAddress.getBytes());
-        map.put(MapleMatchField.IP_PROTO,U16.of(protocol.getIpProtocolNumber()).getBytes());
+        map.put(MapleMatchField.IP_PROTO,U8.of(protocol.getIpProtocolNumber()).getBytes());
         map.putAll(((BasePacket)payload).buildMatchFieldMap());
         return map;
     }
