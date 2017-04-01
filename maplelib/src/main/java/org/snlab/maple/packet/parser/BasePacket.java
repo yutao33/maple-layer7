@@ -20,6 +20,11 @@ package org.snlab.maple.packet.parser;
 //package net.floodlightcontroller.packet;
 
 
+import org.snlab.maple.flowrule.MapleMatchField;
+
+import java.util.Collections;
+import java.util.Map;
+
 /**
 *
 * @author David Erickson (daviderickson@cs.stanford.edu)
@@ -28,6 +33,14 @@ public abstract class BasePacket implements IPacket {
 
     protected IPacket parent;
     protected IPacket payload;
+
+
+
+    Map<MapleMatchField,byte[]> buildMatchFieldMap(){
+        return Collections.emptyMap();
+    }
+
+
 
     /**
      * @return the parent

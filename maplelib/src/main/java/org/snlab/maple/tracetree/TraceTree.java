@@ -10,7 +10,9 @@ package org.snlab.maple.tracetree;
 
 
 import org.snlab.maple.flowrule.MapleMatchField;
+import org.snlab.maple.flowrule.MapleRule;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +24,34 @@ import java.util.Map;
 public class TraceTree{
     private TraceTreeNode treeroot;
 
-    public void update(List<TraceItem> items){
+    public synchronized void update(List<TraceItem> items){
+        if(items.isEmpty()){
+            return ;
+        }
 
+        if(treeroot==null){
+            treeroot=newNode();
+        }
+
+        TraceTreeNode nodep=treeroot;
+
+        for (TraceItem traceItem : items) {
+            if(nodep instanceof TNode){
+
+            } else if(nodep instanceof VNode){
+
+            } else {  //LNode
+
+            }
+        }
+    }
+
+    private TraceTreeNode newNode(){
+        return null;
+    }
+
+    private TraceTreeNode setTNode(){
+        return null;
     }
 
     public void generateRules(){
@@ -33,6 +61,10 @@ public class TraceTree{
 
 
 
+
+
+    //-------------------------------inner class-----------------------------
+
     public abstract static class TraceTreeNode{
         protected int priority;
     }
@@ -40,22 +72,22 @@ public class TraceTree{
     public static class LNode extends TraceTreeNode{
         //action
         //genrule
+        private MapleRule rule;
 
     }
 
 
 
     public static class TNode extends TraceTreeNode {
-        //field
-        //mask value set
-        //truebranch
-        //falsebranch
         private MapleMatchField field;
-
-
-
+        private byte[] mask;
+        private List<byte[]> values;
         private TraceTreeNode branchtrue;
         private TraceTreeNode branchfalse;
+        public TNode(MapleMatchField field){
+            this.field=field;
+            values=new ArrayList<>();
+        }
     }
 
 
@@ -69,15 +101,6 @@ public class TraceTree{
             this.field=field;
             matchentrys=new HashMap<>();
         }
-
-        public MapleMatchField getField() {
-            return field;
-        }
-
-        public byte[] getMask() {
-            return mask.clone();
-        }
-
     }
 
 }

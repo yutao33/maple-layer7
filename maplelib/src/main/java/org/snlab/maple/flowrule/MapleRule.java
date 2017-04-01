@@ -15,4 +15,8 @@ public class MapleRule {
     MapleTopology.Node node;
     MapleMatch match;
     MapleAction action;
+
+    private boolean deleted;
+    private boolean newrule;
+
 }

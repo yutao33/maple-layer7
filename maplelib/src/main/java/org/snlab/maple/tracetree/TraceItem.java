@@ -46,6 +46,14 @@ public class TraceItem{
         return value;
     }
 
+    public Type getType() {
+        return type;
+    }
+
+    public boolean isTestresult() {
+        return testresult;
+    }
+
     public enum Type{
         TEST,
         VALUE;

@@ -21,6 +21,11 @@ public class Forward {
 
     }
 
+
+    public static String[] extractIngress(String... path){
+        return new String[]{};
+    }
+
 }
 
 

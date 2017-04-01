@@ -24,8 +24,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.snlab.maple.flowrule.MapleMatchField;
 import org.snlab.maple.packet.types.EthType;
 import org.snlab.maple.packet.types.MacAddress;
+import org.snlab.maple.packet.types.U16;
 import org.snlab.maple.packet.types.VlanVid;
 
 /**
@@ -316,6 +318,19 @@ public class Ethernet extends BasePacket {
         this.payload.setParent(this);
         return this;
     }
+
+
+
+    @Override
+    Map<MapleMatchField, byte[]> buildMatchFieldMap() {
+        Map<MapleMatchField,byte[]> map=new HashMap<>();
+        map.put(MapleMatchField.ETH_DST,destinationMACAddress.getBytes());
+        map.put(MapleMatchField.ETH_SRC,sourceMACAddress.getBytes());
+        map.put(MapleMatchField.ETH_TYPE, U16.of(etherType.getValue()).getBytes());
+        map.putAll(((BasePacket)payload).buildMatchFieldMap());
+        return map;
+    }
+
 
     /**
      * Checks to see if a string is a valid MAC address.

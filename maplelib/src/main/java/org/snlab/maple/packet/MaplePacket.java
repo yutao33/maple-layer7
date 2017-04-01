@@ -72,7 +72,7 @@ public class MaplePacket implements IMaplePacket {
     }
 
 
-    //-------------------------------setRoute functions-----------------------------
+    //-------------------------------Route functions-----------------------------
 
     /**
      * setRoute
@@ -86,6 +86,10 @@ public class MaplePacket implements IMaplePacket {
     @Override
     public void addRoute(String... path){
 
+    }
+
+    public Object getRoute(){
+        return null;
     }
 
 
@@ -103,20 +107,20 @@ public class MaplePacket implements IMaplePacket {
             return ret;
         }
 
-        public boolean is(MapleTopology.Port port){
-            boolean ret=MaplePacket.this.ingress.equals(port);
-            TraceItem ti = new TraceItem(MapleMatchField.INGRESS, null, port.toString().getBytes(), TraceItem.Type.TEST, ret);
-            MaplePacket.this.traceList.add(ti);
-            return ret;
-        }
+//        public boolean is(MapleTopology.Port port){
+//            boolean ret=MaplePacket.this.ingress.equals(port);
+//            TraceItem ti = new TraceItem(MapleMatchField.INGRESS, null, port.toString().getBytes(), TraceItem.Type.TEST, ret);
+//            MaplePacket.this.traceList.add(ti);
+//            return ret;
+//        }
 
         public boolean in(String... ingresses){
             return false;
         }
 
-        public boolean in(MapleTopology.Port ...ports){
-            return false;
-        }
+//        public boolean in(MapleTopology.Port ...ports){
+//            return false;
+//        }
 
         public boolean belongto(String node){
             boolean ret = MaplePacket.this.ingress.getOwner().getId().equals(node);
@@ -143,10 +147,6 @@ public class MaplePacket implements IMaplePacket {
         }
 
         public boolean in(List<byte[]> set){
-            return false;
-        }
-
-        public boolean range(byte[] value1,byte[] value2){
             return false;
         }
 

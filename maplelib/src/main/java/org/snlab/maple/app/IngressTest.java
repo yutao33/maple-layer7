@@ -11,6 +11,7 @@ package org.snlab.maple.app;
 import org.snlab.maple.api.MapleAppBase;
 import org.snlab.maple.api.IMapleEnv;
 import org.snlab.maple.api.IMaplePacket;
+import org.snlab.maple.api.route.Forward;
 
 
 /**
@@ -19,12 +20,18 @@ import org.snlab.maple.api.IMaplePacket;
  *
  */
 public class IngressTest extends MapleAppBase {
-    private static final String[] path1={""};
-    private static final String[] path2={""};
+    private static final String[] path1={"openflow:2:1","openflow:2:3","openflow:1:2","openflow:3:1"};
+    private static final String[] path2={"openflow:3:1","openflow:3:3","openflow:1:1","openflow:2:1"};
 
     @Override
     public boolean onPacket(IMaplePacket pkt, IMapleEnv env) {
-
-        return false;
+        if(pkt.ingress().in(Forward.extractIngress(path1))){
+            pkt.setRoute(path1);
+        } else if(pkt.ingress().in(Forward.extractIngress(path2))){
+            pkt.setRoute(path2);
+        } else {
+            pkt.setRoute("DROP");
+        }
+        return true;
     }
 }

@@ -55,6 +55,15 @@ public class U32 implements Writeable, OFValueType<U32> {
         return f(raw);
     }
 
+    public byte[] getBytes(){
+        return new byte[]{
+                (byte)((raw>>24)&0xFF),
+                (byte)((raw>>16)&0xFF),
+                (byte)((raw>>8)&0xFF),
+                (byte)(raw&0xFF)
+        };
+    }
+
     public int getRaw() {
         return raw;
     }

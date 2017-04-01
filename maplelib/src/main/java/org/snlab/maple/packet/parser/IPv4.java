@@ -28,8 +28,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.snlab.maple.flowrule.MapleMatchField;
 import org.snlab.maple.packet.types.IPv4Address;
 import org.snlab.maple.packet.types.IpProtocol;
+import org.snlab.maple.packet.types.U16;
 import org.snlab.maple.packet.types.U8;
 
 /**
@@ -438,6 +440,17 @@ public class IPv4 extends BasePacket {
             this.isTruncated = false;
 
         return this;
+    }
+
+
+    @Override
+    Map<MapleMatchField, byte[]> buildMatchFieldMap() {
+        Map<MapleMatchField,byte[]> map=new HashMap<>();
+        map.put(MapleMatchField.IP_SRC,sourceAddress.getBytes());
+        map.put(MapleMatchField.IP_DST,destinationAddress.getBytes());
+        map.put(MapleMatchField.IP_PROTO,U16.of(protocol.getIpProtocolNumber()).getBytes());
+        map.putAll(((BasePacket)payload).buildMatchFieldMap());
+        return map;
     }
 
     /**

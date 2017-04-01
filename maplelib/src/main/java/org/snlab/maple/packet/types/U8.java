@@ -56,6 +56,12 @@ public class U8 implements Writeable, OFValueType<U8> {
         return f(raw);
     }
 
+    public byte[] getBytes(){
+        return new byte[]{
+                raw
+        };
+    }
+
     public byte getRaw() {
         return raw;
     }

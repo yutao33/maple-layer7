@@ -61,6 +61,13 @@ public class U16 implements Writeable, OFValueType<U16> {
         return f(raw);
     }
 
+    public byte[] getBytes(){
+        return new byte[]{
+                (byte)((raw>>8)&0xFF),
+                (byte)(raw&0xFF)
+        };
+    }
+
     public short getRaw() {
         return raw;
     }
