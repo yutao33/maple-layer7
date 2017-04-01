@@ -1,35 +1,50 @@
-/*
- * Copyright © 2017 SNLab and others. All rights reserved.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
- */
+/**
+*    Copyright 2011, Big Switch Networks, Inc. 
+*    Originally created by David Erickson, Stanford University
+* 
+*    Licensed under the Apache License, Version 2.0 (the "License"); you may
+*    not use this file except in compliance with the License. You may obtain
+*    a copy of the License at
+*
+*         http://www.apache.org/licenses/LICENSE-2.0
+*
+*    Unless required by applicable law or agreed to in writing, software
+*    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+*    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+*    License for the specific language governing permissions and limitations
+*    under the License.
+**/
 
 package org.snlab.maple.packet.parser;
-//package net.floodlightcontroller.parser;
+
+//package net.floodlightcontroller.packet;
 
 /**
- * @author David Erickson (daviderickson@cs.stanford.edu)
- */
+*
+* @author David Erickson (daviderickson@cs.stanford.edu)
+*/
 public interface IPacket {
     /**
+     * 
      * @return
      */
     public IPacket getPayload();
 
     /**
+     * 
      * @param packet
      * @return
      */
     public IPacket setPayload(IPacket packet);
 
     /**
+     * 
      * @return
      */
     public IPacket getParent();
 
     /**
+     * 
      * @param packet
      * @return
      */
@@ -39,18 +54,16 @@ public interface IPacket {
      * Reset any checksums as needed, and call resetChecksum on all parents
      */
     public void resetChecksum();
-
+    
     /**
-     * Sets all payloads parent parser if applicable, then serializes this
-     * parser and all payloads
-     *
-     * @return a byte[] containing this parser and payloads
+     * Sets all payloads parent packet if applicable, then serializes this 
+     * packet and all payloads
+     * @return a byte[] containing this packet and payloads
      */
     public byte[] serialize();
 
     /**
-     * Deserializes this parser layer and all possible payloads
-     *
+     * Deserializes this packet layer and all possible payloads
      * @param data
      * @param offset offset to start deserializing from
      * @param length length of the data to deserialize
@@ -58,10 +71,9 @@ public interface IPacket {
      */
     public IPacket deserialize(byte[] data, int offset, int length)
             throws PacketParsingException;
-
-    /**
-     * Clone this parser and its payload parser but not its parent.
-     *
+    
+    /** Clone this packet and its payload packet but not its parent. 
+     * 
      * @return
      */
     public Object clone();

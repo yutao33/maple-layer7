@@ -1,29 +1,47 @@
-/*
- * Copyright © 2017 SNLab and others. All rights reserved.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
- */
+/**
+*    Copyright 2011, Big Switch Networks, Inc.
+*    Originally created by David Erickson, Stanford University
+*
+*    Licensed under the Apache License, Version 2.0 (the "License"); you may
+*    not use this file except in compliance with the License. You may obtain
+*    a copy of the License at
+*
+*         http://www.apache.org/licenses/LICENSE-2.0
+*
+*    Unless required by applicable law or agreed to in writing, software
+*    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+*    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+*    License for the specific language governing permissions and limitations
+*    under the License.
+**/
+
 package org.snlab.maple.packet.parser;
-//package net.floodlightcontroller.parser;
+
+//package net.floodlightcontroller.packet;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.snlab.maple.packet.types.IpProtocol;
+
 /**
- * Implements ICMP parser format
- *
+ * Implements ICMP packet format
  * @author shudong.zhou@bigswitch.com
  */
 public class ICMP extends BasePacket {
+    protected byte icmpType;
+    protected byte icmpCode;
+    protected short checksum;
+
     // The value is the number of bytes of padding
     public static final Map<Byte, Short> paddingMap;
+
     public static final byte ECHO_REPLY = 0x0;
     public static final byte ECHO_REQUEST = 0x8;
     public static final byte TIME_EXCEEDED = 0xB;
     public static final byte DESTINATION_UNREACHABLE = 0x3;
+
     public static final byte CODE_PORT_UNREACHABLE = 0x3;
 
     static {
@@ -33,10 +51,6 @@ public class ICMP extends BasePacket {
         ICMP.paddingMap.put(ICMP.TIME_EXCEEDED, (short) 4);
         ICMP.paddingMap.put(ICMP.DESTINATION_UNREACHABLE, (short) 4);
     }
-
-    protected byte icmpType;
-    protected byte icmpCode;
-    protected short checksum;
 
     /**
      * @return the icmpType
@@ -84,10 +98,10 @@ public class ICMP extends BasePacket {
     }
 
     /**
-     * Serializes the parser. Will compute and set the following fields if they
+     * Serializes the packet. Will compute and set the following fields if they
      * are set to specific values at the time serialize is called:
-     * -checksum : 0
-     * -length : 0
+     *      -checksum : 0
+     *      -length : 0
      */
     @Override
     public byte[] serialize() {
@@ -116,7 +130,7 @@ public class ICMP extends BasePacket {
             bb.put(payloadData);
 
         if (this.parent != null && this.parent instanceof IPv4)
-            ((IPv4) this.parent).setProtocol(IPv4.PROTOCOL_ICMP);
+            ((IPv4)this.parent).setProtocol(IpProtocol.ICMP);
 
         // compute checksum if needed
         if (this.checksum == 0) {
@@ -188,7 +202,7 @@ public class ICMP extends BasePacket {
         bb.position(bb.position() + padding);
 
         this.payload = new Data();
-        this.payload = payload.deserialize(data, bb.position(), bb.limit() - bb.position());
+        this.payload = payload.deserialize(data, bb.position(), bb.limit()-bb.position());
         this.payload.setParent(this);
         return this;
     }

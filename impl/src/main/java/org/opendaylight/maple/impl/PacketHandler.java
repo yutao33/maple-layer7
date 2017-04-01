@@ -9,10 +9,14 @@
 package org.opendaylight.maple.impl;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.*;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snlab.maple.IMapleHandler;
+import org.snlab.maple.flowrule.MaplePacketInReason;
 
 public class PacketHandler implements PacketProcessingListener {
 
@@ -39,8 +43,13 @@ public class PacketHandler implements PacketProcessingListener {
 
         NodeConnectorRef ingress = packetReceived.getIngress();
 
+        KeyedInstanceIdentifier ingressiid = (KeyedInstanceIdentifier) ingress.getValue();
+        NodeConnectorKey ingresskey = (NodeConnectorKey) ingressiid.getKey();
+        String ingresskeyid = ingresskey.getId().getValue();
 
 
-        LOG.debug("packetReceived={}",packetReceived.toString());
+        System.out.println("ingress="+ingresskeyid);
+        mapleHandler.onPacket(ingresskeyid,packetReceived.getPayload(), MaplePacketInReason.NOMATCH);
+
     }
 }

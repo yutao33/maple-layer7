@@ -11,7 +11,8 @@ package org.snlab.maple.packet;
 
 import org.snlab.maple.api.IMaplePacket;
 import org.snlab.maple.env.MapleTopology;
-import org.snlab.maple.tracetree.MapleMatchField;
+import org.snlab.maple.flowrule.MapleMatchField;
+import org.snlab.maple.packet.parser.Ethernet;
 import org.snlab.maple.tracetree.TraceItem;
 
 import java.util.ArrayList;
@@ -24,10 +25,14 @@ public class MaplePacket implements IMaplePacket {
 
     private MapleTopology.Port ingress;
 
+    private Ethernet frame;
+
     private List<TraceItem> traceList =new ArrayList<TraceItem>();
 
     public MaplePacket(byte[] data, MapleTopology.Port ingress){
         this.ingress=ingress;
+        this.frame=new Ethernet();
+        frame.deserialize(data,0,data.length);
     }
 
     public List<TraceItem> getTraceList() {

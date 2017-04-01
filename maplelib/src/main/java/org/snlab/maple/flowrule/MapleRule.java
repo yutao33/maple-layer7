@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple.tracetree;
+package org.snlab.maple.flowrule;
 
 import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.api.route.MapleAction;

@@ -9,6 +9,7 @@
 package org.snlab.maple.tracetree;
 
 
+import org.snlab.maple.flowrule.MapleMatchField;
 
 public class TraceItem{
 

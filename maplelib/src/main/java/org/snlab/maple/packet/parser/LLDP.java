@@ -1,34 +1,47 @@
-/*
- * Copyright © 2017 SNLab and others. All rights reserved.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
- */
+/**
+*    Copyright 2011, Big Switch Networks, Inc. 
+*    Originally created by David Erickson, Stanford University
+* 
+*    Licensed under the Apache License, Version 2.0 (the "License"); you may
+*    not use this file except in compliance with the License. You may obtain
+*    a copy of the License at
+*
+*         http://www.apache.org/licenses/LICENSE-2.0
+*
+*    Unless required by applicable law or agreed to in writing, software
+*    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+*    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+*    License for the specific language governing permissions and limitations
+*    under the License.
+**/
 
 /**
- *
+ * 
  */
 package org.snlab.maple.packet.parser;
-// package net.floodlightcontroller.parser;
+
+//package net.floodlightcontroller.packet;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.snlab.maple.packet.types.EthType;
+
 /**
  * @author David Erickson (daviderickson@cs.stanford.edu)
+ *
  */
 public class LLDP extends BasePacket {
     protected LLDPTLV chassisId;
     protected LLDPTLV portId;
     protected LLDPTLV ttl;
     protected List<LLDPTLV> optionalTLVList;
-    protected short ethType;
+    protected EthType ethType;
 
     public LLDP() {
         this.optionalTLVList = new ArrayList<LLDPTLV>();
-        this.ethType = Ethernet.TYPE_LLDP;
+        this.ethType = EthType.LLDP;
     }
 
     /**
@@ -93,8 +106,8 @@ public class LLDP extends BasePacket {
 
     @Override
     public byte[] serialize() {
-        int length = 2 + this.chassisId.getLength() + 2 + this.portId.getLength() +
-                2 + this.ttl.getLength() + 2;
+        int length = 2+this.chassisId.getLength() + 2+this.portId.getLength() +
+            2+this.ttl.getLength() + 2;
         for (LLDPTLV tlv : this.optionalTLVList) {
             if (tlv != null)
                 length += 2 + tlv.getLength();
@@ -111,7 +124,7 @@ public class LLDP extends BasePacket {
         bb.putShort((short) 0); // End of LLDPDU
 
         if (this.parent != null && this.parent instanceof Ethernet)
-            ((Ethernet) this.parent).setEtherType(ethType);
+            ((Ethernet)this.parent).setEtherType(ethType);
 
         return data;
     }
@@ -193,14 +206,14 @@ public class LLDP extends BasePacket {
             return false;
         return true;
     }
-
+    
     @Override
     public String toString() {
         String str = "";
         str += "chassisId=" + ((this.chassisId == null) ? "null" : this.chassisId.toString());
         str += " portId=" + ((this.portId == null) ? "null" : this.portId.toString());
         str += " ttl=" + ((this.ttl == null) ? "null" : this.ttl.toString());
-        str += " etherType=" + Integer.toString(this.ethType, 16).toUpperCase();
+        str += " etherType=" + ethType.toString();
         str += " optionalTlvList=[";
         if (this.optionalTLVList != null) {
             for (LLDPTLV l : optionalTLVList) str += l.toString() + ", ";

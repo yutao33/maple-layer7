@@ -1,29 +1,38 @@
-/*
- * Copyright © 2017 SNLab and others. All rights reserved.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
- */
+/**
+*    Copyright 2011, Big Switch Networks, Inc. 
+*    Originally created by David Erickson, Stanford University
+* 
+*    Licensed under the Apache License, Version 2.0 (the "License"); you may
+*    not use this file except in compliance with the License. You may obtain
+*    a copy of the License at
+*
+*         http://www.apache.org/licenses/LICENSE-2.0
+*
+*    Unless required by applicable law or agreed to in writing, software
+*    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+*    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+*    License for the specific language governing permissions and limitations
+*    under the License.
+**/
 
-// package net.floodlightcontroller.parser;
 package org.snlab.maple.packet.parser;
 
-// import org.slf4j.Logger;
-// import org.slf4j.LoggerFactory;
+//package net.floodlightcontroller.packet;
 
 
 /**
- * @author David Erickson (daviderickson@cs.stanford.edu)
- */
+*
+* @author David Erickson (daviderickson@cs.stanford.edu)
+*/
 public abstract class BasePacket implements IPacket {
-    // public static final Logger log = LoggerFactory.getLogger(BasePacket.class);
+
     protected IPacket parent;
     protected IPacket payload;
 
     /**
      * @return the parent
      */
+    @Override
     public IPacket getParent() {
         return parent;
     }
@@ -31,6 +40,7 @@ public abstract class BasePacket implements IPacket {
     /**
      * @param parent the parent to set
      */
+    @Override
     public IPacket setParent(IPacket parent) {
         this.parent = parent;
         return this;
@@ -39,6 +49,7 @@ public abstract class BasePacket implements IPacket {
     /**
      * @return the payload
      */
+    @Override
     public IPacket getPayload() {
         return payload;
     }
@@ -46,11 +57,13 @@ public abstract class BasePacket implements IPacket {
     /**
      * @param payload the payload to set
      */
+    @Override
     public IPacket setPayload(IPacket payload) {
         this.payload = payload;
         return this;
     }
-
+    
+    @Override
     public void resetChecksum() {
         if (this.parent != null)
             this.parent.resetChecksum();
@@ -86,16 +99,16 @@ public abstract class BasePacket implements IPacket {
             return false;
         return true;
     }
-
+    
     @Override
     public Object clone() {
         IPacket pkt;
         try {
             pkt = this.getClass().newInstance();
         } catch (Exception e) {
-            throw new RuntimeException("Could not clone parser");
+            throw new RuntimeException("Could not clone packet");
         }
-        // TODO: we are using serialize()/deserialize() to perform the
+        // TODO: we are using serialize()/deserialize() to perform the 
         // cloning. Not the most efficient way but simple. We can revisit
         // if we hit performance problems.
         byte[] data = this.serialize();
@@ -108,14 +121,4 @@ public abstract class BasePacket implements IPacket {
         pkt.setParent(this.parent);
         return pkt;
     }
-
-    public byte[] serialize() {
-        return new byte[0];
-    }
-
-    public IPacket deserialize(byte[] data, int offset, int length) throws PacketParsingException {
-        return null;
-    }
-
-
 }

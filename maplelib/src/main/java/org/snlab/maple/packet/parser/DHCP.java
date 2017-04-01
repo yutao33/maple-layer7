@@ -1,13 +1,23 @@
-/*
- * Copyright © 2017 SNLab and others. All rights reserved.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
- */
+/**
+*    Copyright 2011, Big Switch Networks, Inc. 
+*    Originally created by David Erickson, Stanford University
+* 
+*    Licensed under the Apache License, Version 2.0 (the "License"); you may
+*    not use this file except in compliance with the License. You may obtain
+*    a copy of the License at
+*
+*         http://www.apache.org/licenses/LICENSE-2.0
+*
+*    Unless required by applicable law or agreed to in writing, software
+*    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+*    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+*    License for the specific language governing permissions and limitations
+*    under the License.
+**/
 
 package org.snlab.maple.packet.parser;
-// package net.floodlightcontroller.parser;
+
+//package net.floodlightcontroller.packet;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -15,7 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.snlab.maple.packet.types.IPv4Address;
+import org.snlab.maple.packet.types.MacAddress;
+
 /**
+ *
  * @author David Erickson (daviderickson@cs.stanford.edu)
  */
 public class DHCP extends BasePacket {
@@ -43,6 +57,7 @@ public class DHCP extends BasePacket {
      * ------------------------------------------
      * |            options (312)               |
      * ------------------------------------------
+     * 
      */
     // Header + magic without options
     public static int MIN_HEADER_LENGTH = 240;
@@ -50,6 +65,31 @@ public class DHCP extends BasePacket {
     public static byte OPCODE_REPLY = 0x2;
 
     public static byte HWTYPE_ETHERNET = 0x1;
+    
+    public enum DHCPOptionCode {
+        OptionCode_SubnetMask           ((byte)1),
+        OptionCode_Hostname             ((byte)12),
+        OptionCode_RequestedIP          ((byte)50),
+        OptionCode_LeaseTime            ((byte)51),
+        OptionCode_MessageType          ((byte)53),
+        OptionCode_DHCPServerIp         ((byte)54),
+        OptionCode_RequestedParameters  ((byte)55),
+        OptionCode_RenewalTime          ((byte)58),
+        OPtionCode_RebindingTime        ((byte)59),
+        OptionCode_ClientID             ((byte)61),
+        OptionCode_END                  ((byte)255);
+    
+        protected byte value;
+        
+        private DHCPOptionCode(byte value) {
+            this.value = value;
+        }
+        
+        public byte getValue() {
+            return value;
+        }
+    }
+    
     protected byte opCode;
     protected byte hardwareType;
     protected byte hardwareAddressLength;
@@ -57,11 +97,11 @@ public class DHCP extends BasePacket {
     protected int transactionId;
     protected short seconds;
     protected short flags;
-    protected int clientIPAddress;
-    protected int yourIPAddress;
-    protected int serverIPAddress;
-    protected int gatewayIPAddress;
-    protected byte[] clientHardwareAddress;
+    protected IPv4Address clientIPAddress;
+    protected IPv4Address yourIPAddress;
+    protected IPv4Address serverIPAddress;
+    protected IPv4Address gatewayIPAddress;
+    protected MacAddress clientHardwareAddress;
     protected String serverName;
     protected String bootFileName;
     protected List<DHCPOption> options = new ArrayList<DHCPOption>();
@@ -174,14 +214,14 @@ public class DHCP extends BasePacket {
     /**
      * @return the clientIPAddress
      */
-    public int getClientIPAddress() {
+    public IPv4Address getClientIPAddress() {
         return clientIPAddress;
     }
 
     /**
      * @param clientIPAddress the clientIPAddress to set
      */
-    public DHCP setClientIPAddress(int clientIPAddress) {
+    public DHCP setClientIPAddress(IPv4Address clientIPAddress) {
         this.clientIPAddress = clientIPAddress;
         return this;
     }
@@ -189,14 +229,14 @@ public class DHCP extends BasePacket {
     /**
      * @return the yourIPAddress
      */
-    public int getYourIPAddress() {
+    public IPv4Address getYourIPAddress() {
         return yourIPAddress;
     }
 
     /**
      * @param yourIPAddress the yourIPAddress to set
      */
-    public DHCP setYourIPAddress(int yourIPAddress) {
+    public DHCP setYourIPAddress(IPv4Address yourIPAddress) {
         this.yourIPAddress = yourIPAddress;
         return this;
     }
@@ -204,14 +244,14 @@ public class DHCP extends BasePacket {
     /**
      * @return the serverIPAddress
      */
-    public int getServerIPAddress() {
+    public IPv4Address getServerIPAddress() {
         return serverIPAddress;
     }
 
     /**
      * @param serverIPAddress the serverIPAddress to set
      */
-    public DHCP setServerIPAddress(int serverIPAddress) {
+    public DHCP setServerIPAddress(IPv4Address serverIPAddress) {
         this.serverIPAddress = serverIPAddress;
         return this;
     }
@@ -219,14 +259,14 @@ public class DHCP extends BasePacket {
     /**
      * @return the gatewayIPAddress
      */
-    public int getGatewayIPAddress() {
+    public IPv4Address getGatewayIPAddress() {
         return gatewayIPAddress;
     }
 
     /**
      * @param gatewayIPAddress the gatewayIPAddress to set
      */
-    public DHCP setGatewayIPAddress(int gatewayIPAddress) {
+    public DHCP setGatewayIPAddress(IPv4Address gatewayIPAddress) {
         this.gatewayIPAddress = gatewayIPAddress;
         return this;
     }
@@ -234,21 +274,20 @@ public class DHCP extends BasePacket {
     /**
      * @return the clientHardwareAddress
      */
-    public byte[] getClientHardwareAddress() {
+    public MacAddress getClientHardwareAddress() {
         return clientHardwareAddress;
     }
 
     /**
      * @param clientHardwareAddress the clientHardwareAddress to set
      */
-    public DHCP setClientHardwareAddress(byte[] clientHardwareAddress) {
+    public DHCP setClientHardwareAddress(MacAddress clientHardwareAddress) {
         this.clientHardwareAddress = clientHardwareAddress;
         return this;
     }
-
+    
     /**
      * Gets a specific DHCP option parameter
-     *
      * @param optionCode The option code to get
      * @return The value of the option if it exists, null otherwise
      */
@@ -289,7 +328,7 @@ public class DHCP extends BasePacket {
         }
         return null;
     }
-
+    
     /**
      * @return the serverName
      */
@@ -328,7 +367,7 @@ public class DHCP extends BasePacket {
         // minimum size 240 including magic cookie, options generally padded to 300
         int optionsLength = 0;
         for (DHCPOption option : this.options) {
-            if (option.getCode() == 0 || option.getCode() == ((byte) 255)) {
+            if (option.getCode() == 0 || option.getCode() == ((byte)255)) {
                 optionsLength += 1;
             } else {
                 optionsLength += 2 + (0xff & option.getLength());
@@ -338,7 +377,7 @@ public class DHCP extends BasePacket {
         if (optionsLength < 60)
             optionsPadLength = 60 - optionsLength;
 
-        byte[] data = new byte[240 + optionsLength + optionsPadLength];
+        byte[] data = new byte[240+optionsLength+optionsPadLength];
         ByteBuffer bb = ByteBuffer.wrap(data);
         bb.put(this.opCode);
         bb.put(this.hardwareType);
@@ -347,13 +386,13 @@ public class DHCP extends BasePacket {
         bb.putInt(this.transactionId);
         bb.putShort(this.seconds);
         bb.putShort(this.flags);
-        bb.putInt(this.clientIPAddress);
-        bb.putInt(this.yourIPAddress);
-        bb.putInt(this.serverIPAddress);
-        bb.putInt(this.gatewayIPAddress);
-        bb.put(this.clientHardwareAddress);
-        if (this.clientHardwareAddress.length < 16) {
-            for (int i = 0; i < (16 - this.clientHardwareAddress.length); ++i) {
+        bb.putInt(this.clientIPAddress.getInt());
+        bb.putInt(this.yourIPAddress.getInt());
+        bb.putInt(this.serverIPAddress.getInt());
+        bb.putInt(this.gatewayIPAddress.getInt());
+        bb.put(this.clientHardwareAddress.getBytes());
+        if (this.clientHardwareAddress.getLength() < 16) {
+            for (int i = 0; i < (16 - this.clientHardwareAddress.getLength()); ++i) {
                 bb.put((byte) 0x0);
             }
         }
@@ -384,7 +423,7 @@ public class DHCP extends BasePacket {
         } else {
             byte[] bytes = null;
             try {
-                bytes = string.getBytes("ascii");
+                 bytes = string.getBytes("ascii");
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException("Failure encoding server name", e);
             }
@@ -405,7 +444,7 @@ public class DHCP extends BasePacket {
         if (bb.remaining() < MIN_HEADER_LENGTH) {
             return this;
         }
-
+        
         this.opCode = bb.get();
         this.hardwareType = bb.get();
         this.hardwareAddressLength = bb.get();
@@ -413,14 +452,14 @@ public class DHCP extends BasePacket {
         this.transactionId = bb.getInt();
         this.seconds = bb.getShort();
         this.flags = bb.getShort();
-        this.clientIPAddress = bb.getInt();
-        this.yourIPAddress = bb.getInt();
-        this.serverIPAddress = bb.getInt();
-        this.gatewayIPAddress = bb.getInt();
+        this.clientIPAddress = IPv4Address.of(bb.getInt());
+        this.yourIPAddress = IPv4Address.of(bb.getInt());
+        this.serverIPAddress = IPv4Address.of(bb.getInt());
+        this.gatewayIPAddress = IPv4Address.of(bb.getInt());
         int hardwareAddressLength = 0xff & this.hardwareAddressLength;
-        this.clientHardwareAddress = new byte[hardwareAddressLength];
-
-        bb.get(this.clientHardwareAddress);
+        byte[] tmpMac = new byte[hardwareAddressLength];
+        bb.get(tmpMac);
+        this.clientHardwareAddress = MacAddress.of(tmpMac); /* the assumption here is that we only have MAC address HW addresses */
         for (int i = hardwareAddressLength; i < 16; ++i)
             bb.get();
         this.serverName = readString(bb, 64);
@@ -450,13 +489,13 @@ public class DHCP extends BasePacket {
                     } else {
                         // Skip the invalid option and set the END option
                         code = 0xff;
-                        option.setCode((byte) code);
+                        option.setCode((byte)code);
                         option.setLength((byte) 0);
                     }
                 } else {
                     // Skip the invalid option and set the END option
                     code = 0xff;
-                    option.setCode((byte) code);
+                    option.setCode((byte)code);
                     option.setLength((byte) 0);
                 }
             }
@@ -480,29 +519,5 @@ public class DHCP extends BasePacket {
             throw new RuntimeException("Failure decoding string", e);
         }
         return result;
-    }
-
-    public enum DHCPOptionCode {
-        OptionCode_SubnetMask((byte) 1),
-        OptionCode_Hostname((byte) 12),
-        OptionCode_RequestedIP((byte) 50),
-        OptionCode_LeaseTime((byte) 51),
-        OptionCode_MessageType((byte) 53),
-        OptionCode_DHCPServerIp((byte) 54),
-        OptionCode_RequestedParameters((byte) 55),
-        OptionCode_RenewalTime((byte) 58),
-        OPtionCode_RebindingTime((byte) 59),
-        OptionCode_ClientID((byte) 61),
-        OptionCode_END((byte) 255);
-
-        protected byte value;
-
-        private DHCPOptionCode(byte value) {
-            this.value = value;
-        }
-
-        public byte getValue() {
-            return value;
-        }
     }
 }
