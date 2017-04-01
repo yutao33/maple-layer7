@@ -58,6 +58,7 @@ public class ARP extends BasePacket {
 
 	/**
 	 * @param hardwareType the hardwareType to set
+	 * @return ARP
 	 */
 	public ARP setHardwareType(short hardwareType) {
 		this.hardwareType = hardwareType;
@@ -72,7 +73,8 @@ public class ARP extends BasePacket {
 	}
 
 	/**
-	 * @param protocolType the protocolType to set
+	 * @param protocolType the protocolType to set.
+	 * @return ARP
 	 */
 	public ARP setProtocolType(short protocolType) {
 		this.protocolType = protocolType;
@@ -88,6 +90,7 @@ public class ARP extends BasePacket {
 
 	/**
 	 * @param hardwareAddressLength the hardwareAddressLength to set
+	 * @return ARP
 	 */
 	public ARP setHardwareAddressLength(byte hardwareAddressLength) {
 		this.hardwareAddressLength = hardwareAddressLength;
@@ -103,6 +106,7 @@ public class ARP extends BasePacket {
 
 	/**
 	 * @param protocolAddressLength the protocolAddressLength to set
+	 * @return ARP
 	 */
 	public ARP setProtocolAddressLength(byte protocolAddressLength) {
 		this.protocolAddressLength = protocolAddressLength;
@@ -118,6 +122,7 @@ public class ARP extends BasePacket {
 
 	/**
 	 * @param opCode the opCode to set
+	 * @return ARP
 	 */
 	public ARP setOpCode(ArpOpcode opCode) {
 		this.opCode = opCode;
@@ -133,6 +138,7 @@ public class ARP extends BasePacket {
 
 	/**
 	 * @param senderHardwareAddress the senderHardwareAddress to set
+	 * @return ARP
 	 */
 	public ARP setSenderHardwareAddress(MacAddress senderHardwareAddress) {
 		this.senderHardwareAddress = senderHardwareAddress;
@@ -148,6 +154,7 @@ public class ARP extends BasePacket {
 
 	/**
 	 * @param senderProtocolAddress the senderProtocolAddress to set
+	 * @return ARP
 	 */
 	public ARP setSenderProtocolAddress(IPv4Address senderProtocolAddress) {
 		this.senderProtocolAddress = senderProtocolAddress;
@@ -163,6 +170,7 @@ public class ARP extends BasePacket {
 
 	/**
 	 * @param targetHardwareAddress the targetHardwareAddress to set
+	 * @return
 	 */
 	public ARP setTargetHardwareAddress(MacAddress targetHardwareAddress) {
 		this.targetHardwareAddress = targetHardwareAddress;
@@ -187,6 +195,7 @@ public class ARP extends BasePacket {
 
 	/**
 	 * @param targetProtocolAddress the targetProtocolAddress to set
+	 * @return
 	 */
 	public ARP setTargetProtocolAddress(IPv4Address targetProtocolAddress) {
 		this.targetProtocolAddress = targetProtocolAddress;
