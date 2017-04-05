@@ -17,7 +17,7 @@ public enum MapleMatchField{
     ETH_TYPE("eth_type",16),
     IP_SRC("ip_src",32),
     IP_DST("ip_dst",32),
-    IP_PROTO("ip_proto",16);
+    IP_PROTO("ip_proto",8);
 
     private String field;
     private int bitlength;

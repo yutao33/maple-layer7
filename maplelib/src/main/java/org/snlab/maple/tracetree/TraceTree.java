@@ -62,9 +62,6 @@ public class TraceTree{
 
 
 
-
-
-
     //-------------------------------inner class-----------------------------
 
     public abstract static class TraceTreeNode{
