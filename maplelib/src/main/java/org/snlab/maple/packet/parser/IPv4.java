@@ -444,7 +444,7 @@ public class IPv4 extends BasePacket {
 
 
     @Override
-    Map<MapleMatchField, byte[]> buildMatchFieldMap() {
+    public Map<MapleMatchField, byte[]> buildMatchFieldMap() {
         Map<MapleMatchField,byte[]> map=new HashMap<>();
         map.put(MapleMatchField.IP_SRC,sourceAddress.getBytes());
         map.put(MapleMatchField.IP_DST,destinationAddress.getBytes());

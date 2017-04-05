@@ -8,9 +8,9 @@
 package org.opendaylight.maple.impl;
 
 import org.opendaylight.controller.md.sal.binding.api.*;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -59,7 +59,9 @@ public class ODLMapleProvider {
      * Method called when the blueprint container is created.
      */
     public void init() {
-        ODLMapleAdaptor odlMapleAdaptor = new ODLMapleAdaptor(this.dataBroker);
+        SalFlowService salFlowService = registry.getRpcService(SalFlowService.class);
+
+        ODLMapleAdaptor odlMapleAdaptor = new ODLMapleAdaptor(this.dataBroker, salFlowService);
 
         MapleSystem mapleSystem = new MapleSystem(odlMapleAdaptor);
 
@@ -72,6 +74,7 @@ public class ODLMapleProvider {
 
         DataTreeIdentifier<NetworkTopology> ntti = new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, iid);
         dataBroker.registerDataTreeChangeListener(ntti,new TopologyListener());
+
 
         LOG.info("ODLMapleProvider Session Initiated");
     }
