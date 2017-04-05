@@ -17,6 +17,7 @@ import org.snlab.maple.tracetree.TraceItem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * MaplePacket.
@@ -29,14 +30,21 @@ public class MaplePacket implements IMaplePacket {
 
     private List<TraceItem> traceList =new ArrayList<TraceItem>();
 
+    Map<MapleMatchField, byte[]> fieldMap;
+
     public MaplePacket(byte[] data, MapleTopology.Port ingress){
         this.ingress=ingress;
         this.frame=new Ethernet();
         frame.deserialize(data,0,data.length);
+        fieldMap = frame.buildMatchFieldMap();
     }
 
     public List<TraceItem> getTraceList() {
         return traceList;
+    }
+
+    private void addTraceItem(TraceItem item){
+        this.traceList.add(item);
     }
 
 
@@ -74,10 +82,6 @@ public class MaplePacket implements IMaplePacket {
 
     //-------------------------------Route functions-----------------------------
 
-    /**
-     * setRoute
-     * @param path  path which can include ingress at the beginning
-     */
     @Override
     public void setRoute(String... path){
 
@@ -101,9 +105,10 @@ public class MaplePacket implements IMaplePacket {
         }
 
         public boolean is(String ingress){
+            assert ingress.matches("^openflow:\\d+:\\d+$");//TODO
             boolean ret= MaplePacket.this.ingress.getId().equals(ingress);
             TraceItem ti = new TraceItem(MapleMatchField.INGRESS, null, ingress.getBytes(), TraceItem.Type.TEST, ret);
-            MaplePacket.this.traceList.add(ti);
+            addTraceItem(ti);
             return ret;
         }
 
@@ -115,7 +120,20 @@ public class MaplePacket implements IMaplePacket {
 //        }
 
         public boolean in(String... ingresses){
-            return false;
+            for (String s : ingresses) {
+                assert s.matches("^openflow:\\d+:\\d+$");//TODO
+            }
+            boolean ret=false;
+            List<byte[]> values=new ArrayList<>();
+            for (String s : ingresses) {
+                values.add(s.getBytes());
+                if(MaplePacket.this.ingress.getId().equals(s)){
+                    ret=true;
+                }
+            }
+            TraceItem ti = new TraceItem(MapleMatchField.INGRESS, null, values, TraceItem.Type.TEST, ret);
+            addTraceItem(ti);
+            return ret;
         }
 
 //        public boolean in(MapleTopology.Port ...ports){
@@ -124,12 +142,14 @@ public class MaplePacket implements IMaplePacket {
 
         public boolean belongto(String node){
             boolean ret = MaplePacket.this.ingress.getOwner().getId().equals(node);
-            TraceItem ti = new TraceItem(MapleMatchField.INGRESS, null, node.getBytes(), TraceItem.Type.VALUE, ret);
-            MaplePacket.this.traceList.add(ti);
+            TraceItem ti = new TraceItem(MapleMatchField.INGRESS, null, node.getBytes(), TraceItem.Type.TEST, ret);
+            addTraceItem(ti);
             return ret;
         }
 
         public MapleTopology.Port getValue(){
+            TraceItem ti=new TraceItem(MapleMatchField.INGRESS,null,MaplePacket.this.ingress.getId().getBytes(), TraceItem.Type.VALUE,false);
+            addTraceItem(ti);
             return MaplePacket.this.ingress;
         }
     }
@@ -137,49 +157,81 @@ public class MaplePacket implements IMaplePacket {
     public class PktField {
 
         protected MapleMatchField field;
+        protected byte[] mask;
 
         private PktField(MapleMatchField field){
             this.field=field;
         }
 
-        public boolean is(byte[] context){
-            return false;
+        private boolean test(byte[]value, byte[] context){
+            for (int i = 0; i < value.length; i++) {
+                byte a=value[i];
+                byte b=context[i];
+                if(mask!=null){
+                    a&=mask[i];
+                    b&=mask[i];
+                }
+                if(a!=b){
+                    return false;
+                }
+            }
+            return true;
         }
 
-        public boolean in(List<byte[]> set){
-            return false;
+        public boolean is(byte[] context){
+            assert (field.getBitLength()+7)/8==context.length; //TODO
+            byte[] value = fieldMap.get(field).clone();
+            boolean ret=test(value,context);
+            TraceItem ti = new TraceItem(field, mask, context, TraceItem.Type.TEST, ret);
+            addTraceItem(ti);
+            return ret;
+        }
+
+        public boolean in(byte[]... values){
+            byte[] value=fieldMap.get(field).clone();
+            boolean ret=false;
+            List<byte[]> list=new ArrayList<>();
+            for (byte[] i : values) {
+                list.add(i);
+                if(test(value,i)){
+                    ret=true;
+                }
+            }
+            TraceItem ti = new TraceItem(field, mask, list, TraceItem.Type.TEST, ret);
+            addTraceItem(ti);
+            return ret;
         }
 
         public byte[] get(){
-            return null;
+            byte[] value = fieldMap.get(field).clone();
+            assert value!=null;
+            if(mask!=null){
+                for (int i = 0; i < value.length; i++) {
+                    value[i]&=mask[i];
+                }
+            }
+            TraceItem ti=new TraceItem(field,mask,value, TraceItem.Type.VALUE,false);
+            addTraceItem(ti);
+            return value;
         }
 
     }
 
-    public class PktFieldMaskable extends PktField {
-
-        private byte[] mask;
+    public class PktFieldMaskable extends PktField{
 
         private PktFieldMaskable(MapleMatchField field){
             super(field);
         }
         public PktFieldMaskable mask(byte[] context){
+            assert (field.getBitLength()+7)/8==context.length; //TODO
+            if(mask==null){
+                mask=context;
+            } else {
+                for (int i = 0; i < mask.length; i++) {
+                    mask[i]&=context[i];
+                }
+            }
             return this;
-        }
-
-        @Override
-        public boolean is(byte[] context){
-            return false;
-        }
-
-        @Override
-        public boolean in(List<byte[]> set){
-            return false;
-        }
-
-        @Override
-        public byte[] get(){
-            return null;
         }
 
     }

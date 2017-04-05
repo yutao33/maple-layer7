@@ -13,4 +13,6 @@ import org.snlab.maple.env.MapleTopology;
 
 public interface IMapleEnv {
     MapleTopology getTopo();
+
+    boolean isReExec();
 }

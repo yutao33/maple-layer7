@@ -322,7 +322,7 @@ public class Ethernet extends BasePacket {
 
 
     @Override
-    Map<MapleMatchField, byte[]> buildMatchFieldMap() {
+    public Map<MapleMatchField, byte[]> buildMatchFieldMap() {
         Map<MapleMatchField,byte[]> map=new HashMap<>();
         map.put(MapleMatchField.ETH_DST,destinationMACAddress.getBytes());
         map.put(MapleMatchField.ETH_SRC,sourceMACAddress.getBytes());

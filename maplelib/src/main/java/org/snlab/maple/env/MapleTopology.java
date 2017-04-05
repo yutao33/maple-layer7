@@ -77,7 +77,7 @@ public class MapleTopology {
 
     public static class Port {
         private Node owner;
-        private String id;//  1 2 3 4 internel
+        private String id;//  openflow:1:1 2 3 4 internel
         private Port end;
         private Link link;
 

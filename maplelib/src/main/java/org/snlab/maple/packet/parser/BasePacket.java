@@ -36,7 +36,7 @@ public abstract class BasePacket implements IPacket {
 
 
 
-    Map<MapleMatchField,byte[]> buildMatchFieldMap(){
+    public Map<MapleMatchField,byte[]> buildMatchFieldMap(){
         return Collections.emptyMap();
     }
 

@@ -11,25 +11,40 @@ package org.snlab.maple.tracetree;
 
 import org.snlab.maple.flowrule.MapleMatchField;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TraceItem{
 
     private MapleMatchField field;
 
     private byte[] mask;
 
-    private byte[] value;
+    private List<byte[]> values;
 
     private TraceItem.Type type;
 
     private boolean testresult;
 
-    public TraceItem(MapleMatchField field, byte[] mask, byte[] value,Type type,boolean testresult) {
+    public TraceItem(MapleMatchField field, byte[] mask, List<byte[]> values, Type type, boolean testresult) {
+        assert values!=null;//TODO:
+        this.field = field;
+        if(mask!=null){
+            this.mask = mask.clone();
+        }
+        this.values = new ArrayList<>(values);
+        this.type=type;
+        this.testresult=testresult;
+    }
+
+    public TraceItem(MapleMatchField field, byte[] mask, byte[] value, Type type, boolean testresult) {
         assert value!=null;//TODO:
         this.field = field;
         if(mask!=null){
             this.mask = mask.clone();
         }
-        this.value = value.clone();
+        this.values = new ArrayList<>();
+        this.values.add(value);
         this.type=type;
         this.testresult=testresult;
     }
@@ -42,15 +57,15 @@ public class TraceItem{
         return mask;
     }
 
-    public byte[] getValue() {
-        return value;
+    public List<byte[]> getValues() {
+        return values;
     }
 
     public Type getType() {
         return type;
     }
 
-    public boolean isTestresult() {
+    public boolean getTestresult() {
         return testresult;
     }
 

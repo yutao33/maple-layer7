@@ -11,6 +11,7 @@ package org.snlab.maple.tracetree;
 
 import org.snlab.maple.flowrule.MapleMatchField;
 import org.snlab.maple.flowrule.MapleRule;
+import org.snlab.maple.packet.MaplePacket;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +25,8 @@ import java.util.Map;
 public class TraceTree{
     private TraceTreeNode treeroot;
 
-    public synchronized void update(List<TraceItem> items){
+    public synchronized void update(List<TraceItem> items,MaplePacket pkt){
+
         if(items.isEmpty()){
             return ;
         }

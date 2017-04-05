@@ -50,14 +50,14 @@ public class MapleSystem {
     private void onPacket(MaplePacket pkt) {
         pkt.getTraceList().clear();
 
+
         for (MapleAppBase app : mapleAppList) {
             if (app.onPacket(pkt,mapleEnv)) {
                 break;
             }
         }
 
-
-        traceTree.update(pkt.getTraceList());
+        traceTree.update(pkt.getTraceList(),pkt);
 
         //TODO: flow rules
     }

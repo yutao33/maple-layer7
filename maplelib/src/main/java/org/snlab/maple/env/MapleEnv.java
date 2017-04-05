@@ -18,4 +18,9 @@ public class MapleEnv implements IMapleEnv {
     public MapleTopology getTopo() {
         return topology;
     }
+
+    @Override
+    public boolean isReExec() {
+        return false;
+    }
 }
