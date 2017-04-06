@@ -14,6 +14,10 @@ import org.snlab.maple.packet.parser.Ethernet;
 
 public class ForwardAction {
 
+    private ForwardAction(){
+        throw new RuntimeException("shouldn't construct this instance");
+    }
+
     public static abstract class Action{
 
     }

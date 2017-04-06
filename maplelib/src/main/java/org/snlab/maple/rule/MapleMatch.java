@@ -9,12 +9,10 @@
 package org.snlab.maple.rule;
 
 
+import java.util.Set;
+
 public class MapleMatch{
     MapleMatchField field;
-    byte[] value;
-    byte[] mask;
-
-    public MapleMatch(){
-
-    }
+    Set<MapleMatchValue> values;
+    MapleMatchValue mask;
 }

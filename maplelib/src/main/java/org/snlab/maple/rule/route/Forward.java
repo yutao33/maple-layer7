@@ -10,15 +10,21 @@ package org.snlab.maple.rule.route;
 
 import org.snlab.maple.env.MapleTopology.Port;
 
-
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Forward {
+    Port ingress;
+    List<? extends ForwardAction.Action> actions;
+    int bandwidthlimit;
+    int timeout;
 
-
-
-    public Forward(Port ingress,int bandwidthlimit, int timeout){
-
+    public Forward(Port ingress, List<? extends ForwardAction.Action> actions, int bandwidthlimit, int timeout){
+        this.ingress=ingress;
+        this.actions=new ArrayList<>(actions);
+        this.bandwidthlimit=bandwidthlimit;
+        this.timeout=timeout;
     }
 
 
