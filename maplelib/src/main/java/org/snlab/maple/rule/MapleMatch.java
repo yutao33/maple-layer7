@@ -6,12 +6,15 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple;
+package org.snlab.maple.rule;
 
-import org.snlab.maple.rule.MaplePacketInReason;
 
-public interface IMapleHandler {
+public class MapleMatch{
+    MapleMatchField field;
+    byte[] value;
+    byte[] mask;
 
-    void onPacket(String ingress, byte[] payload, MaplePacketInReason reason);
+    public MapleMatch(){
 
+    }
 }

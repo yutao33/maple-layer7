@@ -11,7 +11,7 @@ package org.snlab.maple.app;
 import org.snlab.maple.api.MapleAppBase;
 import org.snlab.maple.api.IMapleEnv;
 import org.snlab.maple.api.IMaplePacket;
-import org.snlab.maple.api.route.Forward;
+import org.snlab.maple.rule.route.Forward;
 
 
 /**

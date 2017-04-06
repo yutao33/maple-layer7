@@ -6,9 +6,27 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple.flowrule;
+package org.snlab.maple.rule.route;
 
-public enum MaplePacketInReason {
-    NOMATCH,
-    TOCONTROLLER;
+import org.snlab.maple.env.MapleTopology.Port;
+
+
+
+
+public class Forward {
+
+
+
+    public Forward(Port ingress,int bandwidthlimit, int timeout){
+
+    }
+
+
+    public static String[] extractIngress(String... path){
+        return new String[]{};
+    }
+
 }
+
+
+

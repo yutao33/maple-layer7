@@ -6,15 +6,15 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple.flowrule;
+package org.snlab.maple.rule;
 
 import org.snlab.maple.env.MapleTopology;
-import org.snlab.maple.api.route.MapleAction;
+import org.snlab.maple.rule.route.ForwardAction;
 
 public class MapleRule {
     MapleTopology.Node node;
     MapleMatch match;
-    MapleAction action;
+    ForwardAction action;
 
     private boolean deleted;
     private boolean newrule;

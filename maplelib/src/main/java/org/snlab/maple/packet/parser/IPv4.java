@@ -28,10 +28,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.snlab.maple.flowrule.MapleMatchField;
+import org.snlab.maple.rule.MapleMatchField;
 import org.snlab.maple.packet.types.IPv4Address;
 import org.snlab.maple.packet.types.IpProtocol;
-import org.snlab.maple.packet.types.U16;
 import org.snlab.maple.packet.types.U8;
 
 /**

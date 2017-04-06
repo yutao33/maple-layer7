@@ -12,10 +12,11 @@ package org.snlab.maple;
 import org.snlab.maple.api.MapleAppBase;
 import org.snlab.maple.env.MapleEnv;
 import org.snlab.maple.env.MapleTopology;
-import org.snlab.maple.flowrule.MaplePacketInReason;
+import org.snlab.maple.rule.MaplePacketInReason;
 import org.snlab.maple.packet.MaplePacket;
 import org.snlab.maple.tracetree.TraceTree;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class MapleSystem {
         this.mapleAdaptor = mapleAdaptor;
         this.traceTree=new TraceTree();
         this.mapleEnv=new MapleEnv();
+        this.mapleAppList=new ArrayList<>();
     }
 
     public IMapleHandler getHandler() {
@@ -50,7 +52,6 @@ public class MapleSystem {
     private void onPacket(MaplePacket pkt) {
         pkt.getTraceList().clear();
 
-
         for (MapleAppBase app : mapleAppList) {
             if (app.onPacket(pkt,mapleEnv)) {
                 break;
@@ -59,6 +60,7 @@ public class MapleSystem {
 
         traceTree.update(pkt.getTraceList(),pkt);
 
+        //mapleAdaptor.installRule();
         //TODO: flow rules
     }
 
@@ -108,7 +110,8 @@ public class MapleSystem {
 
         @Override
         public void onPacket(String ingress, byte[] payload, MaplePacketInReason reason) {
-            new MaplePacket(payload,new MapleTopology.Port());
+            MaplePacket pkt = new MaplePacket(payload, new MapleTopology.Port());
+            MapleSystem.this.onPacket(pkt);
         }
     }
 }

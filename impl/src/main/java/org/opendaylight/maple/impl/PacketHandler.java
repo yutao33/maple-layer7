@@ -11,12 +11,11 @@ package org.opendaylight.maple.impl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.*;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snlab.maple.IMapleHandler;
-import org.snlab.maple.flowrule.MaplePacketInReason;
+import org.snlab.maple.rule.MaplePacketInReason;
 
 public class PacketHandler implements PacketProcessingListener {
 

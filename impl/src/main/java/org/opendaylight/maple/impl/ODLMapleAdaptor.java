@@ -13,6 +13,7 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
@@ -76,7 +77,7 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
     public ODLMapleAdaptor(DataBroker dataBroker, SalFlowService salFlowService){
         this.dataBroker = dataBroker;
         this.salFlowService = salFlowService;
-        installRule();
+        //installRule();
     }
 
     @Override
@@ -174,7 +175,8 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
 
         //KeyedInstanceIdentifier<Flow, FlowKey> flowiid = tableInstanceId.child(Flow.class, new FlowKey(new FlowId("1")));
         WriteTransaction wt = dataBroker.newWriteOnlyTransaction();
-        wt.put(LogicalDatastoreType.CONFIGURATION,flowPath,flow);
+        //ReadWriteTransaction wt = dataBroker.newReadWriteTransaction();
+        wt.put(LogicalDatastoreType.CONFIGURATION,flowPath,flow,true);
         CheckedFuture<Void, TransactionCommitFailedException> submit = wt.submit();
         Futures.addCallback(submit, new FutureCallback<Void>() {
             @Override

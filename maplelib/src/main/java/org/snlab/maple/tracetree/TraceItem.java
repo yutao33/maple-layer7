@@ -9,7 +9,7 @@
 package org.snlab.maple.tracetree;
 
 
-import org.snlab.maple.flowrule.MapleMatchField;
+import org.snlab.maple.rule.MapleMatchField;
 
 import java.util.ArrayList;
 import java.util.List;

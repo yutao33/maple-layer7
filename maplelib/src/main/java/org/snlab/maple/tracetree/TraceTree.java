@@ -9,8 +9,8 @@
 package org.snlab.maple.tracetree;
 
 
-import org.snlab.maple.flowrule.MapleMatchField;
-import org.snlab.maple.flowrule.MapleRule;
+import org.snlab.maple.rule.MapleMatchField;
+import org.snlab.maple.rule.MapleRule;
 import org.snlab.maple.packet.MaplePacket;
 
 import java.util.ArrayList;

@@ -10,8 +10,9 @@ package org.snlab.maple.packet;
 
 
 import org.snlab.maple.api.IMaplePacket;
+import org.snlab.maple.rule.route.Forward;
 import org.snlab.maple.env.MapleTopology;
-import org.snlab.maple.flowrule.MapleMatchField;
+import org.snlab.maple.rule.MapleMatchField;
 import org.snlab.maple.packet.parser.Ethernet;
 import org.snlab.maple.tracetree.TraceItem;
 
@@ -89,6 +90,10 @@ public class MaplePacket implements IMaplePacket {
 
     @Override
     public void addRoute(String... path){
+
+    }
+
+    public void setRoute(Forward... path){
 
     }
 
