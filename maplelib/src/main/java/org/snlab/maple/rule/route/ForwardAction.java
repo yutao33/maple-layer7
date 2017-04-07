@@ -9,7 +9,7 @@
 package org.snlab.maple.rule.route;
 
 import org.snlab.maple.env.MapleTopology.Port;
-import org.snlab.maple.rule.MapleMatchField;
+import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.packet.parser.Ethernet;
 
 public class ForwardAction {

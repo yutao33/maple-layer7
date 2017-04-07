@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple.rule;
+package org.snlab.maple.rule.field;
 
 public enum MapleMatchField{
 
@@ -21,14 +21,20 @@ public enum MapleMatchField{
 
     private String field;
     private int bitlength;
+    private int bytelength;
 
     MapleMatchField(String str,int len){
         this.field =str;
         this.bitlength=len;
+        this.bytelength=(len+7)/8;
     }
 
     public int getBitLength(){
         return bitlength;
+    }
+
+    public int getByteLength() {
+        return bytelength;
     }
 
     @Override

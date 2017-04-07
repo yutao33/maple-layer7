@@ -20,7 +20,7 @@ package org.snlab.maple.packet.parser;
 //package net.floodlightcontroller.packet;
 
 
-import org.snlab.maple.rule.MapleMatchField;
+import org.snlab.maple.rule.field.MapleMatchField;
 
 import java.util.Collections;
 import java.util.Map;

@@ -6,18 +6,22 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple.rule;
+package org.snlab.maple.rule.match;
 
 import java.util.Arrays;
 
-public class MapleMatchValue {
+public class ByteArray {
     byte[] value;
-    public MapleMatchValue(byte[] value){
-        this.value=value;
+    public ByteArray(byte[] value){
+        this.value=value.clone();
     }
 
-    public byte[] getValue() {
-        return value.clone();
+    public byte get(int index) {
+        return value[index];
+    }
+
+    public int length(){
+        return value.length;
     }
 
     @Override
@@ -25,7 +29,7 @@ public class MapleMatchValue {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        MapleMatchValue value1 = (MapleMatchValue) o;
+        ByteArray value1 = (ByteArray) o;
 
         return Arrays.equals(value, value1.value);
     }

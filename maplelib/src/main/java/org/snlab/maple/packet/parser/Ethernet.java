@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.snlab.maple.rule.MapleMatchField;
+import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.packet.types.EthType;
 import org.snlab.maple.packet.types.MacAddress;
 import org.snlab.maple.packet.types.U16;

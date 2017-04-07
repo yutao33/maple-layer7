@@ -9,16 +9,17 @@
 package org.snlab.maple.rule;
 
 import org.snlab.maple.env.MapleTopology;
+import org.snlab.maple.rule.field.MapleMatchField;
+import org.snlab.maple.rule.match.MapleMatch;
 import org.snlab.maple.rule.route.Forward;
-import org.snlab.maple.rule.route.ForwardAction;
 
 import java.util.List;
 import java.util.Map;
 
 public class MapleRule {
-    MapleTopology.Node node;
-    Map<MapleMatchField,MapleMatch> matches;
-    List<Forward> route;
+    private MapleTopology.Node node;
+    private Map<MapleMatchField,MapleMatch> matches;
+    private List<Forward> route;
 
     private int flags;
     private static int ISDELETED_MASK=0x1;
@@ -29,6 +30,18 @@ public class MapleRule {
         this.matches = matches;
         this.route = route;
         this.flags=0;
+    }
+
+    public MapleTopology.Node getNode() {
+        return node;
+    }
+
+    public Map<MapleMatchField, MapleMatch> getMatches() {
+        return matches;
+    }
+
+    public List<Forward> getRoute() {
+        return route;
     }
 
     public boolean isDeleted(){

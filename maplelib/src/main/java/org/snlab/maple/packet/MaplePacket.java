@@ -12,9 +12,11 @@ package org.snlab.maple.packet;
 import org.snlab.maple.api.IMaplePacket;
 import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.packet.parser.Ethernet;
-import org.snlab.maple.rule.MapleMatchField;
+import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.rule.route.Forward;
-import org.snlab.maple.tracetree.TraceItem;
+import org.snlab.maple.tracetree.Trace;
+import org.snlab.maple.tracetree.Trace.TraceItem;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +57,9 @@ public class MaplePacket implements IMaplePacket {
         return frame;
     }
 
+    public MapleTopology.Port getIngress(){
+        return ingress;
+    }
 
     //-------------------------------trace functions-----------------------------
 
@@ -111,7 +116,7 @@ public class MaplePacket implements IMaplePacket {
 
     }
 
-    public Object getRoute() {
+    public List<Forward> getRoute() {
         return null;
     }
 
@@ -126,7 +131,7 @@ public class MaplePacket implements IMaplePacket {
         public boolean is(String ingress) {
             assert ingress.matches("^openflow:\\d+:\\d+$");//TODO
             boolean ret = MaplePacket.this.ingress.getId().equals(ingress);
-            TraceItem ti = new TraceItem(MapleMatchField.INGRESS, null, ingress.getBytes(), TraceItem.Type.TEST, ret);
+            TraceItem ti=new Trace.TraceIs(MapleMatchField.INGRESS,null,ingress.getBytes(),ret);
             addTraceItem(ti);
             return ret;
         }
@@ -150,7 +155,7 @@ public class MaplePacket implements IMaplePacket {
                     ret = true;
                 }
             }
-            TraceItem ti = new TraceItem(MapleMatchField.INGRESS, null, values, TraceItem.Type.TEST, ret);
+            TraceItem ti=new Trace.TraceIn(MapleMatchField.INGRESS, null, values, ret);
             addTraceItem(ti);
             return ret;
         }
@@ -161,13 +166,13 @@ public class MaplePacket implements IMaplePacket {
 
         public boolean belongto(String node) {
             boolean ret = MaplePacket.this.ingress.getOwner().getId().equals(node);
-            TraceItem ti = new TraceItem(MapleMatchField.INGRESS, null, node.getBytes(), TraceItem.Type.TEST, ret);
+            TraceItem ti=new Trace.TraceRange(MapleMatchField.INGRESS, null, node.getBytes(), null, ret);
             addTraceItem(ti);
             return ret;
         }
 
         public MapleTopology.Port getValue() {
-            TraceItem ti = new TraceItem(MapleMatchField.INGRESS, null, MaplePacket.this.ingress.getId().getBytes(), TraceItem.Type.VALUE, false);
+            TraceItem ti=new Trace.TraceGet(MapleMatchField.INGRESS, null, MaplePacket.this.ingress.getId().getBytes());
             addTraceItem(ti);
             return MaplePacket.this.ingress;
         }
@@ -201,7 +206,7 @@ public class MaplePacket implements IMaplePacket {
             assert (field.getBitLength() + 7) / 8 == context.length; //TODO
             byte[] value = fieldMap.get(field).clone();
             boolean ret = test(value, context);
-            TraceItem ti = new TraceItem(field, mask, context, TraceItem.Type.TEST, ret);
+            TraceItem ti = new Trace.TraceIs(field, mask, context, ret);
             addTraceItem(ti);
             return ret;
         }
@@ -216,7 +221,7 @@ public class MaplePacket implements IMaplePacket {
                     ret = true;
                 }
             }
-            TraceItem ti = new TraceItem(field, mask, list, TraceItem.Type.TEST, ret);
+            TraceItem ti = new Trace.TraceIn(field, mask, list, ret);
             addTraceItem(ti);
             return ret;
         }
@@ -229,7 +234,7 @@ public class MaplePacket implements IMaplePacket {
                     value[i] &= mask[i];
                 }
             }
-            TraceItem ti = new TraceItem(field, mask, value, TraceItem.Type.VALUE, false);
+            TraceItem ti = new Trace.TraceGet(field, mask, value);
             addTraceItem(ti);
             return value;
         }
@@ -243,7 +248,7 @@ public class MaplePacket implements IMaplePacket {
         }
 
         public PktFieldMaskable mask(byte[] context) {
-            assert (field.getBitLength() + 7) / 8 == context.length; //TODO
+            assert field.getByteLength() == context.length; //TODO
             if (mask == null) {
                 mask = context;
             } else {
