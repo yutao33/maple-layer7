@@ -18,18 +18,18 @@ import java.util.Map;
 
 public class MapleRule {
     private MapleTopology.Node node;
-    private Map<MapleMatchField,MapleMatch> matches;
+    private Map<MapleMatchField, MapleMatch> matches;
     private List<Forward> route;
 
     private int flags;
-    private static int ISDELETED_MASK=0x1;
-    private static int ISNEW_MASK=0x2;
+    private static int ISDELETED_MASK = 0x1;
+    private static int ISNEW_MASK = 0x2;
 
-    public MapleRule(MapleTopology.Node node,Map<MapleMatchField,MapleMatch> matches, List<Forward> route) {
+    public MapleRule(MapleTopology.Node node, Map<MapleMatchField, MapleMatch> matches, List<Forward> route) {
         this.node = node;
         this.matches = matches;
         this.route = route;
-        this.flags=0;
+        this.flags = 0;
     }
 
     public MapleTopology.Node getNode() {
@@ -44,27 +44,27 @@ public class MapleRule {
         return route;
     }
 
-    public boolean isDeleted(){
-        return (flags&ISDELETED_MASK)!=0;
+    public boolean isDeleted() {
+        return (flags & ISDELETED_MASK) != 0;
     }
 
-    public boolean isNew(){
-        return (flags&ISNEW_MASK)!=0;
+    public boolean isNew() {
+        return (flags & ISNEW_MASK) != 0;
     }
 
-    public void setIsDeleted(boolean isdeleted){
-        if(isdeleted){
-            flags|=ISDELETED_MASK;
+    public void setIsDeleted(boolean isdeleted) {
+        if (isdeleted) {
+            flags |= ISDELETED_MASK;
         } else {
-            flags&=~ISDELETED_MASK;
+            flags &= ~ISDELETED_MASK;
         }
     }
 
-    public void setIsNew(boolean isnew){
-        if(isnew){
-            flags|=ISNEW_MASK;
+    public void setIsNew(boolean isnew) {
+        if (isnew) {
+            flags |= ISNEW_MASK;
         } else {
-            flags&=~ISNEW_MASK;
+            flags &= ~ISNEW_MASK;
         }
     }
 

@@ -14,18 +14,19 @@ import org.snlab.maple.packet.parser.Ethernet;
 
 public class ForwardAction {
 
-    private ForwardAction(){
+    private ForwardAction() {
         throw new RuntimeException("shouldn't construct this instance");
     }
 
-    public static abstract class Action{
+    public static abstract class Action {
 
     }
 
-    public static class OutPut extends Action{
+    public static class OutPut extends Action {
         private Port port;
-        public OutPut(Port port){
-            this.port=port;
+
+        public OutPut(Port port) {
+            this.port = port;
         }
     }
 
@@ -33,14 +34,15 @@ public class ForwardAction {
         void onPunt(Ethernet originPkt);
     }
 
-    public static class Punt extends Action{
+    public static class Punt extends Action {
         private PuntPktListener listener;
-        public Punt(PuntPktListener listener){
-            this.listener=listener;
+
+        public Punt(PuntPktListener listener) {
+            this.listener = listener;
         }
     }
 
-    public static class SetField extends Action{
+    public static class SetField extends Action {
         private MapleMatchField field;
 
         public SetField(MapleMatchField field) {
@@ -48,11 +50,11 @@ public class ForwardAction {
         }
     }
 
-    public static class PushVlan extends Action{
+    public static class PushVlan extends Action {
 
     }
 
-    public static class PopVlan extends Action{
+    public static class PopVlan extends Action {
 
     }
 

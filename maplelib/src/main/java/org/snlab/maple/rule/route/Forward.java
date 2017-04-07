@@ -20,15 +20,15 @@ public class Forward {
     int bandwidthlimit;
     int timeout;
 
-    public Forward(Port ingress, List<? extends ForwardAction.Action> actions, int bandwidthlimit, int timeout){
-        this.ingress=ingress;
-        this.actions=new ArrayList<>(actions);
-        this.bandwidthlimit=bandwidthlimit;
-        this.timeout=timeout;
+    public Forward(Port ingress, List<? extends ForwardAction.Action> actions, int bandwidthlimit, int timeout) {
+        this.ingress = ingress;
+        this.actions = new ArrayList<>(actions);
+        this.bandwidthlimit = bandwidthlimit;
+        this.timeout = timeout;
     }
 
 
-    public static String[] extractIngress(String... path){
+    public static String[] extractIngress(String... path) {
         return new String[]{};
     }
 

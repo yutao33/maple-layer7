@@ -8,11 +8,11 @@
 
 package org.snlab.maple.rule.match;
 
-public class MaskValuePair {
+public class ValueMaskPair {
     private ByteArray mask;
     private ByteArray value;
 
-    public MaskValuePair(ByteArray mask, ByteArray value) {
+    public ValueMaskPair(ByteArray value, ByteArray mask) {
         this.mask = mask;
         this.value = value;
     }
@@ -31,7 +31,7 @@ public class MaskValuePair {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        MaskValuePair that = (MaskValuePair) o;
+        ValueMaskPair that = (ValueMaskPair) o;
 
         if (mask != null ? !mask.equals(that.mask) : that.mask != null) return false;
         return value != null ? value.equals(that.value) : that.value == null;

@@ -10,15 +10,14 @@ package org.snlab.maple.rule.match;
 
 
 import org.snlab.maple.rule.field.MapleMatchField;
-import org.snlab.maple.rule.match.MaskValuePair;
 
 import java.util.Set;
 
-public class MapleMatch{
+public class MapleMatch {
     private MapleMatchField field;
-    private Set<MaskValuePair> matchset;
+    private Set<ValueMaskPair> matchset;
 
-    public MapleMatch(MapleMatchField field, Set<MaskValuePair> matchset) {
+    public MapleMatch(MapleMatchField field, Set<ValueMaskPair> matchset) {
         this.field = field;
         this.matchset = matchset;
     }
@@ -27,7 +26,7 @@ public class MapleMatch{
         return field;
     }
 
-    public Set<MaskValuePair> getMatchset() {
+    public Set<ValueMaskPair> getMatchset() {
         return matchset;
     }
 }

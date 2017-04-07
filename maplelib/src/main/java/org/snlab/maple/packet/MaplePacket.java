@@ -57,7 +57,7 @@ public class MaplePacket implements IMaplePacket {
         return frame;
     }
 
-    public MapleTopology.Port getIngress(){
+    public MapleTopology.Port getIngress() {
         return ingress;
     }
 
@@ -131,7 +131,7 @@ public class MaplePacket implements IMaplePacket {
         public boolean is(String ingress) {
             assert ingress.matches("^openflow:\\d+:\\d+$");//TODO
             boolean ret = MaplePacket.this.ingress.getId().equals(ingress);
-            TraceItem ti=new Trace.TraceIs(MapleMatchField.INGRESS,null,ingress.getBytes(),ret);
+            TraceItem ti = new Trace.TraceIs(MapleMatchField.INGRESS, null, ingress.getBytes(), ret);
             addTraceItem(ti);
             return ret;
         }
@@ -155,7 +155,7 @@ public class MaplePacket implements IMaplePacket {
                     ret = true;
                 }
             }
-            TraceItem ti=new Trace.TraceIn(MapleMatchField.INGRESS, null, values, ret);
+            TraceItem ti = new Trace.TraceIn(MapleMatchField.INGRESS, null, values, ret);
             addTraceItem(ti);
             return ret;
         }
@@ -166,13 +166,13 @@ public class MaplePacket implements IMaplePacket {
 
         public boolean belongto(String node) {
             boolean ret = MaplePacket.this.ingress.getOwner().getId().equals(node);
-            TraceItem ti=new Trace.TraceRange(MapleMatchField.INGRESS, null, node.getBytes(), null, ret);
+            TraceItem ti = new Trace.TraceRange(MapleMatchField.INGRESS, null, node.getBytes(), null, ret);
             addTraceItem(ti);
             return ret;
         }
 
         public MapleTopology.Port getValue() {
-            TraceItem ti=new Trace.TraceGet(MapleMatchField.INGRESS, null, MaplePacket.this.ingress.getId().getBytes());
+            TraceItem ti = new Trace.TraceGet(MapleMatchField.INGRESS, null, MaplePacket.this.ingress.getId().getBytes());
             addTraceItem(ti);
             return MaplePacket.this.ingress;
         }

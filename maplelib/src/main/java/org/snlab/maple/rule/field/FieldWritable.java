@@ -12,19 +12,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class FieldWritable {
-    public static MapleMatchField ETH_SRC=MapleMatchField.ETH_SRC;
+    public static MapleMatchField ETH_SRC = MapleMatchField.ETH_SRC;
 
-    public static Set<MapleMatchField> writableFields=new HashSet<>();
+    public static Set<MapleMatchField> writableFields = new HashSet<>();
 
-    static{
+    static {
         writableFields.add(ETH_SRC);
     }
 
-    public static boolean isWriteAble(MapleMatchField field){
+    public static boolean isWriteAble(MapleMatchField field) {
         return writableFields.contains(field);
     }
 
-    private FieldWritable(){
+    private FieldWritable() {
 
     }
 

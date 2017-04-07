@@ -31,9 +31,9 @@ public class MapleSystem {
 
     public MapleSystem(IMapleAdaptor mapleAdaptor) {
         this.mapleAdaptor = mapleAdaptor;
-        this.traceTree=new TraceTree();
-        this.mapleEnv=new MapleEnv();
-        this.mapleAppList=new ArrayList<>();
+        this.traceTree = new TraceTree();
+        this.mapleEnv = new MapleEnv();
+        this.mapleAppList = new ArrayList<>();
     }
 
     public IMapleHandler getHandler() {
@@ -53,25 +53,25 @@ public class MapleSystem {
         pkt.getTraceList().clear();
 
         for (MapleAppBase app : mapleAppList) {
-            if (app.onPacket(pkt,mapleEnv)) {
+            if (app.onPacket(pkt, mapleEnv)) {
                 break;
             }
         }
 
-        traceTree.update(pkt.getTraceList(),pkt);
+        traceTree.update(pkt.getTraceList(), pkt);
 
         //mapleAdaptor.installRule();
         //TODO: flow rules
     }
 
-    private boolean setupMapleApp(Class<? extends MapleAppBase> appclass,MapleAppSetup opt) {
+    private boolean setupMapleApp(Class<? extends MapleAppBase> appclass, MapleAppSetup opt) {
 
-        switch(opt){
+        switch (opt) {
             case INSTALL:
                 try {
                     MapleAppBase app = appclass.newInstance();
                     app.init(mapleEnv);
-                    mapleAppList.add(0,app);
+                    mapleAppList.add(0, app);
                 } catch (InstantiationException e) {
                     e.printStackTrace();
                 } catch (IllegalAccessException e) {
@@ -82,7 +82,7 @@ public class MapleSystem {
                 Iterator<MapleAppBase> iter = mapleAppList.iterator();
                 while (iter.hasNext()) {
                     MapleAppBase app = iter.next();
-                    if(app.getClass().equals(appclass)){
+                    if (app.getClass().equals(appclass)) {
                         iter.remove();
                         break;//  'break' is safe
                     }
@@ -92,10 +92,10 @@ public class MapleSystem {
         return true;
     }
 
-    private Object command(Class<? extends MapleAppBase> appclass, Object parm){
+    private Object command(Class<? extends MapleAppBase> appclass, Object parm) {
         for (MapleAppBase app : mapleAppList) {
-            if(app.getClass().equals(appclass)){
-                return app.onCommand(parm,mapleEnv);  // 'return' is safe
+            if (app.getClass().equals(appclass)) {
+                return app.onCommand(parm, mapleEnv);  // 'return' is safe
             }
         }
         return null;

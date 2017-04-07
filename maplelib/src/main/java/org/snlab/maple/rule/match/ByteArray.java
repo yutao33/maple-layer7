@@ -12,15 +12,16 @@ import java.util.Arrays;
 
 public class ByteArray {
     byte[] value;
-    public ByteArray(byte[] value){
-        this.value=value.clone();
+
+    public ByteArray(byte[] value) {
+        this.value = value.clone();
     }
 
     public byte get(int index) {
         return value[index];
     }
 
-    public int length(){
+    public int length() {
         return value.length;
     }
 
