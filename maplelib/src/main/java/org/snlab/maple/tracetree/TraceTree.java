@@ -158,7 +158,6 @@ public class TraceTree {
             throw new UnsupportedOperationException();
         }
 
-        ;
     }
 
     public static class SingleValue extends TestCondition {
@@ -256,6 +255,7 @@ public class TraceTree {
 
         public VNode(MapleMatchField field) {
             this.field = field;
+            matchentries=new HashMap<>();
         }
     }
 
