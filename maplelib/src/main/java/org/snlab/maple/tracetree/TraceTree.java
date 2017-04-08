@@ -34,9 +34,7 @@ public class TraceTree {
             return;
         }
         if (items.isEmpty()) {
-            if (!route.isEmpty()) {
-                treeroot = testifLNode_and_updateornew(treeroot, route);
-            }
+            treeroot = testifLNode_and_updateornew(treeroot, route);
             return;
         }
         Trace.TraceItem item0 = items.get(0);
