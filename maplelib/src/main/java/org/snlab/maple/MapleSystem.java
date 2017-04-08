@@ -10,6 +10,7 @@ package org.snlab.maple;
 
 
 import org.snlab.maple.api.MapleAppBase;
+import org.snlab.maple.app.SetRouteTest;
 import org.snlab.maple.env.MapleEnv;
 import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.rule.MaplePacketInReason;
@@ -34,6 +35,10 @@ public class MapleSystem {
         this.traceTree = new TraceTree();
         this.mapleEnv = new MapleEnv();
         this.mapleAppList = new ArrayList<>();
+
+        //test
+        this.mapleAppList.add(new SetRouteTest());
+
     }
 
     public IMapleHandler getHandler() {
@@ -110,8 +115,8 @@ public class MapleSystem {
 
         @Override
         public void onPacket(String ingress, byte[] payload, MaplePacketInReason reason) {
-            MaplePacket pkt = new MaplePacket(payload, new MapleTopology.Port());
-            MapleSystem.this.onPacket(pkt);
+            //MaplePacket pkt = new MaplePacket(payload, null);
+            //MapleSystem.this.onPacket(pkt);
         }
     }
 }

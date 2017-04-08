@@ -18,6 +18,15 @@ public class ForwardAction {
         throw new RuntimeException("shouldn't construct this instance");
     }
 
+
+    //-------------------static Action function-----------------------
+
+    public static OutPut output(Port port){
+        return new OutPut(port);
+    }
+
+    //-------------------static Action class------------------------
+
     public static abstract class Action {
 
     }
@@ -57,6 +66,5 @@ public class ForwardAction {
     public static class PopVlan extends Action {
 
     }
-
 
 }

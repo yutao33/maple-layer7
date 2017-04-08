@@ -16,6 +16,8 @@ import org.snlab.maple.rule.match.ByteArray;
 import org.snlab.maple.rule.match.ValueMaskPair;
 import org.snlab.maple.rule.route.Forward;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 
 
@@ -54,6 +56,7 @@ public class TraceTree {
                     nodep = testifexpected_and_updateornew(tb, items.get(i + 1));
                 }
                 t.setBranch(testresult, nodep);
+                //Barrier rule
             } else if (nodep instanceof VNode) {
                 Trace.TraceGet ti = (Trace.TraceGet) items.get(i);
                 VNode v = (VNode) nodep;
@@ -71,24 +74,27 @@ public class TraceTree {
         }
     }
 
-    private TraceTreeNode testifexpected_and_updateornew(TraceTreeNode node, Trace.TraceItem item) {
+    private TraceTreeNode testifexpected_and_updateornew(@Nullable TraceTreeNode node,@Nonnull Trace.TraceItem item) {
         TraceTreeNode ret = null;
         if (item instanceof Trace.TestItem) {
             Trace.TestItem ti = (Trace.TestItem) item;
             if (node instanceof TNode) {
-                ret = testifTNodeexpected_and_updateornew((TNode) node, ti);
+                ret = testifTNodeexpected_and_returnornew((TNode) node, ti);
             } else {
                 recurseMarkDeleted(node);
-                TNode t = new TNode(item.getField());
-
+                TNode t = new TNode(ti.getField());
+                t.condition=genTNodeCondition(ti);
+                //TODO t.matchset
                 ret = t;
             }
-
         } else if (item instanceof Trace.TraceGet) {
+            Trace.TraceGet ti=(Trace.TraceGet)item;
             if (node instanceof VNode) {
-
+                ret = testifVNodeexpected_and_returnornew((VNode)node,ti);
             } else {
-
+                recurseMarkDeleted(node);
+                VNode v = new VNode(ti.getField(),ti.getMask());
+                ret = v;
             }
         } else {
             throw new RuntimeException("unexpected");
@@ -96,17 +102,49 @@ public class TraceTree {
         return ret;
     }
 
-    private TraceTreeNode testifTNodeexpected_and_updateornew(TNode node, Trace.TestItem item) {
-        TraceTreeNode ret = null;
+    private TestCondition genTNodeCondition(Trace.TestItem item){
+        if(item instanceof Trace.TraceIs){
+            Trace.TraceIs i=(Trace.TraceIs)item;
+            return new SingleValue(i.getValue(),i.getMask());
+        } else if(item instanceof Trace.TraceIn){
+            Trace.TraceIn i=(Trace.TraceIn)item;
+            return new ValueSet(i.getValues(),i.getMask());
+        } else if(item instanceof Trace.TraceRange){
+            Trace.TraceRange i=(Trace.TraceRange)item;
+            return new ValueRange(i.getValue1(),i.getValue2(),i.getMask());
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
 
-        return ret;
+    private TraceTreeNode testifTNodeexpected_and_returnornew(@Nonnull TNode node, Trace.TestItem item) {
+        if(node.field.equals(item.getField())&&
+                node.condition.equalto(item)){
+            return node;
+        } else {
+            recurseMarkDeleted(node);
+            TNode t=new TNode(item.getField());
+            t.condition=genTNodeCondition(item);
+            //TODO t.matchset
+            return t;
+        }
+    }
+
+    private TraceTreeNode testifVNodeexpected_and_returnornew(@Nonnull VNode node,Trace.TraceGet item){
+        if(node.field.equals(item.getField())){
+            return node;
+        } else {
+            recurseMarkDeleted(node);
+            VNode v=new VNode(item.getField(),item.getMask());
+            return v;
+        }
     }
 
     private TraceTreeNode testifLNode_and_updateornew(TraceTreeNode node, List<Forward> route) {
         TraceTreeNode ret = null;
         if (node instanceof LNode) {
             LNode l = (LNode) node;
-            l.route = route;//TODO
+            l.route = route;//TODO generate rules
             ret = node;
         } else {
             recurseMarkDeleted(node);
@@ -156,6 +194,10 @@ public class TraceTree {
             throw new UnsupportedOperationException();
         }
 
+        public boolean equalto(Trace.TestItem item){
+            throw new UnsupportedOperationException();
+        }
+
     }
 
     public static class SingleValue extends TestCondition {
@@ -171,6 +213,18 @@ public class TraceTree {
             Set<ValueMaskPair> set = new HashSet<>();
             set.add(new ValueMaskPair(value, mask));
             return set;
+        }
+
+        @Override
+        public boolean equalto(Trace.TestItem item) {
+            if(item instanceof Trace.TraceIs){
+                Trace.TraceIs i=(Trace.TraceIs)item;
+                if(Objects.equals(this.value,i.getValue())&&
+                        Objects.equals(this.mask,i.getMask())){
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
@@ -190,6 +244,18 @@ public class TraceTree {
             }
             return set;
         }
+
+        @Override
+        public boolean equalto(Trace.TestItem item) {
+            if(item instanceof Trace.TraceIn){
+                Trace.TraceIn i=(Trace.TraceIn)item;
+                if(Objects.equals(this.values,i.getValues())&&
+                        Objects.equals(this.mask,i.getMask())){
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     public static class ValueRange extends TestCondition {
@@ -205,6 +271,19 @@ public class TraceTree {
         @Override
         public Set<ValueMaskPair> toMatchSet() {
             throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean equalto(Trace.TestItem item) {
+            if(item instanceof Trace.TraceRange){
+                Trace.TraceRange i=(Trace.TraceRange)item;
+                if(Objects.equals(this.value1,i.getValue1())&&
+                        Objects.equals(this.value2,i.getValue2())&&
+                        Objects.equals(this.mask,i.getMask())){
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
@@ -227,7 +306,7 @@ public class TraceTree {
     public static class TNode extends TraceTreeNode {
         private MapleMatchField field;
         private TestCondition condition;
-        private Set<ValueMaskPair> matchset;
+        private Set<ValueMaskPair> matchset; // for generate rule
         private TraceTreeNode branchtrue;
         private TraceTreeNode branchfalse;
 
@@ -251,8 +330,9 @@ public class TraceTree {
         private ByteArray mask;
         private Map<ByteArray, TraceTreeNode> matchentries;
 
-        public VNode(MapleMatchField field) {
+        public VNode(MapleMatchField field,ByteArray mask) {
             this.field = field;
+            this.mask = mask;
             matchentries=new HashMap<>();
         }
     }

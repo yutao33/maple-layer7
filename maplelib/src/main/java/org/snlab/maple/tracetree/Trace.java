@@ -43,9 +43,9 @@ public class Trace {
         private ByteArray value;
 
         public TraceGet(MapleMatchField field, byte[] mask, @Nonnull byte[] value) {
-            this.field = field;
+            super.field = field;
             if (mask != null) {
-                this.mask = new ByteArray(mask);
+                super.mask = new ByteArray(mask);
             }
             this.value = new ByteArray(value);
         }
@@ -59,9 +59,9 @@ public class Trace {
         private ByteArray value;
 
         public TraceIs(MapleMatchField field, byte[] mask, @Nonnull byte[] value, boolean ret) {
-            this.field = field;
+            super.field = field;
             if (mask != null) {
-                this.mask = new ByteArray(mask);
+                super.mask = new ByteArray(mask);
             }
             this.value = new ByteArray(value);
             this.result = ret;
@@ -76,9 +76,9 @@ public class Trace {
         private Set<ByteArray> values;
 
         public TraceIn(MapleMatchField field, byte[] mask, @Nonnull List<byte[]> values, boolean ret) {
-            this.field = field;
+            super.field = field;
             if (mask != null) {
-                this.mask = new ByteArray(mask);
+                super.mask = new ByteArray(mask);
             }
             for (byte[] value : values) {
                 this.values.add(new ByteArray(value));
@@ -96,9 +96,9 @@ public class Trace {
         private ByteArray value2;
 
         public TraceRange(MapleMatchField field, byte[] mask, byte[] value1, byte[] value2, boolean ret) {
-            this.field = field;
+            super.field = field;
             if (mask != null) {
-                this.mask = new ByteArray(mask);
+                super.mask = new ByteArray(mask);
             }
             this.value1 = new ByteArray(value1);
             this.value2 = new ByteArray(value2);

@@ -12,6 +12,14 @@ import org.snlab.maple.packet.MaplePacket;
 
 public interface IMaplePacket {
 
+    MaplePacket.PktFieldMaskable ethSrc();
+
+    MaplePacket.PktFieldMaskable ethDst();
+
+    MaplePacket.PktFieldMaskable ipSrc();
+
+    MaplePacket.PktFieldMaskable ipDst();
+
     MaplePacket.Ingress ingress();
 
     void setRoute(String... path);

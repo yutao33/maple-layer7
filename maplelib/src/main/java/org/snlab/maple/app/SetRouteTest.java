@@ -18,9 +18,10 @@ import org.snlab.maple.api.IMaplePacket;
  * mn --topo=tree,fanout=2,depth=2 --controller=remote,port=6653 --switch=ovs,protocols=OpenFlow13 --mac
  * h1 h2 ~ h3 h4
  */
-public class SetRouteTest extends MapleAppBase{
-    private static final String[] path1={"openflow:2:3","openflow:1:2"};
-    private static final String[] path2={"openflow:3:3","openflow:1:1"};
+public class SetRouteTest extends MapleAppBase {
+    private static final String[] path1 = {null, "openflow:2:3", null, "openflow:1:2"};
+    private static final String[] path2 = {null, "openflow:3:3", null, "openflow:1:1"};
+
     @Override
     public boolean onPacket(IMaplePacket pkt, IMapleEnv env) {
         pkt.setRoute(path1);

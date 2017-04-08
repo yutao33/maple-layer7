@@ -8,55 +8,76 @@
 
 package org.snlab.maple.env;
 
-import java.util.List;
+import java.util.Collections;
+import java.util.Set;
 
 public class MapleTopology {
-    private List<Node> nodes;
-    private List<MapleTopology>links;
+    private Set<Node> nodes;
+    private Set<Link> links;
 
-    public List<Node> getNodes() {
-        return nodes;
+    public Set<Node> getNodes() {
+        return Collections.unmodifiableSet(nodes);
     }
 
-    public List<MapleTopology> getLinks() {
-        return links;
+    public Set<Link> getLinks() {
+        return Collections.unmodifiableSet(links);
     }
+
+
+
+
+    //-----------------------inner class-----------------------
 
     public static class Link {
         private Port p1;
         private Port p2;
 
-        public Port getP1() {
+        public Link(){
+
+        }
+
+        public Port getPort1() {
             return p1;
         }
 
-        public void setP1(Port p1) {
-            this.p1 = p1;
-        }
-
-        public Port getP2() {
+        public Port getPort2() {
             return p2;
         }
 
-        public void setP2(Port p2) {
-            this.p2 = p2;
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Link link = (Link) o;
+            if(p1.equals(link.p1)){
+                return p2.equals(link.p2);
+            } else if(p1.equals(link.p2)){
+                return p2.equals(link.p2);
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return p1.hashCode()+p2.hashCode();
         }
     }
 
     public static class Node {
-        private String id;
-        private List<Port> ports;
+        private String id; //openflow:1 openflow:233334443
+        private Set<Port> ports;
 
-        public List<Port> getPorts() {
-            return ports;
+        public Node(){
+
+        }
+
+        public Set<Port> getPorts() {
+            return Collections.unmodifiableSet(ports);  //TODO
         }
 
         public String getId() {
             return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
         }
 
         @Override
@@ -81,36 +102,24 @@ public class MapleTopology {
         private Port end;
         private Link link;
 
-        public Node getOwner() {
-            return owner;
+        public Port(){
+
         }
 
-        public void setOwner(Node owner) {
-            this.owner = owner;
+        public Node getOwner() {
+            return owner;
         }
 
         public String getId() {
             return id;
         }
 
-        public void setId(String id) {
-            this.id = id;
-        }
-
         public Port getEnd() {
             return end;
         }
 
-        public void setEnd(Port end) {
-            this.end = end;
-        }
-
         public Link getLink() {
             return link;
-        }
-
-        public void setLink(Link link) {
-            this.link = link;
         }
 
         @Override

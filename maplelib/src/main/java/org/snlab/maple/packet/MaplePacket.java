@@ -35,6 +35,8 @@ public class MaplePacket implements IMaplePacket {
 
     private Map<MapleMatchField, byte[]> fieldMap;
 
+    private List<Forward> route = new ArrayList<>();
+
     public MaplePacket(byte[] data, MapleTopology.Port ingress) {
         this.ingress = ingress;
         this.frame = new Ethernet();
@@ -63,18 +65,29 @@ public class MaplePacket implements IMaplePacket {
 
     //-------------------------------trace functions-----------------------------
 
+    @Override
     public PktFieldMaskable ethSrc() {
-        return null;
+        return new PktFieldMaskable(MapleMatchField.ETH_SRC);
     }
 
+    @Override
     public PktFieldMaskable ethDst() {
-        return null;
+        return new PktFieldMaskable(MapleMatchField.ETH_DST);
     }
 
-    public PktFieldMaskable vlanid() {
-        return null;
+    public PktFieldMaskable vlanId() {
+        throw new UnsupportedOperationException();
     }
 
+    @Override
+    public PktFieldMaskable ipSrc() {
+        return new PktFieldMaskable(MapleMatchField.IP_SRC);
+    }
+
+    @Override
+    public PktFieldMaskable ipDst() {
+        return new PktFieldMaskable(MapleMatchField.IP_DST);
+    }
 
     @Override
     public MaplePacket.Ingress ingress() {
@@ -83,13 +96,11 @@ public class MaplePacket implements IMaplePacket {
 
 
     public boolean isTunnel() {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
 
-    public PktFieldMaskable ipSrc() {
-        return new PktFieldMaskable(MapleMatchField.IP_SRC);
-    }
+
 
 
     //-------------------------------Route functions-----------------------------
@@ -117,7 +128,7 @@ public class MaplePacket implements IMaplePacket {
     }
 
     public List<Forward> getRoute() {
-        return null;
+        return route;
     }
 
 
@@ -136,12 +147,9 @@ public class MaplePacket implements IMaplePacket {
             return ret;
         }
 
-//        public boolean is(MapleTopology.Port port){
-//            boolean ret=MaplePacket.this.ingress.equals(port);
-//            TraceItem ti = new TraceItem(MapleMatchField.INGRESS, null, port.toString().getBytes(), TraceItem.Type.TEST, ret);
-//            MaplePacket.this.traceList.add(ti);
-//            return ret;
-//        }
+        public boolean is(MapleTopology.Port port){
+            throw new UnsupportedOperationException();
+        }
 
         public boolean in(String... ingresses) {
             for (String s : ingresses) {
@@ -160,9 +168,9 @@ public class MaplePacket implements IMaplePacket {
             return ret;
         }
 
-//        public boolean in(MapleTopology.Port ...ports){
-//            return false;
-//        }
+        public boolean in(MapleTopology.Port ...ports){
+            throw new UnsupportedOperationException();
+        }
 
         public boolean belongto(String node) {
             boolean ret = MaplePacket.this.ingress.getOwner().getId().equals(node);
