@@ -10,9 +10,19 @@ package org.snlab.maple.env;
 
 import org.snlab.maple.api.IMapleEnv;
 
+import java.util.List;
+
 public class MapleEnv implements IMapleEnv {
 
     private MapleTopology topology=new MapleTopology();
+
+    public void updateTopology(List<MapleTopology.Element> putList,
+                               List<MapleTopology.Element> deleteList){
+        topology.update(putList,deleteList);
+    }
+
+
+    //------------------env function---------------------
 
     @Override
     public MapleTopology getTopo() {

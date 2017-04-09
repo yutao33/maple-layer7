@@ -8,10 +8,16 @@
 
 package org.snlab.maple;
 
+import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.rule.MaplePacketInReason;
+
+import java.util.List;
 
 public interface IMapleHandler {
 
     void onPacket(String ingress, byte[] payload, MaplePacketInReason reason);
 
+
+    void onTopologyChanged(List<MapleTopology.Element> putList,
+                           List<MapleTopology.Element> deleteList);
 }

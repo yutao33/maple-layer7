@@ -8,67 +8,101 @@
 
 package org.snlab.maple.env;
 
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 
 public class MapleTopology {
-    private Set<Node> nodes;
-    private Set<Link> links;
+    private Map<String,Node> nodes;
+    private Map<String,Link> links;
+
+    public MapleTopology() {
+        nodes=new HashMap<>();
+        links=new HashMap<>();
+    }
 
     public Set<Node> getNodes() {
-        return Collections.unmodifiableSet(nodes);
+        //return Collections.unmodifiableSet(nodes.values());
+        throw new UnsupportedOperationException();
     }
 
     public Set<Link> getLinks() {
-        return Collections.unmodifiableSet(links);
+        //return Collections.unmodifiableSet(links);
+        throw new UnsupportedOperationException();
     }
 
+    /**
+     * for MapleEnv to update topology
+     * @param putList
+     * @param deleteList
+     */
+    void update(List<MapleTopology.Element> putList,
+                               List<MapleTopology.Element> deleteList){
+        if(!putList.isEmpty()){
+            for (Element ele : putList) {
+                if(ele instanceof Node){
+                    Node node = (Node) ele;
 
+                } else if(ele instanceof Port) {
+                    Port port = (Port) ele;
+                } else if(ele instanceof Link){
+                    Link link = (Link) ele;
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+            }
+        }
+        if(!deleteList.isEmpty()){
+            for (Element ele : putList) {
+                if(ele instanceof Node){
+                    Node node = (Node) ele;
+                } else if(ele instanceof Port) {
+                    Port port = (Port) ele;
+                } else if(ele instanceof Link){
+                    Link link = (Link) ele;
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+            }
+        }
+    }
 
+    @Override
+    public String toString() {
+        StringBuilder sb=new StringBuilder("MapleTopology:\nNodes:\n");
+        for (Node node : nodes) {
+            sb.append(node.getId());
+            sb.append(" : ");
+            for (Port port : node.getPorts()) {
+                sb.append(port.getId());
+                sb.append(" -> ");
+                if(port.getEnd()!=null){
+                    sb.append(port.getEnd().getId());
+                } else {
+                    sb.append("null");
+                }
+                sb.append(" ; ");
+            }
+        }
+        sb.append("Links:\n");
+        for (Link link : links) {
+            sb.append(link.getStart().getId());
+            sb.append(" -> ");
+            sb.append(link.getEnd().getId());
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
 
     //-----------------------inner class-----------------------
 
-    public static class Link {
-        private Port p1;
-        private Port p2;
+    public static abstract class Element{
 
-        public Link(){
-
-        }
-
-        public Port getPort1() {
-            return p1;
-        }
-
-        public Port getPort2() {
-            return p2;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Link link = (Link) o;
-            if(p1.equals(link.p1)){
-                return p2.equals(link.p2);
-            } else if(p1.equals(link.p2)){
-                return p2.equals(link.p2);
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return p1.hashCode()+p2.hashCode();
-        }
     }
 
-    public static class Node {
+    public static class Node extends Element{
         private String id; //openflow:1 openflow:233334443
         private Set<Port> ports;
 
-        public Node(){
+        public Node(String id, List<String> ports){
 
         }
 
@@ -96,13 +130,13 @@ public class MapleTopology {
         }
     }
 
-    public static class Port {
-        private Node owner;
-        private String id;//  openflow:1:1 2 3 4 internel
+    public static class Port extends Element{
+        private Node owner;// openflow:1
+        private String id;//  openflow:1:1 openflow:1:2 openflow:1:internal
         private Port end;
         private Link link;
 
-        public Port(){
+        public Port(String id){
 
         }
 
@@ -140,4 +174,40 @@ public class MapleTopology {
             return result;
         }
     }
+
+    public static class Link extends Element{
+        private Port start;
+        private Port end;
+
+        public Link(String start,String end){
+
+        }
+
+        public Port getStart() {
+            return start;
+        }
+
+        public Port getEnd() {
+            return end;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Link link = (Link) o;
+
+            if (!start.equals(link.start)) return false;
+            return end.equals(link.end);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = start.hashCode();
+            result = 31 * result + end.hashCode();
+            return result;
+        }
+    }
+
 }

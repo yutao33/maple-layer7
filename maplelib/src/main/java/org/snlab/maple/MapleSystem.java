@@ -115,8 +115,20 @@ public class MapleSystem {
 
         @Override
         public void onPacket(String ingress, byte[] payload, MaplePacketInReason reason) {
-            //MaplePacket pkt = new MaplePacket(payload, null);
-            //MapleSystem.this.onPacket(pkt);
+            MaplePacket pkt = new MaplePacket(payload, new MapleTopology.Port(ingress));
+            MapleSystem.this.onPacket(pkt);
+        }
+
+
+        /**
+         * Topology change.
+         * PUT DELETE
+         * Node Port Link
+         */
+        @Override
+        public void onTopologyChanged(List<MapleTopology.Element> putList,
+                                      List<MapleTopology.Element> deleteList){
+            MapleSystem.this.mapleEnv.updateTopology(putList,deleteList);
         }
     }
 }

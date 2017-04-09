@@ -16,6 +16,7 @@ import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.snlab.maple.IMapleHandler;
 import org.snlab.maple.MapleSystem;
 
 public class ODLMapleProvider {
@@ -65,7 +66,9 @@ public class ODLMapleProvider {
 
         MapleSystem mapleSystem = new MapleSystem(odlMapleAdaptor);
 
-        PacketHandler packetHandler = new PacketHandler(mapleSystem.getHandler());
+        IMapleHandler mapleHandler = mapleSystem.getHandler();
+
+        PacketHandler packetHandler = new PacketHandler(mapleHandler);
 
         packetHandlerListenerRegistration = notificationService.registerNotificationListener(packetHandler);
 
@@ -73,7 +76,7 @@ public class ODLMapleProvider {
         //dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,iid,new TopologyListener(), AsyncDataBroker.DataChangeScope.BASE);
 
         DataTreeIdentifier<NetworkTopology> ntti = new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, iid);
-        dataBroker.registerDataTreeChangeListener(ntti,new TopologyListener());
+        dataBroker.registerDataTreeChangeListener(ntti,new TopologyListener(mapleHandler));
 
 
         LOG.info("ODLMapleProvider Session Initiated");
