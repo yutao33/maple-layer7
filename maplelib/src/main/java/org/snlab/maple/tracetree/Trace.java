@@ -13,6 +13,7 @@ import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.rule.match.ByteArray;
 
 import javax.annotation.Nonnull;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -80,6 +81,7 @@ public class Trace {
             if (mask != null) {
                 super.mask = new ByteArray(mask);
             }
+            this.values = new HashSet<>();
             for (byte[] value : values) {
                 this.values.add(new ByteArray(value));
             }
