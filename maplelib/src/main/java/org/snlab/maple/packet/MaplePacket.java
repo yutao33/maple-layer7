@@ -140,7 +140,7 @@ public class MaplePacket implements IMaplePacket {
         }
 
         public boolean is(String ingress) {
-            assert ingress.matches("^openflow:\\d+:\\d+$");//TODO
+            assert ingress.matches("^openflow:\\d+:\\w+$");//TODO
             boolean ret = MaplePacket.this.ingress.getId().equals(ingress);
             TraceItem ti = new Trace.TraceIs(MapleMatchField.INGRESS, null, ingress.getBytes(), ret);
             addTraceItem(ti);
@@ -153,7 +153,7 @@ public class MaplePacket implements IMaplePacket {
 
         public boolean in(String... ingresses) {
             for (String s : ingresses) {
-                assert s.matches("^openflow:\\d+:\\d+$");//TODO
+                assert s.matches("^openflow:\\d+:\\w+$");//TODO
             }
             boolean ret = false;
             List<byte[]> values = new ArrayList<>();

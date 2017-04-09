@@ -8,11 +8,23 @@
 
 package org.snlab.maple.env;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
+
 
 public class MapleTopology {
-    private Map<String,Node> nodes;
-    private Map<String,Link> links;
+    public static final Logger LOG=Logger.getLogger("MapleTopology");
+
+    private Map<Node,Node> nodes;
+    private Map<Link,Link> links;
 
     public MapleTopology() {
         nodes=new HashMap<>();
@@ -20,62 +32,123 @@ public class MapleTopology {
     }
 
     public Set<Node> getNodes() {
-        //return Collections.unmodifiableSet(nodes.values());
-        throw new UnsupportedOperationException();
+        return Collections.unmodifiableSet(nodes.keySet());
     }
 
     public Set<Link> getLinks() {
-        //return Collections.unmodifiableSet(links);
-        throw new UnsupportedOperationException();
+        return Collections.unmodifiableSet(links.keySet());
     }
 
     /**
      * for MapleEnv to update topology
      * @param putList
      * @param deleteList
+     * @return ischanged
      */
-    void update(List<MapleTopology.Element> putList,
+    boolean update(List<MapleTopology.Element> putList,
                                List<MapleTopology.Element> deleteList){
-        if(!putList.isEmpty()){
-            for (Element ele : putList) {
+        boolean ischanged=false;
+        List<Node> nodeList=new ArrayList<>();
+        List<Port> portList=new ArrayList<>();
+        List<Link> linkList=new ArrayList<>();
+        if(deleteList!=null){
+            for (Element ele : deleteList) {
                 if(ele instanceof Node){
-                    Node node = (Node) ele;
-
+                    nodeList.add((Node)ele);
                 } else if(ele instanceof Port) {
-                    Port port = (Port) ele;
+                    portList.add((Port) ele);
                 } else if(ele instanceof Link){
-                    Link link = (Link) ele;
+                    linkList.add((Link) ele);
                 } else {
                     throw new UnsupportedOperationException();
+                }
+            }
+            for (Link link : linkList) {
+                Link mylink = links.get(link);
+                removeLink(mylink);
+            }
+            for (Port port : portList) {
+                Node mynode = nodes.get(port.getOwner());
+                Iterator<Port> iter = mynode.ports.iterator();
+                while (iter.hasNext()) {
+                    Port next =  iter.next();
+                    if(next.equals(port)){
+                        removeLinkofaPort(next);
+                        iter.remove();
+                    }
+                }
+            }
+            for (Node node : nodeList) {
+                Node mynode = nodes.get(node);
+                if(mynode!=null){
+                    removeNode(mynode);
+                }
+            }
+            nodeList.clear();
+            portList.clear();
+            linkList.clear();
+        }
+        if(putList!=null){
+            for (Element ele : putList) {
+                if(ele instanceof Node){
+                    nodeList.add((Node) ele);
+                } else if(ele instanceof Port) {
+                    portList.add((Port) ele);
+                } else if(ele instanceof Link){
+                    linkList.add((Link) ele);
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+            }
+            for (Node node : nodeList) {
+                Node mynode = nodes.get(node);
+                if(mynode!=null){
+                    removeNode(mynode);
                 }
             }
         }
-        if(!deleteList.isEmpty()){
-            for (Element ele : putList) {
-                if(ele instanceof Node){
-                    Node node = (Node) ele;
-                } else if(ele instanceof Port) {
-                    Port port = (Port) ele;
-                } else if(ele instanceof Link){
-                    Link link = (Link) ele;
-                } else {
-                    throw new UnsupportedOperationException();
-                }
-            }
+        return ischanged;
+    }
+
+
+
+    //remove a node in nodes
+    private void removeNode(Node mynode){
+        for (Port myport : mynode.getPorts()) {
+            removeLinkofaPort(myport);
+        }
+        nodes.remove(mynode);
+    }
+
+    //remove related link of one port
+    private void removeLinkofaPort(Port myport){
+        removeLink(myport.link.end.link);
+        removeLink(myport.link);
+    }
+
+    //remove a link from links and set the start to null
+    private void removeLink(Link mylink){
+        if(mylink!=null){
+            links.remove(mylink);
+            mylink.start.link=null;
         }
     }
+
+
+
+
 
     @Override
     public String toString() {
         StringBuilder sb=new StringBuilder("MapleTopology:\nNodes:\n");
-        for (Node node : nodes) {
+        for (Node node : nodes.keySet()) {
             sb.append(node.getId());
             sb.append(" : ");
             for (Port port : node.getPorts()) {
                 sb.append(port.getId());
                 sb.append(" -> ");
-                if(port.getEnd()!=null){
-                    sb.append(port.getEnd().getId());
+                if(port.getLink()!=null){
+                    sb.append(port.getLink().getEnd().getId());
                 } else {
                     sb.append("null");
                 }
@@ -83,7 +156,7 @@ public class MapleTopology {
             }
         }
         sb.append("Links:\n");
-        for (Link link : links) {
+        for (Link link : links.keySet()) {
             sb.append(link.getStart().getId());
             sb.append(" -> ");
             sb.append(link.getEnd().getId());
@@ -99,11 +172,17 @@ public class MapleTopology {
     }
 
     public static class Node extends Element{
-        private String id; //openflow:1 openflow:233334443
+        private final String id; //openflow:1 openflow:233334443
         private Set<Port> ports;
 
         public Node(String id, List<String> ports){
-
+            this.id=id;
+            this.ports=new HashSet<>();
+            if(ports!=null) {
+                for (String port : ports) {
+                    this.ports.add(new Port(port));
+                }
+            }
         }
 
         public Set<Port> getPorts() {
@@ -132,24 +211,23 @@ public class MapleTopology {
 
     public static class Port extends Element{
         private Node owner;// openflow:1
-        private String id;//  openflow:1:1 openflow:1:2 openflow:1:internal
-        private Port end;
+        private final String id;//  openflow:1:1 openflow:1:2 openflow:1:internal
         private Link link;
 
         public Port(String id){
-
+            assert id.matches("openflow:\\d+:\\w+");//TODO
+            this.id=id;
         }
 
         public Node getOwner() {
+            if(this.owner==null){
+                this.owner=new Node(id.substring(0,id.lastIndexOf(':')), Arrays.asList(id));
+            }
             return owner;
         }
 
         public String getId() {
             return id;
-        }
-
-        public Port getEnd() {
-            return end;
         }
 
         public Link getLink() {
@@ -163,24 +241,22 @@ public class MapleTopology {
 
             Port port = (Port) o;
 
-            if (!owner.equals(port.owner)) return false;
-            return id.equals(port.id);
+            return id != null ? id.equals(port.id) : port.id == null;
         }
 
         @Override
         public int hashCode() {
-            int result = owner.hashCode();
-            result = 31 * result + id.hashCode();
-            return result;
+            return id != null ? id.hashCode() : 0;
         }
     }
 
     public static class Link extends Element{
-        private Port start;
-        private Port end;
+        private final Port start;
+        private final Port end;
 
         public Link(String start,String end){
-
+            this.start=new Port(start);
+            this.end=new Port(end);
         }
 
         public Port getStart() {

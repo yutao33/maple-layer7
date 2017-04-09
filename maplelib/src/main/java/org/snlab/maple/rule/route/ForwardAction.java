@@ -12,7 +12,7 @@ import org.snlab.maple.env.MapleTopology.Port;
 import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.packet.parser.Ethernet;
 
-public class ForwardAction {
+public final class ForwardAction {
 
     private ForwardAction() {
         throw new RuntimeException("shouldn't construct this instance");
