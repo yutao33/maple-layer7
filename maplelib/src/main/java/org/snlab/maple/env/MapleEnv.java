@@ -18,7 +18,13 @@ public class MapleEnv implements IMapleEnv {
 
     public void updateTopology(List<MapleTopology.Element> putList,
                                List<MapleTopology.Element> deleteList){
-        topology.update(putList,deleteList);
+        boolean ret=topology.update(putList,deleteList);
+        if(ret){
+            System.out.println("topo changed true");
+            System.out.println(topology.toString());
+        } else {
+            System.out.println("topo changed false");
+        }
     }
 
 
