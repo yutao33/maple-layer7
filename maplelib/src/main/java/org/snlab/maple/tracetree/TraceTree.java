@@ -25,6 +25,7 @@ import java.util.*;
  * TraceTree.
  */
 public class TraceTree {
+
     private TraceTreeNode treeroot;
 
     //-------------------------------update-----------------------------
@@ -170,17 +171,34 @@ public class TraceTree {
                 recurseMarkDeleted(branch);
             }
         } else {
-            throw new RuntimeException("unexpected");
+            throw new RuntimeException("unexpected node type");
         }
     }
 
 
     //-------------------------------generateRules-----------------------------
 
-    public void generateRules() {
+    List<MapleRule> rules;
+    int globalpriority;
 
+    public synchronized List<MapleRule> generateRules() {
+        rules=new ArrayList<>();
+        globalpriority=1;
+        recurseGenerateRules(treeroot);
+        return rules;
     }
 
+    private void recurseGenerateRules(TraceTreeNode node){
+        if(node instanceof LNode){
+
+        } else if(node instanceof TNode){
+
+        } else if(node instanceof VNode){
+
+        } else {
+            throw new RuntimeException("unexpected node type 1");
+        }
+    }
 
     //-------------------------------inner class-----------------------------
 
@@ -306,9 +324,10 @@ public class TraceTree {
     public static class TNode extends TraceTreeNode {
         private MapleMatchField field;
         private TestCondition condition;
-        private Set<ValueMaskPair> matchset; // for generate rule
         private TraceTreeNode branchtrue;
         private TraceTreeNode branchfalse;
+
+        private Set<ValueMaskPair> matchset; // for generate rule
 
         public TNode(MapleMatchField field) {
             this.field = field;

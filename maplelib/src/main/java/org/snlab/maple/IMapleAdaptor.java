@@ -10,20 +10,14 @@
 package org.snlab.maple;
 
 
+import org.snlab.maple.rule.MapleRule;
+
+import java.util.List;
+
 public interface IMapleAdaptor {
     void sendPacket();
 
-    void installPath();
-
-    void deletePath();
-
-    void installRule();
-
-    void deleteRule();
-
-    void resetWriteTransaction();
-
-    void submitTransaction();
+    void updateRules(List<MapleRule> rules);
 
     void outputtracetree();
 

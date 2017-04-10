@@ -9,6 +9,7 @@
 package org.snlab.maple.rule;
 
 public enum MaplePacketInReason {
+    INVALIDTTL,
     NOMATCH,
     TOCONTROLLER;
 }

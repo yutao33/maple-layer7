@@ -43,7 +43,7 @@ public class TopologyListener implements DataTreeChangeListener<NetworkTopology>
     }
 
     @Override
-    public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<NetworkTopology>> changes) {
+    public synchronized void onDataTreeChanged(@Nonnull Collection<DataTreeModification<NetworkTopology>> changes) {
 
         putList.clear();
         deleteList.clear();
@@ -110,7 +110,7 @@ public class TopologyListener implements DataTreeChangeListener<NetworkTopology>
                         break;
                 }
             } else {
-                LOG.warn("unknown ModificationType");
+                LOG.warn("unknown ModificationType: "+mctype);
             }
         }
     }
@@ -118,7 +118,8 @@ public class TopologyListener implements DataTreeChangeListener<NetworkTopology>
     private void modifyNode(DataObjectModification<Node> nodemod) {
         Collection<DataObjectModification<? extends DataObject>> mc = nodemod.getModifiedChildren();
         for (DataObjectModification<? extends DataObject> mcc : mc) {
-            if (nodemod.getIdentifier().getType().equals(TerminationPoint.class)) {
+            Class<? extends DataObject> mctype = mcc.getIdentifier().getType();
+            if (mctype.equals(TerminationPoint.class)) {
                 DataObjectModification<TerminationPoint> tpmod= (DataObjectModification<TerminationPoint>) mcc;
                 switch(tpmod.getModificationType()){
                     case WRITE:
@@ -130,7 +131,7 @@ public class TopologyListener implements DataTreeChangeListener<NetworkTopology>
                         break;
                 }
             } else {
-                LOG.warn("unknown ModificationType");
+                LOG.warn("unknown ModificationType1:"+ mctype);
             }
         }
     }

@@ -13,16 +13,20 @@ import org.snlab.maple.api.MapleAppBase;
 import org.snlab.maple.app.SetRouteTest;
 import org.snlab.maple.env.MapleEnv;
 import org.snlab.maple.env.MapleTopology;
+import org.snlab.maple.packet.types.EthType;
 import org.snlab.maple.rule.MaplePacketInReason;
 import org.snlab.maple.packet.MaplePacket;
+import org.snlab.maple.rule.MapleRule;
 import org.snlab.maple.tracetree.TraceTree;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class MapleSystem {
 
+    private final static Logger LOG=Logger.getLogger(MapleSystem.class.toString());
 
     private final IMapleAdaptor mapleAdaptor;
     private TraceTree traceTree;
@@ -48,13 +52,12 @@ public class MapleSystem {
         return handler;
     }
 
-
-    private void updateFlowRules() {
-
-    }
-
-
     private void onPacket(MaplePacket pkt) {
+        if(pkt.getFrame().getEtherType().equals(EthType.LLDP)){
+            LOG.info("get LLDP");
+            return;
+        }
+
         pkt.getTraceList().clear();
 
         for (MapleAppBase app : mapleAppList) {
@@ -65,8 +68,9 @@ public class MapleSystem {
 
         traceTree.update(pkt.getTraceList(), pkt);
 
-        //mapleAdaptor.installRule();
-        //TODO: flow rules
+        List<MapleRule> rules = traceTree.generateRules();
+
+        mapleAdaptor.updateRules(rules);
     }
 
     private boolean setupMapleApp(Class<? extends MapleAppBase> appclass, MapleAppSetup opt) {

@@ -171,10 +171,13 @@ public class MapleTopology {
                         myend=end;
                     } else {
                         if(myend.link!=null){
-                            removeLink(myend.link);
+                            if(!myend.link.end.equals(mystart)) {
+                                removeLink(myend.link);
+                            }
                         }
                     }
                     mylink = new Link(mystart, myend);
+                    mystart.link=mylink;
                     links.put(mylink,mylink);
                     ischanged=true;
                 }
@@ -198,7 +201,7 @@ public class MapleTopology {
     }
 
     //remove a node in nodes
-    private void removeNode(Node mynode){
+    private void removeNode(Node mynode) {
         for (Port myport : mynode.getPorts()) {
             removeLinkofaPort(myport);
         }
@@ -207,8 +210,10 @@ public class MapleTopology {
 
     //remove related link of one port
     private void removeLinkofaPort(Port myport){
-        removeLink(myport.link.end.link);
-        removeLink(myport.link);
+        if(myport.link!=null) {
+            removeLink(myport.link.end.link);
+            removeLink(myport.link);
+        }
     }
 
     //remove a link from links and set the start to null
@@ -239,6 +244,7 @@ public class MapleTopology {
                 }
                 sb.append(" ; ");
             }
+            sb.append("\n");
         }
         sb.append("Links:\n");
         for (Link link : links.keySet()) {
@@ -292,6 +298,14 @@ public class MapleTopology {
         public int hashCode() {
             return id.hashCode();
         }
+
+        @Override
+        public String toString() {
+            return "Node{" +
+                    "id='" + id + '\'' +
+                    ", ports=" + ports +
+                    '}';
+        }
     }
 
     public static class Port extends Element{
@@ -333,6 +347,13 @@ public class MapleTopology {
         public int hashCode() {
             return id != null ? id.hashCode() : 0;
         }
+
+        @Override
+        public String toString() {
+            return "Port{" +
+                    "id='" + id + '\'' +
+                    '}';
+        }
     }
 
     public static class Link extends Element{
@@ -373,6 +394,14 @@ public class MapleTopology {
             int result = start.hashCode();
             result = 31 * result + end.hashCode();
             return result;
+        }
+
+        @Override
+        public String toString() {
+            return "Link{" +
+                    "start=" + start +
+                    ", end=" + end +
+                    '}';
         }
     }
 

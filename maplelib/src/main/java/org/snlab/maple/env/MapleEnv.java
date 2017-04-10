@@ -11,20 +11,25 @@ package org.snlab.maple.env;
 import org.snlab.maple.api.IMapleEnv;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 public class MapleEnv implements IMapleEnv {
+
+    private static final Logger LOG= Logger.getLogger(MapleEnv.class.toString());
 
     private MapleTopology topology=new MapleTopology();
 
     public void updateTopology(List<MapleTopology.Element> putList,
                                List<MapleTopology.Element> deleteList){
         boolean ret=topology.update(putList,deleteList);
+        String info="updateTopology:\nputList="
+                +putList.toString()
+                +"\ndeleteList="+deleteList.toString()
+                +"\nreturn="+ret;
         if(ret){
-            System.out.println("topo changed true");
-            System.out.println(topology.toString());
-        } else {
-            System.out.println("topo changed false");
+            info+="\nTopology=\n"+topology.toString();
         }
+        LOG.info(info+"\n");
     }
 
 

@@ -9,6 +9,7 @@
 package org.snlab.maple.api;
 
 import org.snlab.maple.packet.MaplePacket;
+import org.snlab.maple.rule.route.Forward;
 
 public interface IMaplePacket {
 
@@ -25,4 +26,8 @@ public interface IMaplePacket {
     void setRoute(String... path);
 
     void addRoute(String... path);
+
+    void setRoute(Forward... path);
+
+    void addRoute(Forward... path);
 }

@@ -8,7 +8,6 @@
 
 package org.snlab.maple.rule;
 
-import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.rule.match.MapleMatch;
 import org.snlab.maple.rule.route.Forward;
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 public class MapleRule {
-    private MapleTopology.Node node;
     private Map<MapleMatchField, MapleMatch> matches;
     private List<Forward> route;
 
@@ -25,15 +23,10 @@ public class MapleRule {
     private static int ISDELETED_MASK = 0x1;
     private static int ISNEW_MASK = 0x2;
 
-    public MapleRule(MapleTopology.Node node, Map<MapleMatchField, MapleMatch> matches, List<Forward> route) {
-        this.node = node;
+    public MapleRule(Map<MapleMatchField, MapleMatch> matches, List<Forward> route) {
         this.matches = matches;
         this.route = route;
         this.flags = 0;
-    }
-
-    public MapleTopology.Node getNode() {
-        return node;
     }
 
     public Map<MapleMatchField, MapleMatch> getMatches() {

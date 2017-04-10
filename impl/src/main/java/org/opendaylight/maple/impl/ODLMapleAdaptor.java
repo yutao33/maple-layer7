@@ -13,7 +13,6 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
@@ -53,13 +52,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snlab.maple.IMapleAdaptor;
+import org.snlab.maple.rule.MapleRule;
 
 import javax.annotation.Nullable;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class ODLMapleAdaptor implements IMapleAdaptor {
@@ -77,7 +77,6 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
     public ODLMapleAdaptor(DataBroker dataBroker, SalFlowService salFlowService){
         this.dataBroker = dataBroker;
         this.salFlowService = salFlowService;
-        //installRule();
     }
 
     @Override
@@ -88,24 +87,16 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
                 .child(Node.class)
                 .child(NodeConnector.class).augmentation(FlowCapableNodeConnectorStatisticsData.class).build();
 
-
     }
 
     @Override
-    public void installPath() {
+    public void updateRules(List<MapleRule> rules) {
 
     }
 
-    @Override
-    public void deletePath() {
-
-    }
-
-    @Override
-    public void installRule(){
+    private void installRule(){
 
         FlowId flowId = new FlowId("maple" + flowIdInc.getAndIncrement());
-        //InstanceIdentifier<Flow> flowPath=null;
 
         InstanceIdentifier<Node> iid = InstanceIdentifier.builder(Nodes.class).child(Node.class, new NodeKey(new NodeId("openflow:1"))).build();
         InstanceIdentifier<Flow> flowPath = iid.builder().augmentation(FlowCapableNode.class)
@@ -192,20 +183,6 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
 
     }
 
-    @Override
-    public void deleteRule() {
-
-    }
-
-    @Override
-    public void resetWriteTransaction() {
-
-    }
-
-    @Override
-    public void submitTransaction() {
-
-    }
 
     @Override
     public void outputtracetree() {

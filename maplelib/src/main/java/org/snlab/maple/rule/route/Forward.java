@@ -10,6 +10,8 @@ package org.snlab.maple.rule.route;
 
 import org.snlab.maple.env.MapleTopology.Port;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,11 +38,25 @@ public class Forward {
         this(ingress, Arrays.asList(action),0,0);
     }
 
+    public Forward(@Nullable String ingress,@Nonnull String output){
+        if(ingress!=null){
+            this.ingress=new Port(ingress);
+        }
+        this.actions=Arrays.asList(ForwardAction.output(new Port(output)));
+    }
+
 
     public static String[] extractIngress(String... path) {
         return new String[]{};
     }
 
+    public List<? extends ForwardAction.Action> getActions() {
+        return actions;
+    }
+
+    public int getBandwidthlimit() {
+        return bandwidthlimit;
+    }
 }
 
 
