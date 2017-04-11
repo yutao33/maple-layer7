@@ -13,6 +13,7 @@ import org.snlab.maple.packet.MaplePacket;
 import org.snlab.maple.rule.MapleRule;
 import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.rule.match.ByteArray;
+import org.snlab.maple.rule.match.MapleMatch;
 import org.snlab.maple.rule.match.ValueMaskPair;
 import org.snlab.maple.rule.route.Forward;
 
@@ -336,6 +337,7 @@ public class TraceTree {
         private TraceTreeNode branchfalse;
 
         private Set<ValueMaskPair> matchset; // for generate rule
+        private MapleMatch match;  //?
 
         public TNode(MapleMatchField field) {
             this.field = field;
@@ -352,10 +354,16 @@ public class TraceTree {
         }
     }
 
+    public static class VNodeEntry{
+        private TraceTreeNode child;
+        private MapleMatch match;
+    }
+
     public static class VNode extends TraceTreeNode {
         private MapleMatchField field;
         private ByteArray mask;
-        private Map<ByteArray, TraceTreeNode> matchentries;
+        private Map<ByteArray, TraceTreeNode> matchentries;//children
+        //private Map<ByteArray,MapleMatch> children;
 
         public VNode(MapleMatchField field,ByteArray mask) {
             this.field = field;

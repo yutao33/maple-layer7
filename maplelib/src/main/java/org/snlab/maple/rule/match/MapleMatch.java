@@ -11,6 +11,7 @@ package org.snlab.maple.rule.match;
 
 import org.snlab.maple.rule.field.MapleMatchField;
 
+import java.util.Collections;
 import java.util.Set;
 
 public class MapleMatch {
@@ -27,6 +28,6 @@ public class MapleMatch {
     }
 
     public Set<ValueMaskPair> getMatchset() {
-        return matchset;
+        return Collections.unmodifiableSet(matchset);
     }
 }

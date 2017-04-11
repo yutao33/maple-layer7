@@ -11,6 +11,7 @@ package org.snlab.maple.rule.field;
 import java.util.HashSet;
 import java.util.Set;
 
+
 public class FieldWritable {
     public static MapleMatchField ETH_SRC = MapleMatchField.ETH_SRC;
 

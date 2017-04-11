@@ -8,12 +8,15 @@
 
 package org.snlab.maple.rule.match;
 
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import java.util.Arrays;
 
+@Immutable
 public class ByteArray {
-    byte[] value;
+    private final byte[] value;
 
-    public ByteArray(byte[] value) {
+    public ByteArray(@Nonnull byte[] value) {
         this.value = value.clone();
     }
 

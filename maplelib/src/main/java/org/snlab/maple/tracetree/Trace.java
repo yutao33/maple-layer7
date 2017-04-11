@@ -17,7 +17,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Trace {
+public final class Trace {
+
+    private Trace(){
+        throw new UnsupportedOperationException();
+    }
 
     public static abstract class TraceItem {
         protected MapleMatchField field;
@@ -32,7 +36,7 @@ public class Trace {
         }
     }
 
-    static abstract class TestItem extends TraceItem {
+    public static abstract class TestItem extends TraceItem {
         protected boolean result;
 
         public boolean getresult() {
