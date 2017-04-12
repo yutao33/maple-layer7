@@ -21,6 +21,7 @@ package org.snlab.maple.packet.parser;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -323,7 +324,7 @@ public class Ethernet extends BasePacket {
 
     @Override
     public Map<MapleMatchField, byte[]> buildMatchFieldMap() {
-        Map<MapleMatchField,byte[]> map=new HashMap<>();
+        Map<MapleMatchField,byte[]> map=new EnumMap<>(MapleMatchField.class);
         map.put(MapleMatchField.ETH_DST,destinationMACAddress.getBytes());
         map.put(MapleMatchField.ETH_SRC,sourceMACAddress.getBytes());
         map.put(MapleMatchField.ETH_TYPE, U16.of(etherType.getValue()).getBytes());

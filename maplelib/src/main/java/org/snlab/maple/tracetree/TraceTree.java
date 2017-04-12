@@ -21,8 +21,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -36,11 +38,14 @@ public class TraceTree {
 
     private TraceTreeNode treeroot;
 
+
     //-------------------------------update-----------------------------
+
+    private Map<MapleMatchField,MapleMatch> matchMap=new EnumMap<>(MapleMatchField.class);
 
     public synchronized void update(List<Trace.TraceItem> items, MaplePacket pkt) {
         List<Forward> route = pkt.getRoute();
-        if (route.isEmpty()) {
+        if (route==null||route.isEmpty()) {
             //TODO find and delete
             return;
         }
@@ -70,13 +75,14 @@ public class TraceTree {
                 Trace.TraceGet ti = (Trace.TraceGet) items.get(i);
                 VNode v = (VNode) nodep;
                 ByteArray value = ti.getValue();
-                TraceTreeNode tv = v.matchentries.get(value);
+                TraceTreeNode tv = v.getEntryChild(value);
                 if (i == items.size() - 1) {
                     nodep = testifLNode_and_updateornew(tv, route);
                 } else {
                     nodep = testifexpected_and_updateornew(tv, items.get(i + 1));
                 }
-                v.matchentries.put(value, nodep);
+                v.putMatchEntry(value,nodep);
+                //TODO rules
             } else {
                 throw new RuntimeException("unexpected");
             }
@@ -85,26 +91,23 @@ public class TraceTree {
 
     private TraceTreeNode testifexpected_and_updateornew(@Nullable TraceTreeNode node,@Nonnull Trace.TraceItem item) {
         TraceTreeNode ret = null;
-        if (item instanceof Trace.TestItem) {
+        if(node!=null&&node.isConsistentWith(item)){
+            // TODO maybe need to update match set
+            ret=node;
+        }
+        else if (item instanceof Trace.TestItem) {
             Trace.TestItem ti = (Trace.TestItem) item;
-            if (node instanceof TNode) {
-                ret = testifTNodeexpected_and_returnornew((TNode) node, ti);
-            } else {
-                recurseMarkDeleted(node);
-                TNode t = new TNode(ti.getField());
-                t.condition=genTNodeCondition(ti);
-                //TODO t.matchset
-                ret = t;
-            }
+            recurseMarkDeleted(node);
+            TNode t = new TNode(ti.getField());
+            t.condition=genTNodeCondition(ti);
+            //TODO t.match
+            ret = t;
         } else if (item instanceof Trace.TraceGet) {
             Trace.TraceGet ti=(Trace.TraceGet)item;
-            if (node instanceof VNode) {
-                ret = testifVNodeexpected_and_returnornew((VNode)node,ti);
-            } else {
-                recurseMarkDeleted(node);
-                VNode v = new VNode(ti.getField(),ti.getMask());
-                ret = v;
-            }
+            recurseMarkDeleted(node);
+            VNode v = new VNode(ti.getField(),ti.getMask());
+            //TODO v.entry.match
+            ret = v;
         } else {
             throw new RuntimeException("unexpected");
         }
@@ -126,30 +129,7 @@ public class TraceTree {
         }
     }
 
-    private TraceTreeNode testifTNodeexpected_and_returnornew(@Nonnull TNode node, Trace.TestItem item) {
-        if(node.field.equals(item.getField())&&
-                node.condition.equalto(item)){
-            return node;
-        } else {
-            recurseMarkDeleted(node);
-            TNode t=new TNode(item.getField());
-            t.condition=genTNodeCondition(item);
-            //TODO t.matchset
-            return t;
-        }
-    }
-
-    private TraceTreeNode testifVNodeexpected_and_returnornew(@Nonnull VNode node,Trace.TraceGet item){
-        if(node.field.equals(item.getField())){
-            return node;
-        } else {
-            recurseMarkDeleted(node);
-            VNode v=new VNode(item.getField(),item.getMask());
-            return v;
-        }
-    }
-
-    private TraceTreeNode testifLNode_and_updateornew(TraceTreeNode node, List<Forward> route) {
+    private TraceTreeNode testifLNode_and_updateornew(@Nullable TraceTreeNode node, List<Forward> route) {
         TraceTreeNode ret = null;
         if (node instanceof LNode) {
             LNode l = (LNode) node;
@@ -174,9 +154,9 @@ public class TraceTree {
             recurseMarkDeleted(t.branchtrue);
         } else if (node instanceof VNode) {
             VNode v = (VNode) node;
-            Collection<TraceTreeNode> branches = v.matchentries.values();
-            for (TraceTreeNode branch : branches) {
-                recurseMarkDeleted(branch);
+            Collection<VNodeEntry> entries = v.matchentries.values();
+            for (VNodeEntry entry : entries) {
+                recurseMarkDeleted(entry.child);
             }
         } else {
             throw new RuntimeException("unexpected node type");
@@ -186,8 +166,8 @@ public class TraceTree {
 
     //-------------------------------generateRules-----------------------------
 
-    List<MapleRule> rules;
-    int globalpriority;
+    private List<MapleRule> rules;
+    private int globalpriority;
 
     public synchronized List<MapleRule> generateRules() {
         rules=new ArrayList<>();
@@ -198,11 +178,18 @@ public class TraceTree {
 
     private void recurseGenerateRules(TraceTreeNode node){
         if(node instanceof LNode){
-
+            node.priority=globalpriority;
+            rules.add(((LNode)node).rule);
         } else if(node instanceof TNode){
-
+            TNode t=(TNode)node;
+            recurseGenerateRules(t.getBranch(false));
+            globalpriority++;
+            recurseGenerateRules(t.getBranch(true));
         } else if(node instanceof VNode){
-
+            VNode v=(VNode)node;
+            for (VNodeEntry entry : v.matchentries.values()) {
+                recurseGenerateRules(entry.child);
+            }
         } else {
             throw new RuntimeException("unexpected node type 1");
         }
@@ -220,7 +207,7 @@ public class TraceTree {
             throw new UnsupportedOperationException();
         }
 
-        public boolean equalto(Trace.TestItem item){
+        public boolean isConsistentWith(Trace.TestItem item){
             throw new UnsupportedOperationException();
         }
 
@@ -242,7 +229,7 @@ public class TraceTree {
         }
 
         @Override
-        public boolean equalto(Trace.TestItem item) {
+        public boolean isConsistentWith(Trace.TestItem item) {
             if(item instanceof Trace.TraceIs){
                 Trace.TraceIs i=(Trace.TraceIs)item;
                 if(Objects.equals(this.value,i.getValue())&&
@@ -272,7 +259,7 @@ public class TraceTree {
         }
 
         @Override
-        public boolean equalto(Trace.TestItem item) {
+        public boolean isConsistentWith(Trace.TestItem item) {
             if(item instanceof Trace.TraceIn){
                 Trace.TraceIn i=(Trace.TraceIn)item;
                 if(Objects.equals(this.values,i.getValues())&&
@@ -301,7 +288,7 @@ public class TraceTree {
         }
 
         @Override
-        public boolean equalto(Trace.TestItem item) {
+        public boolean isConsistentWith(Trace.TestItem item) {
             if(item instanceof Trace.TraceRange){
                 Trace.TraceRange i=(Trace.TraceRange)item;
                 if(Objects.equals(this.value1,i.getValue1())&&
@@ -319,6 +306,10 @@ public class TraceTree {
      */
     public abstract static class TraceTreeNode {
         protected int priority;
+
+        public boolean isConsistentWith(Trace.TraceItem item){
+            throw new UnsupportedOperationException();
+        }
     }
 
     public static class LNode extends TraceTreeNode {
@@ -328,6 +319,11 @@ public class TraceTree {
         public LNode(List<Forward> route) {
             this.route = route;
         }
+
+        @Override
+        public boolean isConsistentWith(Trace.TraceItem item) {
+            return false;
+        }
     }
 
     public static class TNode extends TraceTreeNode {
@@ -336,8 +332,7 @@ public class TraceTree {
         private TraceTreeNode branchtrue;
         private TraceTreeNode branchfalse;
 
-        private Set<ValueMaskPair> matchset; // for generate rule
-        private MapleMatch match;  //?
+        private MapleMatch match;// for generate rules
 
         public TNode(MapleMatchField field) {
             this.field = field;
@@ -352,23 +347,78 @@ public class TraceTree {
             if (b) branchtrue = branch;
             else branchfalse = branch;
         }
+
+        @Override
+        public boolean isConsistentWith(Trace.TraceItem item) {
+            if(item instanceof Trace.TestItem){
+                if(this.field.equals(item.getField())&&
+                        this.condition.isConsistentWith((Trace.TestItem)item)){
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     public static class VNodeEntry{
         private TraceTreeNode child;
-        private MapleMatch match;
+
+        private MapleMatch match;// for generate rules
+
+        public VNodeEntry(TraceTreeNode child, MapleMatch match) {
+            this.child = child;
+            this.match = match;
+        }
     }
 
     public static class VNode extends TraceTreeNode {
         private MapleMatchField field;
         private ByteArray mask;
-        private Map<ByteArray, TraceTreeNode> matchentries;//children
-        //private Map<ByteArray,MapleMatch> children;
+        private Map<ByteArray, VNodeEntry> matchentries;//children
 
         public VNode(MapleMatchField field,ByteArray mask) {
             this.field = field;
             this.mask = mask;
             matchentries=new HashMap<>();
+        }
+
+        public void putMatchEntry(ByteArray value,TraceTreeNode child){
+            matchentries.put(value,new VNodeEntry(child,null));
+        }
+
+        public TraceTreeNode getEntryChild(ByteArray value){
+            return matchentries.get(value).child;
+        }
+
+        @Override
+        public boolean isConsistentWith(Trace.TraceItem item) {
+            if(item instanceof Trace.TraceGet) {
+                return this.field.equals(item.getField())
+                        && Objects.equals(mask, item.getMask());
+            }
+            return false;
+        }
+
+        public Iterator<TraceTreeNode> iterator(){
+            return new Iterator<TraceTreeNode>() {
+
+                private Iterator<VNodeEntry> iter = matchentries.values().iterator();
+
+                @Override
+                public void remove() {
+                    iter.remove();
+                }
+
+                @Override
+                public boolean hasNext() {
+                    return iter.hasNext();
+                }
+
+                @Override
+                public TraceTreeNode next() {
+                    return iter.next().child;
+                }
+            };
         }
     }
 

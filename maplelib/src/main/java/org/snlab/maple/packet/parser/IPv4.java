@@ -25,6 +25,7 @@ package org.snlab.maple.packet.parser;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -444,7 +445,7 @@ public class IPv4 extends BasePacket {
 
     @Override
     public Map<MapleMatchField, byte[]> buildMatchFieldMap() {
-        Map<MapleMatchField,byte[]> map=new HashMap<>();
+        Map<MapleMatchField,byte[]> map=new EnumMap<>(MapleMatchField.class);
         map.put(MapleMatchField.IP_SRC,sourceAddress.getBytes());
         map.put(MapleMatchField.IP_DST,destinationAddress.getBytes());
         map.put(MapleMatchField.IP_PROTO,U8.of(protocol.getIpProtocolNumber()).getBytes());

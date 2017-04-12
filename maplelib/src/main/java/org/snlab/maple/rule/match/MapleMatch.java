@@ -11,12 +11,14 @@ package org.snlab.maple.rule.match;
 
 import org.snlab.maple.rule.field.MapleMatchField;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Collections;
 import java.util.Set;
 
+@Immutable
 public class MapleMatch {
-    private MapleMatchField field;
-    private Set<ValueMaskPair> matchset;
+    private final MapleMatchField field;
+    private final Set<ValueMaskPair> matchset;
 
     public MapleMatch(MapleMatchField field, Set<ValueMaskPair> matchset) {
         this.field = field;

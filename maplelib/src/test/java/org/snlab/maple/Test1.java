@@ -12,8 +12,6 @@ package org.snlab.maple;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.snlab.maple.rule.match.ByteArray;
-import org.snlab.maple.rule.match.ValueMaskPair;
 
 public class Test1 {
 
@@ -22,13 +20,7 @@ public class Test1 {
 
     @Test
     public void test1(){
-        thrown.expect(IllegalArgumentException.class);
-        new ByteArray(null);
+
     }
 
-    @Test
-    public void test1_1(){
-        thrown.expect(IllegalArgumentException.class);
-        new ValueMaskPair(null,null);
-    }
 }

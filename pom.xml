@@ -63,21 +63,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   <profiles>
 
     <profile>
-      <id>devel</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <modules>
-        <module>maplelib</module>
-        <module>api</module>
-        <module>impl</module>
-        <module>features</module>
-        <module>artifacts</module>
-        <module>cli</module>
-      </modules>
-    </profile>
-
-    <profile>
       <id>all</id>
       <modules>
         <module>maplelib</module>

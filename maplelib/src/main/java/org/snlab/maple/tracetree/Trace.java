@@ -106,8 +106,12 @@ public final class Trace {
             if (mask != null) {
                 super.mask = new ByteArray(mask);
             }
-            this.value1 = new ByteArray(value1);
-            this.value2 = new ByteArray(value2);
+            if(value1!=null) {
+                this.value1 = new ByteArray(value1);
+            }
+            if(value2!=null) {
+                this.value2 = new ByteArray(value2);
+            }
             this.result = ret;
         }
 

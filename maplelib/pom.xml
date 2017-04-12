@@ -1,16 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.snlab.maple</groupId>
-  <artifactId>maplelib</artifactId>
-  <version>2.0.0</version>
+    <groupId>org.snlab.maple</groupId>
+    <artifactId>maplelib</artifactId>
+    <version>2.0.0</version>
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.6.1</version>
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
@@ -20,69 +20,65 @@
     </build>
     <packaging>jar</packaging>
 
-  <name>maplelib</name>
-  <!--<url>http://maven.apache.org</url>-->
+    <name>maplelib</name>
+    <!--<url>http://maven.apache.org</url>-->
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
-    </dependency>
-      <dependency>
-          <groupId>com.google.guava</groupId>
-          <artifactId>guava</artifactId>
-          <version>18.0-rc2</version>
-      </dependency>
-      <dependency>
-          <groupId>com.google.code.findbugs</groupId>
-          <artifactId>annotations</artifactId>
-          <version>3.0.0</version>
-          <exclusions>
-              <!-- We'd like (have) to eventually exclude :jsr305 here as well, because
-                   the types of this artifact are already shaded inside the :annotations artifact.
-                   This state is a temporary solution to allow all projects to gradually switch over
-                   switch their <dependency><groupId>com.google.code.findbugs from
-                   <artifactId>jsr305 to <artifactId>annotations in all pom.xml.
-                   The target solution is https://git.opendaylight.org/gerrit/#/c/47337/
-                -->
-              <exclusion>
-                  <groupId>net.jcip</groupId>
-                  <!-- The types of this artifact are already shaded inside the :annotations artifact -->
-                  <artifactId>jcip-annotations</artifactId>
-              </exclusion>
-          </exclusions>
-      </dependency>
-      <dependency>
-          <groupId>com.google.code.findbugs</groupId>
-          <artifactId>jsr305</artifactId>
-          <version>3.0.0</version>
-      </dependency>
-      <dependency>
-          <groupId>io.netty</groupId>
-          <artifactId>netty-buffer</artifactId>
-          <version>4.1.3.Final</version>
-      </dependency>
-  </dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0-rc2</version>
+        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>com.google.code.findbugs</groupId>-->
+        <!--<artifactId>annotations</artifactId>-->
+        <!--<version>3.0.0</version>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.1</version>
+        </dependency>
 
-  <!--<build>-->
+        <!--<dependency>-->
+        <!--<groupId>org.projectlombok</groupId>-->
+        <!--<artifactId>lombok</artifactId>-->
+        <!--<version>1.16.16</version>-->
+        <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+
+
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-buffer</artifactId>
+            <version>4.1.3.Final</version>
+        </dependency>
+    </dependencies>
+
+
+    <!--<build>-->
     <!--<plugins>-->
-      <!--<plugin>-->
-        <!--<groupId>org.apache.maven.plugins</groupId>-->
-        <!--<artifactId>maven-compiler-plugin</artifactId>-->
-        <!--<configuration>-->
-          <!--<compilerArguments>-->
-            <!--<bootclasspath>${java.home}\lib\rt.jar;${java.home}\lib\jce.jar</bootclasspath>-->
-          <!--</compilerArguments>-->
-        <!--</configuration>-->
-      <!--</plugin>-->
+    <!--<plugin>-->
+    <!--<groupId>org.apache.maven.plugins</groupId>-->
+    <!--<artifactId>maven-compiler-plugin</artifactId>-->
+    <!--<configuration>-->
+    <!--<compilerArguments>-->
+    <!--<bootclasspath>${java.home}\lib\rt.jar;${java.home}\lib\jce.jar</bootclasspath>-->
+    <!--</compilerArguments>-->
+    <!--</configuration>-->
+    <!--</plugin>-->
     <!--</plugins>-->
-  <!--</build>-->
+    <!--</build>-->
 
 
 </project>

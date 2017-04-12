@@ -8,6 +8,7 @@
 
 package org.snlab.maple.rule.match;
 
+
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Arrays;
