@@ -12,6 +12,10 @@ package org.snlab.maple;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.snlab.maple.rule.field.MapleMatchField;
+import org.snlab.maple.tracetree.TraceTree;
+
+import java.util.Iterator;
 
 public class Test1 {
 

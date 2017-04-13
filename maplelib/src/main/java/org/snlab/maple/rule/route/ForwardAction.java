@@ -9,8 +9,10 @@
 package org.snlab.maple.rule.route;
 
 import org.snlab.maple.env.MapleTopology.Port;
-import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.packet.parser.Ethernet;
+import org.snlab.maple.rule.field.MapleMatchField;
+
+import javax.annotation.Nonnull;
 
 public final class ForwardAction {
 
@@ -21,7 +23,7 @@ public final class ForwardAction {
 
     //-------------------static Action function-----------------------
 
-    public static OutPut output(Port port){
+    public static OutPut output(@Nonnull Port port){
         return new OutPut(port);
     }
 
@@ -34,8 +36,23 @@ public final class ForwardAction {
     public static class OutPut extends Action {
         private Port port;
 
-        public OutPut(Port port) {
+        public OutPut(@Nonnull Port port) {
             this.port = port;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            OutPut outPut = (OutPut) o;
+
+            return port.equals(outPut.port);
+        }
+
+        @Override
+        public int hashCode() {
+            return port.hashCode();
         }
     }
 
@@ -49,6 +66,7 @@ public final class ForwardAction {
         public Punt(PuntPktListener listener) {
             this.listener = listener;
         }
+
     }
 
     public static class SetField extends Action {

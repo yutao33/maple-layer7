@@ -12,20 +12,22 @@ import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.rule.match.MapleMatch;
 import org.snlab.maple.rule.route.Forward;
 
+import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
 public class MapleRule {
-    private Map<MapleMatchField, MapleMatch> matches;
-    private List<Forward> route;
+    private final Map<MapleMatchField, MapleMatch> matches;
+    private final List<Forward> route;
 
     private int flags;
-    private static int ISDELETED_MASK = 0x1;
-    private static int ISNEW_MASK = 0x2;
+    private static final int ISDELETED_MASK = 0x1;
+    private static final int ISNEW_MASK = 0x2;
 
     public MapleRule(Map<MapleMatchField, MapleMatch> matches, List<Forward> route) {
-        this.matches = matches;
-        this.route = route;
+        this.matches = new EnumMap<>(matches);
+        this.route = new ArrayList<>(route);
         this.flags = 0;
     }
 

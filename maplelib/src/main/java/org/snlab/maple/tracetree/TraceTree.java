@@ -63,26 +63,41 @@ public class TraceTree {
                 Trace.TestItem ti = (Trace.TestItem) items.get(i);
                 TNode t = (TNode) nodep;
                 boolean testresult = ti.getresult();
-                TraceTreeNode tb = t.getBranch(testresult);
-                if (i == items.size() - 1) {
-                    nodep = testifLNode_and_updateornew(tb, route);
-                } else {
-                    nodep = testifexpected_and_updateornew(tb, items.get(i + 1));
+                TraceTreeNode odltestbranch = t.getBranch(testresult);
+
+                if(testresult) {
+                    MapleMatch match = t.match;
+                    matchMap.put(match.getField(), match);
                 }
-                t.setBranch(testresult, nodep);
-                //Barrier rule
+
+                if (i == items.size() - 1) {
+                    nodep = testifLNode_and_updateornew(odltestbranch, route);
+                } else {
+                    nodep = testifexpected_and_updateornew(odltestbranch, items.get(i + 1));
+                }
+                if(nodep!=odltestbranch) {
+                    t.setBranch(testresult, nodep);
+                }
+                if(!testresult&&t.getBranch(true)==null){
+                    t.setBranch(true,barrierRuleLNode());
+                }
             } else if (nodep instanceof VNode) {
                 Trace.TraceGet ti = (Trace.TraceGet) items.get(i);
                 VNode v = (VNode) nodep;
                 ByteArray value = ti.getValue();
-                TraceTreeNode tv = v.getEntryChild(value);
+                VNodeEntry odlentry = v.getEntryorConstruct(value);
+
+                matchMap.put(odlentry.match.getField(),odlentry.match);
+
+                TraceTreeNode oldchild=odlentry.child;
                 if (i == items.size() - 1) {
-                    nodep = testifLNode_and_updateornew(tv, route);
+                    nodep = testifLNode_and_updateornew(oldchild, route);
                 } else {
-                    nodep = testifexpected_and_updateornew(tv, items.get(i + 1));
+                    nodep = testifexpected_and_updateornew(oldchild, items.get(i + 1));
                 }
-                v.putMatchEntry(value,nodep);
-                //TODO rules
+                if(nodep!=oldchild) {
+                    odlentry.child = nodep;
+                }
             } else {
                 throw new RuntimeException("unexpected");
             }
@@ -133,13 +148,23 @@ public class TraceTree {
         TraceTreeNode ret = null;
         if (node instanceof LNode) {
             LNode l = (LNode) node;
-            l.route = route;//TODO generate rules
+            if(l.route.equals(route)){
+                //TODO generate tmp drop rule if route is null
+            } else {
+                l.route = route;
+                l.rule=new MapleRule(matchMap,route); //NOTE new rule
+            }
             ret = node;
         } else {
             recurseMarkDeleted(node);
             ret = new LNode(route);
         }
         return ret;
+    }
+
+    private TraceTreeNode barrierRuleLNode(){
+        LNode l = new LNode(Forward.DEFAULT_PuntForwards);
+        return l;
     }
 
     private void recurseMarkDeleted(TraceTreeNode node) {
@@ -327,7 +352,7 @@ public class TraceTree {
     }
 
     public static class TNode extends TraceTreeNode {
-        private MapleMatchField field;
+        private final MapleMatchField field;
         private TestCondition condition;
         private TraceTreeNode branchtrue;
         private TraceTreeNode branchfalse;
@@ -372,8 +397,8 @@ public class TraceTree {
     }
 
     public static class VNode extends TraceTreeNode {
-        private MapleMatchField field;
-        private ByteArray mask;
+        private final MapleMatchField field;
+        private final ByteArray mask;
         private Map<ByteArray, VNodeEntry> matchentries;//children
 
         public VNode(MapleMatchField field,ByteArray mask) {
@@ -382,12 +407,13 @@ public class TraceTree {
             matchentries=new HashMap<>();
         }
 
-        public void putMatchEntry(ByteArray value,TraceTreeNode child){
-            matchentries.put(value,new VNodeEntry(child,null));
-        }
-
-        public TraceTreeNode getEntryChild(ByteArray value){
-            return matchentries.get(value).child;
+        @Nonnull
+        public VNodeEntry getEntryorConstruct(ByteArray value){
+            VNodeEntry v = matchentries.get(value);
+            if(v==null){
+                v=new VNodeEntry(null,null);//TODO match
+            }
+            return v;
         }
 
         @Override
