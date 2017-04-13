@@ -256,7 +256,9 @@ public class MaplePacket implements IMaplePacket {
         public boolean range(byte[] value1,byte[] value2){
             int len=field.getByteLength();
             assert len==value1.length && len==value2.length;//TODO
+            boolean ret=false;
 
+            return ret;
         }
 
         public byte[] get() {
