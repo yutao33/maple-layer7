@@ -10,6 +10,7 @@ package org.snlab.maple.rule.match;
 
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Arrays;
 
@@ -27,6 +28,18 @@ public class ByteArray {
 
     public int length() {
         return value.length;
+    }
+
+    public ByteArray bitAnd(@Nullable ByteArray a2){
+        if(a2==null){
+            return this;
+        }
+        assert value.length==a2.value.length; //TODO
+        byte[] v = value.clone();
+        for(int i=0;i<v.length;i++){
+            v[i]&=a2.value[i];
+        }
+        return new ByteArray(v);
     }
 
     @Override

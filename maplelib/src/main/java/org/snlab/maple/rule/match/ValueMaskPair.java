@@ -10,24 +10,25 @@ package org.snlab.maple.rule.match;
 
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public class ValueMaskPair {
     private final ByteArray mask;
-    private final ByteArray value;
+    private final ByteArray valueMasked;
 
-    public ValueMaskPair(@Nonnull ByteArray value, ByteArray mask) {
+    public ValueMaskPair(@Nonnull ByteArray value,@Nullable ByteArray mask) {
         this.mask = mask;
-        this.value = value;
+        this.valueMasked = value.bitAnd(mask);
     }
 
     public ByteArray getMask() {
         return mask;
     }
 
-    public ByteArray getValue() {
-        return value;
+    public ByteArray getValueMasked() {
+        return valueMasked;
     }
 
     @Override
@@ -38,13 +39,13 @@ public class ValueMaskPair {
         ValueMaskPair that = (ValueMaskPair) o;
 
         if (mask != null ? !mask.equals(that.mask) : that.mask != null) return false;
-        return value.equals(that.value);
+        return valueMasked.equals(that.valueMasked);
     }
 
     @Override
     public int hashCode() {
         int result = mask != null ? mask.hashCode() : 0;
-        result = 31 * result + value.hashCode();
+        result = 31 * result + valueMasked.hashCode();
         return result;
     }
 }

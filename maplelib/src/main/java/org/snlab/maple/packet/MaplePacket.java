@@ -169,10 +169,6 @@ public class MaplePacket implements IMaplePacket {
             return ret;
         }
 
-        public boolean is(MapleTopology.Port port){
-            throw new UnsupportedOperationException();
-        }
-
         public boolean in(String... ingresses) {
             for (String s : ingresses) {
                 assert s.matches("^openflow:\\d+:\\w+$");//TODO
@@ -188,10 +184,6 @@ public class MaplePacket implements IMaplePacket {
             TraceItem ti = new Trace.TraceIn(MapleMatchField.INGRESS, null, values, ret);
             addTraceItem(ti);
             return ret;
-        }
-
-        public boolean in(MapleTopology.Port ...ports){
-            throw new UnsupportedOperationException();
         }
 
         public boolean belongto(String node) {
@@ -223,7 +215,7 @@ public class MaplePacket implements IMaplePacket {
                 byte b = context[i];
                 if (mask != null) {
                     a &= mask[i];
-                    b &= mask[i];
+                    //b &= mask[i];  NOTE b shouldn't be masked
                 }
                 if (a != b) {
                     return false;
@@ -233,9 +225,14 @@ public class MaplePacket implements IMaplePacket {
         }
 
         public boolean is(byte[] context) {
-            assert (field.getBitLength() + 7) / 8 == context.length; //TODO
-            byte[] value = fieldMap.get(field).clone();
-            boolean ret = test(value, context);
+            assert field.getByteLength() == context.length; //TODO
+            boolean ret;
+            byte[] value = fieldMap.get(field);
+            if(value!=null){
+                ret = test(value, context);
+            } else {
+                ret = false;
+            }
             TraceItem ti = new Trace.TraceIs(field, mask, context, ret);
             addTraceItem(ti);
             return ret;
@@ -254,6 +251,12 @@ public class MaplePacket implements IMaplePacket {
             TraceItem ti = new Trace.TraceIn(field, mask, list, ret);
             addTraceItem(ti);
             return ret;
+        }
+
+        public boolean range(byte[] value1,byte[] value2){
+            int len=field.getByteLength();
+            assert len==value1.length && len==value2.length;//TODO
+
         }
 
         public byte[] get() {
@@ -277,7 +280,7 @@ public class MaplePacket implements IMaplePacket {
             super(field);
         }
 
-        public PktFieldMaskable mask(byte[] context) {
+        public PktFieldMaskable mask(byte[] context) {  //TODO mask is all zero
             assert field.getByteLength() == context.length; //TODO
             if (mask == null) {
                 mask = context;
