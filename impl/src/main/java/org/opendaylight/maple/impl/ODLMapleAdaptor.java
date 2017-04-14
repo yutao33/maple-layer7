@@ -90,6 +90,11 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
     }
 
     @Override
+    public void outputtracetree() {
+
+    }
+
+    @Override
     public void updateRules(List<MapleRule> rules) {
 
     }
@@ -183,9 +188,4 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
 
     }
 
-
-    @Override
-    public void outputtracetree() {
-
-    }
 }

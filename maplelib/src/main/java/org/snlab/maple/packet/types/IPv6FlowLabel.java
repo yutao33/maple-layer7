@@ -23,7 +23,7 @@ public class IPv6FlowLabel implements OFValueType<IPv6FlowLabel> {
     }
 
     public static IPv6FlowLabel of(int label) {
-        if(label == NONE_VAL)
+        if (label == NONE_VAL)
             return NONE;
         return new IPv6FlowLabel(label);
     }
@@ -37,7 +37,7 @@ public class IPv6FlowLabel implements OFValueType<IPv6FlowLabel> {
     public boolean equals(Object obj) {
         if (!(obj instanceof IPv6FlowLabel))
             return false;
-        IPv6FlowLabel other = (IPv6FlowLabel)obj;
+        IPv6FlowLabel other = (IPv6FlowLabel) obj;
         if (other.label != this.label)
             return false;
         return true;
@@ -61,7 +61,7 @@ public class IPv6FlowLabel implements OFValueType<IPv6FlowLabel> {
     }
 
     public static IPv6FlowLabel read4Bytes(ByteBuf c) throws OFParseError {
-        return IPv6FlowLabel.of((int)(c.readUnsignedInt() & 0xFFFFFFFF));
+        return IPv6FlowLabel.of((int) (c.readUnsignedInt() & 0xFFFFFFFF));
     }
 
     @Override

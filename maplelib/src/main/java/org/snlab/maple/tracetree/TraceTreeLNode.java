@@ -39,10 +39,10 @@ public class TraceTreeLNode extends TraceTreeNode {
         return rule;
     }
 
-    public static TraceTreeLNode build(@Nonnull List<Forward> route,@Nonnull Map<MapleMatchField,MapleMatch> matchMapBefore){
-        Map<MapleMatchField,MapleMatch> match=new EnumMap<>(matchMapBefore);
+    public static TraceTreeLNode build(@Nonnull List<Forward> route, @Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
+        Map<MapleMatchField, MapleMatch> match = new EnumMap<>(matchMapBefore);
         TraceTreeLNode l = new TraceTreeLNode(route);
-        l.rule=new MapleRule(match,route);
+        l.rule = new MapleRule(match, route);
         return l;
     }
 }

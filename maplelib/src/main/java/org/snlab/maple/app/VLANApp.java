@@ -13,20 +13,19 @@ import org.snlab.maple.packet.MaplePacket;
 
 import java.util.Map;
 
-public class VLANApp{
+public class VLANApp {
 
-    Map<MapleTopology.Port,Short> Port2VlanidTable;
-    Map<MapleTopology.Port,byte[]> Port2MacaddrTable;
+    Map<MapleTopology.Port, Short> Port2VlanidTable;
+    Map<MapleTopology.Port, byte[]> Port2MacaddrTable;
 
 
-    String[] boundaryport(){
+    String[] boundaryport() {
         return null;
     }
 
 
-    boolean onPacket(MaplePacket pkt){
-        if(pkt.ingress().in(boundaryport())){
-
+    boolean onPacket(MaplePacket pkt) {
+        if (pkt.ingress().in(boundaryport())) {
 
 
         }

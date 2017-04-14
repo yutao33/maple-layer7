@@ -27,7 +27,9 @@ public class Forward {
     public static final List<? extends ForwardAction.Action> DEFAULT_PuntActions =
             Collections.singletonList(new ForwardAction.Punt(null));
     public static final List<Forward> DEFAULT_PuntForwards =
-            Collections.singletonList(new Forward(null,DEFAULT_PuntActions,0,0));
+            Collections.singletonList(new Forward(null, DEFAULT_PuntActions, 0, 0));
+    public static final Forward DROP =
+            new Forward(null, ForwardAction.drop());
 
 
     public Forward(Port ingress, List<? extends ForwardAction.Action> actions, int bandwidthlimit, int timeout) {
@@ -37,16 +39,16 @@ public class Forward {
         //this.timeout = timeout;
     }
 
-    public Forward(Port ingress, ForwardAction.Action action, int bandwidthlimit, int timeout){
-        this(ingress, Collections.singletonList(action),bandwidthlimit,timeout);
+    public Forward(Port ingress, ForwardAction.Action action, int bandwidthlimit, int timeout) {
+        this(ingress, Collections.singletonList(action), bandwidthlimit, timeout);
     }
 
-    public Forward(Port ingress, ForwardAction.Action action){
-        this(ingress, Collections.singletonList(action),0,0);
+    public Forward(Port ingress, ForwardAction.Action action) {
+        this(ingress, Collections.singletonList(action), 0, 0);
     }
 
-    public Forward(@Nullable String ingress,@Nonnull String output){
-        if(ingress!=null){
+    public Forward(@Nullable String ingress, @Nonnull String output) {
+        if (ingress != null) {
             this.ingress = new Port(ingress);
         } else {
             this.ingress = null;
@@ -86,6 +88,14 @@ public class Forward {
         result = 31 * result + actions.hashCode();
         result = 31 * result + bandwidthlimit;
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Forward{" +
+                "ingress=" + ingress +
+                ", actions=" + actions +
+                '}';
     }
 }
 

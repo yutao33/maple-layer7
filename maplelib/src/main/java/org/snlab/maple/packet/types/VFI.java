@@ -6,18 +6,21 @@ import org.snlab.maple.packet.exceptions.OFParseError;
 
 import com.google.common.hash.PrimitiveSink;
 
-/** Represents a two byte virtual forwarding instance.
-*
-* @author Sudeep Modi {@literal <}sudeep.modi@bigswitch.com{@literal >}
-*
-*/public class VFI implements OFValueType<VFI> {
+/**
+ * Represents a two byte virtual forwarding instance.
+ *
+ * @author Sudeep Modi {@literal <}sudeep.modi@bigswitch.com{@literal >}
+ */
+public class VFI implements OFValueType<VFI> {
     private static final short ZERO_VAL = 0x0000;
     final static int LENGTH = 2;
 
     public static final VFI ZERO = new VFI(ZERO_VAL);
 
-    /** for use with masking operations */
-    public static final VFI NO_MASK = new VFI((short)0xFFFF);
+    /**
+     * for use with masking operations
+     */
+    public static final VFI NO_MASK = new VFI((short) 0xFFFF);
     public static final VFI FULL_MASK = ZERO;
 
     private final short vfi;
@@ -34,7 +37,9 @@ import com.google.common.hash.PrimitiveSink;
         return new VFI((short) vfi);
     }
 
-    /** @return the actual VFI value */
+    /**
+     * @return the actual VFI value
+     */
     public short getVfi() {
         return vfi;
     }

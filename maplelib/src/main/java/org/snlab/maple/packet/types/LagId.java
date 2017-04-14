@@ -24,7 +24,7 @@ public class LagId implements OFValueType<LagId> {
     }
 
     public static LagId of(final int raw) {
-        if(raw == NONE_VAL)
+        if (raw == NONE_VAL)
             return NONE;
         else if (raw == NO_MASK_VAL)
             return NO_MASK;

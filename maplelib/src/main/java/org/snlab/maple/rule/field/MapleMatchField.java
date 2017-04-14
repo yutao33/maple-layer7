@@ -37,10 +37,4 @@ public enum MapleMatchField {
         return bytelength;
     }
 
-    @Override
-    public String toString() {
-        return "MapleMatchField{" +
-                "field='" + field + '\'' +
-                '}';
-    }
 }

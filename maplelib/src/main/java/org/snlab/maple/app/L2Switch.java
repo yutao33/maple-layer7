@@ -18,14 +18,14 @@ import java.util.Map;
 
 public class L2Switch extends MapleAppBase {
 
-    Map<Long,Port> hostTable =new HashMap<>();
+    Map<Long, Port> hostTable = new HashMap<>();
 
     @Override
     public boolean onPacket(IMaplePacket pkt, IMapleEnv env) {
 
-        long ethSrc=0;
+        long ethSrc = 0;
 
-        if(!hostTable.containsKey(ethSrc)){
+        if (!hostTable.containsKey(ethSrc)) {
 
         }
 

@@ -17,7 +17,6 @@ import org.snlab.maple.rule.route.Forward;
 import org.snlab.maple.tracetree.Trace;
 import org.snlab.maple.tracetree.Trace.TraceItem;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -53,6 +52,13 @@ public class MaplePacket implements IMaplePacket {
         this.traceList.add(item);
     }
 
+    @Override
+    public String toString() {
+        return "MaplePacket{" +
+                "ingress=" + ingress +
+                ", frame=" + frame +
+                '}';
+    }
 
     //-------------------------------get Raw packet functions-----------------------------
 
@@ -74,6 +80,11 @@ public class MaplePacket implements IMaplePacket {
     @Override
     public PktFieldMaskable ethDst() {
         return new PktFieldMaskable(MapleMatchField.ETH_DST);
+    }
+
+    @Override
+    public PktField ethType() {
+        return new PktField(MapleMatchField.ETH_TYPE);
     }
 
     public PktFieldMaskable vlanId() {
@@ -103,15 +114,15 @@ public class MaplePacket implements IMaplePacket {
 
     //-------------------------------Route functions-----------------------------
 
-    private void checkRoute(){
-        if(route==null){
-            route=new ArrayList<>();
+    private void checkRoute() {
+        if (route == null) {
+            route = new ArrayList<>();
         }
     }
 
     @Override
     public void setRoute(String... path) {
-        if(route!=null){
+        if (route != null) {
             route.clear();
         }
         addRoute(path);
@@ -121,7 +132,7 @@ public class MaplePacket implements IMaplePacket {
     public void addRoute(String... path) {
         checkRoute();
         int flen = path.length / 2;
-        for(int i=0;i<flen*2;i++){
+        for (int i = 0; i < flen; i++) {
             Forward forward = new Forward(path[i * 2], path[i * 2 + 1]);
             route.add(forward);
         }
@@ -129,16 +140,16 @@ public class MaplePacket implements IMaplePacket {
 
     @Override
     public void setRoute(Forward... path) {
-        if(route!=null){
+        if (route != null) {
             route.clear();
         }
         addRoute(path);
     }
 
     @Override
-    public void addRoute(Forward... path){
+    public void addRoute(Forward... path) {
         checkRoute();
-        Collections.addAll(route,path);
+        Collections.addAll(route, path);
     }
 
     public void setPktField(MapleMatchField field, byte[] value) {
@@ -228,7 +239,7 @@ public class MaplePacket implements IMaplePacket {
             assert field.getByteLength() == context.length; //TODO
             boolean ret;
             byte[] value = fieldMap.get(field);
-            if(value!=null){
+            if (value != null) {
                 ret = test(value, context);
             } else {
                 ret = false;
@@ -253,10 +264,10 @@ public class MaplePacket implements IMaplePacket {
             return ret;
         }
 
-        public boolean range(byte[] value1,byte[] value2){
-            int len=field.getByteLength();
-            assert len==value1.length && len==value2.length;//TODO
-            boolean ret=false;
+        public boolean range(byte[] value1, byte[] value2) {
+            int len = field.getByteLength();
+            assert len == value1.length && len == value2.length;//TODO
+            boolean ret = false;
 
             return ret;
         }

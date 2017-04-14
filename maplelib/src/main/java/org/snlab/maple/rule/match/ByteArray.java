@@ -30,31 +30,31 @@ public class ByteArray {
         return value.length;
     }
 
-    public ByteArray bitAnd(@Nullable ByteArray a2){
-        if(a2==null){
+    public ByteArray bitAnd(@Nullable ByteArray a2) {
+        if (a2 == null) {
             return this;
         }
-        assert value.length==a2.value.length; //TODO
+        assert value.length == a2.value.length; //TODO
         byte[] v = value.clone();
-        for(int i=0;i<v.length;i++){
-            v[i]&=a2.value[i];
+        for (int i = 0; i < v.length; i++) {
+            v[i] &= a2.value[i];
         }
         return new ByteArray(v);
     }
 
-    public ByteArray bitOr(@Nonnull ByteArray a2){
-        assert value.length==a2.value.length;
+    public ByteArray bitOr(@Nonnull ByteArray a2) {
+        assert value.length == a2.value.length;
         byte[] v = value.clone();
-        for(int i=0;i<v.length;i++){
-            v[i]|=a2.value[i];
+        for (int i = 0; i < v.length; i++) {
+            v[i] |= a2.value[i];
         }
         return new ByteArray(v);
     }
 
-    public ByteArray not(){
+    public ByteArray not() {
         byte[] v = value.clone();
-        for(int i=0;i<v.length;i++){
-            v[i]=(byte)~v[i];
+        for (int i = 0; i < v.length; i++) {
+            v[i] = (byte) ~v[i];
         }
         return new ByteArray(v);
     }

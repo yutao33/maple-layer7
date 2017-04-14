@@ -1,18 +1,18 @@
 /**
- *    Copyright (c) 2008 The Board of Trustees of The Leland Stanford Junior
- *    University
- *
- *    Licensed under the Apache License, Version 2.0 (the "License"); you may
- *    not use this file except in compliance with the License. You may obtain
- *    a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- *    License for the specific language governing permissions and limitations
- *    under the License.
+ * Copyright (c) 2008 The Board of Trustees of The Leland Stanford Junior
+ * University
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License. You may obtain
+ * a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
  **/
 
 package org.snlab.maple.packet.types;
@@ -47,7 +47,7 @@ public class U64 implements Writeable, OFValueType<U64>, HashValue<U64> {
     }
 
     public static U64 ofRaw(final long raw) {
-        if(raw == ZERO_VAL)
+        if (raw == ZERO_VAL)
             return ZERO;
         return new U64(raw);
     }
@@ -63,7 +63,7 @@ public class U64 implements Writeable, OFValueType<U64>, HashValue<U64> {
     public BigInteger getBigInteger() {
         BigInteger bigInt = BigInteger.valueOf(raw & UNSIGNED_MASK);
         if (raw < 0) {
-          bigInt = bigInt.setBit(Long.SIZE - 1);
+            bigInt = bigInt.setBit(Long.SIZE - 1);
         }
         return bigInt;
     }
@@ -76,7 +76,7 @@ public class U64 implements Writeable, OFValueType<U64>, HashValue<U64> {
     public static BigInteger f(final long value) {
         BigInteger bigInt = BigInteger.valueOf(value & UNSIGNED_MASK);
         if (value < 0) {
-          bigInt = bigInt.setBit(Long.SIZE - 1);
+            bigInt = bigInt.setBit(Long.SIZE - 1);
         }
         return bigInt;
     }
@@ -146,6 +146,7 @@ public class U64 implements Writeable, OFValueType<U64>, HashValue<U64> {
     public U64 and(U64 other) {
         return ofRaw(raw & other.raw);
     }
+
     @Override
     public U64 xor(U64 other) {
         return U64.of(raw ^ other.raw);

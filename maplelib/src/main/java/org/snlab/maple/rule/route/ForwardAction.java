@@ -23,11 +23,11 @@ public final class ForwardAction {
 
     //-------------------static Action function-----------------------
 
-    public static OutPut output(@Nonnull Port port){
+    public static OutPut output(@Nonnull Port port) {
         return new OutPut(port);
     }
 
-    public static Drop drop(){
+    public static Drop drop() {
         return new Drop();
     }
 
@@ -35,6 +35,10 @@ public final class ForwardAction {
 
     public static abstract class Action {
 
+        @Override
+        public String toString() {
+            return this.getClass().getSimpleName();
+        }
     }
 
     public static class OutPut extends Action {
@@ -58,6 +62,13 @@ public final class ForwardAction {
         public int hashCode() {
             return port.hashCode();
         }
+
+        @Override
+        public String toString() {
+            return "OutPut{" +
+                    "port=" + port.getId() +
+                    '}';
+        }
     }
 
     public interface PuntPktListener {
@@ -73,7 +84,7 @@ public final class ForwardAction {
 
     }
 
-    public static class Drop extends Action{
+    public static class Drop extends Action {
 
     }
 

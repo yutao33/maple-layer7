@@ -1,19 +1,19 @@
 /**
-*    Copyright 2011, Big Switch Networks, Inc.
-*    Originally created by David Erickson, Stanford University
-*
-*    Licensed under the Apache License, Version 2.0 (the "License"); you may
-*    not use this file except in compliance with the License. You may obtain
-*    a copy of the License at
-*
-*         http://www.apache.org/licenses/LICENSE-2.0
-*
-*    Unless required by applicable law or agreed to in writing, software
-*    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-*    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-*    License for the specific language governing permissions and limitations
-*    under the License.
-**/
+ * Copyright 2011, Big Switch Networks, Inc.
+ * Originally created by David Erickson, Stanford University
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License. You may obtain
+ * a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
 
 /**
  *
@@ -233,6 +233,7 @@ public class IPv4 extends BasePacket {
         this.checksum = checksum;
         return this;
     }
+
     @Override
     public void resetChecksum() {
         this.checksum = 0;
@@ -253,7 +254,7 @@ public class IPv4 extends BasePacket {
         this.sourceAddress = sourceAddress;
         return this;
     }
-    
+
     /**
      * @param sourceAddress the sourceAddress to set
      */
@@ -284,7 +285,7 @@ public class IPv4 extends BasePacket {
         this.destinationAddress = destinationAddress;
         return this;
     }
-    
+
     /**
      * @param destinationAddress the destinationAddress to set
      */
@@ -349,10 +350,10 @@ public class IPv4 extends BasePacket {
         bb.put(this.diffServ);
         bb.putShort(this.totalLength);
         bb.putShort(this.identification);
-        bb.putShort((short)(((this.flags & IPV4_FLAGS_MASK) << IPV4_FLAGS_SHIFT)
+        bb.putShort((short) (((this.flags & IPV4_FLAGS_MASK) << IPV4_FLAGS_SHIFT)
                 | (this.fragmentOffset & IPV4_OFFSET_MASK)));
         bb.put(this.ttl);
-        bb.put((byte)this.protocol.getIpProtocolNumber());
+        bb.put((byte) this.protocol.getIpProtocolNumber());
         bb.putShort(this.checksum);
         bb.putInt(this.sourceAddress.getInt());
         bb.putInt(this.destinationAddress.getInt());
@@ -388,7 +389,7 @@ public class IPv4 extends BasePacket {
         if (this.version != 4) {
             throw new PacketParsingException(
                     "Invalid version for IPv4 packet: " +
-                    this.version);
+                            this.version);
         }
         this.diffServ = bb.get();
         this.totalLength = bb.getShort();
@@ -411,7 +412,7 @@ public class IPv4 extends BasePacket {
         IPacket payload;
         isFragment = ((this.flags & IPV4_FLAGS_DONTFRAG) == 0) &&
                 ((this.flags & IPV4_FLAGS_MOREFRAG) != 0 ||
-                this.fragmentOffset != 0);
+                        this.fragmentOffset != 0);
         if (!isFragment && IPv4.protocolClassMap.containsKey(this.protocol)) {
             Class<? extends IPacket> clazz = IPv4.protocolClassMap.get(this.protocol);
             try {
@@ -428,9 +429,9 @@ public class IPv4 extends BasePacket {
             payload = new Data();
         }
         int payloadLength = this.totalLength - this.headerLength * 4;
-        int remLength = bb.limit()-bb.position();
+        int remLength = bb.limit() - bb.position();
         if (remLength < payloadLength)
-            payloadLength = bb.limit()-bb.position();
+            payloadLength = bb.limit() - bb.position();
         this.payload = payload.deserialize(data, bb.position(), payloadLength);
         this.payload.setParent(this);
 
@@ -445,11 +446,11 @@ public class IPv4 extends BasePacket {
 
     @Override
     public Map<MapleMatchField, byte[]> buildMatchFieldMap() {
-        Map<MapleMatchField,byte[]> map=new EnumMap<>(MapleMatchField.class);
-        map.put(MapleMatchField.IP_SRC,sourceAddress.getBytes());
-        map.put(MapleMatchField.IP_DST,destinationAddress.getBytes());
-        map.put(MapleMatchField.IP_PROTO,U8.of(protocol.getIpProtocolNumber()).getBytes());
-        map.putAll(((BasePacket)payload).buildMatchFieldMap());
+        Map<MapleMatchField, byte[]> map = new EnumMap<>(MapleMatchField.class);
+        map.put(MapleMatchField.IP_SRC, sourceAddress.getBytes());
+        map.put(MapleMatchField.IP_DST, destinationAddress.getBytes());
+        map.put(MapleMatchField.IP_PROTO, U8.of(protocol.getIpProtocolNumber()).getBytes());
+        map.putAll(((BasePacket) payload).buildMatchFieldMap());
         return map;
     }
 
@@ -462,11 +463,11 @@ public class IPv4 extends BasePacket {
     public static int toIPv4Address(String ipAddress) {
         if (ipAddress == null)
             throw new IllegalArgumentException("Specified IPv4 address must" +
-                "contain 4 sets of numerical digits separated by periods");
+                    "contain 4 sets of numerical digits separated by periods");
         String[] octets = ipAddress.split("\\.");
         if (octets.length != 4)
             throw new IllegalArgumentException("Specified IPv4 address must" +
-                "contain 4 sets of numerical digits separated by periods");
+                    "contain 4 sets of numerical digits separated by periods");
 
         int result = 0;
         for (int i = 0; i < 4; ++i) {
@@ -474,7 +475,7 @@ public class IPv4 extends BasePacket {
             if (oct > 255 || oct < 0)
                 throw new IllegalArgumentException("Octet values in specified" +
                         " IPv4 address must be 0 <= value <= 255");
-            result |=  oct << ((3-i)*8);
+            result |= oct << ((3 - i) * 8);
         }
         return result;
     }
@@ -488,8 +489,8 @@ public class IPv4 extends BasePacket {
     public static int toIPv4Address(byte[] ipAddress) {
         int ip = 0;
         for (int i = 0; i < 4; i++) {
-          int t = (ipAddress[i] & 0xff) << ((3-i)*8);
-          ip |= t;
+            int t = (ipAddress[i] & 0xff) << ((3 - i) * 8);
+            ip |= t;
         }
         return ip;
     }
@@ -505,7 +506,7 @@ public class IPv4 extends BasePacket {
         StringBuffer sb = new StringBuffer();
         int result = 0;
         for (int i = 0; i < 4; ++i) {
-            result = (ipAddress >> ((3-i)*8)) & 0xff;
+            result = (ipAddress >> ((3 - i) * 8)) & 0xff;
             sb.append(Integer.valueOf(result).toString());
             if (i != 3)
                 sb.append(".");
@@ -530,7 +531,7 @@ public class IPv4 extends BasePacket {
             sb.append(fromIPv4Address(ip));
             sb.append(",");
         }
-        sb.replace(sb.length()-1, sb.length(), "]");
+        sb.replace(sb.length() - 1, sb.length(), "]");
         return sb.toString();
     }
 
@@ -544,7 +545,7 @@ public class IPv4 extends BasePacket {
         String[] octets = ipAddress.split("\\.");
         if (octets.length != 4)
             throw new IllegalArgumentException("Specified IPv4 address must" +
-                "contain 4 sets of numerical digits separated by periods");
+                    "contain 4 sets of numerical digits separated by periods");
 
         byte[] result = new byte[4];
         for (int i = 0; i < 4; ++i) {
@@ -560,11 +561,11 @@ public class IPv4 extends BasePacket {
      * @return The IP address separated into bytes.
      */
     public static byte[] toIPv4AddressBytes(int ipAddress) {
-        return new byte[] {
-                (byte)(ipAddress >>> 24),
-                (byte)(ipAddress >>> 16),
-                (byte)(ipAddress >>> 8),
-                (byte)ipAddress};
+        return new byte[]{
+                (byte) (ipAddress >>> 24),
+                (byte) (ipAddress >>> 16),
+                (byte) (ipAddress >>> 8),
+                (byte) ipAddress};
     }
 
     /* (non-Javadoc)

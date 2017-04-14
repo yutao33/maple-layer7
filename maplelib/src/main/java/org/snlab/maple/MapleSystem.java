@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 
 public class MapleSystem {
 
-    private final static Logger LOG=Logger.getLogger(MapleSystem.class.toString());
+    private final static Logger LOG = Logger.getLogger(MapleSystem.class.toString());
 
     private final IMapleAdaptor mapleAdaptor;
     private TraceTree traceTree;
@@ -53,7 +53,7 @@ public class MapleSystem {
     }
 
     private void onPacket(MaplePacket pkt) {
-        if(pkt.getFrame().getEtherType().equals(EthType.LLDP)){
+        if (pkt.getFrame().getEtherType().equals(EthType.LLDP)) {
             LOG.info("get LLDP");
             return;
         }
@@ -69,6 +69,8 @@ public class MapleSystem {
         traceTree.update(pkt.getTraceList(), pkt);
 
         List<MapleRule> rules = traceTree.generateRules();
+
+        LOG.info("packet=" + pkt + "\nrules=\n" + rules);
 
         mapleAdaptor.updateRules(rules);
     }
@@ -131,8 +133,8 @@ public class MapleSystem {
          */
         @Override
         public void onTopologyChanged(List<MapleTopology.Element> putList,
-                                      List<MapleTopology.Element> deleteList){
-            MapleSystem.this.mapleEnv.updateTopology(putList,deleteList);
+                                      List<MapleTopology.Element> deleteList) {
+            MapleSystem.this.mapleEnv.updateTopology(putList, deleteList);
         }
     }
 }

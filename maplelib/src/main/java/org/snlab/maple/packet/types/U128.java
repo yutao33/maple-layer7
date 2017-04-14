@@ -90,7 +90,7 @@ public class U128 implements OFValueType<U128>, HashValue<U128> {
     @Override
     public int compareTo(@Nonnull U128 o) {
         int msb = UnsignedLongs.compare(this.raw1, o.raw1);
-        if(msb != 0)
+        if (msb != 0)
             return msb;
         else
             return UnsignedLongs.compare(this.raw2, o.raw2);
@@ -126,9 +126,9 @@ public class U128 implements OFValueType<U128>, HashValue<U128> {
     public U128 add(U128 other) {
         long newRaw2 = this.raw2 + other.raw2;
         long newRaw1 = this.raw1 + other.raw1;
-        if(UnsignedLongs.compare(newRaw2, this.raw2) < 0) {
+        if (UnsignedLongs.compare(newRaw2, this.raw2) < 0) {
             // raw2 overflow
-            newRaw1+=1;
+            newRaw1 += 1;
         }
         return U128.of(newRaw1, newRaw2);
     }
@@ -137,11 +137,12 @@ public class U128 implements OFValueType<U128>, HashValue<U128> {
     public U128 subtract(U128 other) {
         long newRaw2 = this.raw2 - other.raw2;
         long newRaw1 = this.raw1 - other.raw1;
-        if(UnsignedLongs.compare(this.raw2, other.raw2) < 0) {
+        if (UnsignedLongs.compare(this.raw2, other.raw2) < 0) {
             newRaw1 -= 1;
         }
         return U128.of(newRaw1, newRaw2);
     }
+
     @Override
     public int prefixBits(int numBits) {
         return HashValueUtils.prefixBits(this.raw1, numBits);
@@ -164,9 +165,9 @@ public class U128 implements OFValueType<U128>, HashValue<U128> {
         public Builder<U128> add(U128 other) {
             raw2 += other.raw2;
             raw1 += other.raw1;
-            if(UnsignedLongs.compare(raw2, other.raw2) < 0) {
+            if (UnsignedLongs.compare(raw2, other.raw2) < 0) {
                 // raw2 overflow
-                raw1+=1;
+                raw1 += 1;
             }
             return this;
         }
@@ -174,7 +175,7 @@ public class U128 implements OFValueType<U128>, HashValue<U128> {
         @Override
         public Builder<U128> subtract(
                 U128 other) {
-            if(UnsignedLongs.compare(this.raw2, other.raw2) >= 0) {
+            if (UnsignedLongs.compare(this.raw2, other.raw2) >= 0) {
                 raw2 -= other.raw2;
                 raw1 -= other.raw1;
             } else {

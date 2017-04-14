@@ -7,10 +7,11 @@ import com.google.common.primitives.UnsignedInts;
 
 import io.netty.buffer.ByteBuf;
 
-/** Represents the VXLAN Network Identifier (24 bits).
+/**
+ * Represents the VXLAN Network Identifier (24 bits).
  *
  * @author Sarath Kumar Sankaran Kutty
- * {@literal <}sarath.kutty@bigswitch.com{@literal >}
+ *         {@literal <}sarath.kutty@bigswitch.com{@literal >}
  */
 public class VxlanNI implements OFValueType<VxlanNI> {
 
@@ -39,7 +40,9 @@ public class VxlanNI implements OFValueType<VxlanNI> {
         return new VxlanNI(vni);
     }
 
-    /** @return the VxLAN Network ID */
+    /**
+     * @return the VxLAN Network ID
+     */
     public int getVni() {
         return vni;
     }

@@ -11,6 +11,7 @@ package org.snlab.maple.app;
 import org.snlab.maple.api.MapleAppBase;
 import org.snlab.maple.api.IMapleEnv;
 import org.snlab.maple.api.IMaplePacket;
+import org.snlab.maple.rule.route.Forward;
 
 
 /**
@@ -24,8 +25,13 @@ public class SetRouteTest extends MapleAppBase {
 
     @Override
     public boolean onPacket(IMaplePacket pkt, IMapleEnv env) {
-        pkt.setRoute(path1);
-        pkt.addRoute(path2);
+        if (pkt.ethType().is(new byte[]{0x8, 0}) ||
+                pkt.ethType().is(new byte[]{8, 6})) {
+            pkt.setRoute(path1);
+            pkt.addRoute(path2);
+        } else {
+            pkt.setRoute(Forward.DROP);
+        }
         return true;
     }
 }

@@ -4,7 +4,9 @@ package org.snlab.maple.packet.types;
  * Represents the speed of a port
  */
 public enum PortSpeed {
-    /** no speed set */
+    /**
+     * no speed set
+     */
     SPEED_NONE(0),
     SPEED_10MB(10),
     SPEED_100MB(100),
@@ -15,8 +17,9 @@ public enum PortSpeed {
     SPEED_1TB(1_000_000);
 
     private long speedInBps;
+
     private PortSpeed(int speedInMbps) {
-        this.speedInBps = speedInMbps * 1000L*1000L;
+        this.speedInBps = speedInMbps * 1000L * 1000L;
     }
 
     public long getSpeedBps() {

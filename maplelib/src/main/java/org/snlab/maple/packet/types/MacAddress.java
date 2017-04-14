@@ -35,9 +35,9 @@ public class MacAddress implements OFValueType<MacAddress> {
     private static final long LLDP_MAC_ADDRESS_MASK = 0xfffffffffff0L;
     private static final long LLDP_MAC_ADDRESS_VALUE = 0x0180c2000000L;
     private final static MacAddress IPV4_MULTICAST_BASE_ADDRESS =
-           MacAddress.of("01:00:5E:00:00:00");
+            MacAddress.of("01:00:5E:00:00:00");
     private final static MacAddress IPV6_MULTICAST_BASE_ADDRESS =
-           MacAddress.of("33:33:00:00:00:00");
+            MacAddress.of("33:33:00:00:00:00");
 
     private static final String FORMAT_ERROR = "Mac address is not well-formed. " +
             "It must consist of 6 hex digit pairs separated by colons or hyphens: ";
@@ -61,16 +61,17 @@ public class MacAddress implements OFValueType<MacAddress> {
 
     public static MacAddress of(long raw) {
         raw &= BROADCAST_VAL;
-        if(raw == NONE_VAL)
+        if (raw == NONE_VAL)
             return NONE;
         if (raw == BROADCAST_VAL)
             return BROADCAST;
         return new MacAddress(raw);
     }
 
-    /** Parse a mac adress from a string representation as
-     *  6 hex bytes separated by colons or hyphens (01:02:03:04:05:06,
-     *  01-02-03-04-05-06).
+    /**
+     * Parse a mac adress from a string representation as
+     * 6 hex bytes separated by colons or hyphens (01:02:03:04:05:06,
+     * 01-02-03-04-05-06).
      *
      * @param macString - a mac address in string representation
      * @return the parsed MacAddress
@@ -103,7 +104,7 @@ public class MacAddress implements OFValueType<MacAddress> {
             // Iterate over separators
             if (macString.charAt(index++) != separator) {
                 throw new IllegalArgumentException(FORMAT_ERROR + macString +
-                                                   " (inconsistent separators");
+                        " (inconsistent separators");
             }
 
             shift -= 8;
@@ -118,12 +119,12 @@ public class MacAddress implements OFValueType<MacAddress> {
             synchronized (this) {
                 if (bytesCache == null) {
                     bytesCache =
-                            new byte[] { (byte) ((rawValue >> 40) & 0xFF),
+                            new byte[]{(byte) ((rawValue >> 40) & 0xFF),
                                     (byte) ((rawValue >> 32) & 0xFF),
                                     (byte) ((rawValue >> 24) & 0xFF),
                                     (byte) ((rawValue >> 16) & 0xFF),
                                     (byte) ((rawValue >> 8) & 0xFF),
-                                    (byte) ((rawValue >> 0) & 0xFF) };
+                                    (byte) ((rawValue >> 0) & 0xFF)};
                 }
             }
         }
@@ -132,6 +133,7 @@ public class MacAddress implements OFValueType<MacAddress> {
 
     /**
      * Returns {@code true} if the MAC address is the broadcast address.
+     *
      * @return {@code true} if the MAC address is the broadcast address.
      */
     public boolean isBroadcast() {
@@ -140,6 +142,7 @@ public class MacAddress implements OFValueType<MacAddress> {
 
     /**
      * Returns {@code true} if the MAC address is a multicast address.
+     *
      * @return {@code true} if the MAC address is a multicast address.
      */
     public boolean isMulticast() {
@@ -151,6 +154,7 @@ public class MacAddress implements OFValueType<MacAddress> {
 
     /**
      * Returns {@code true} if the MAC address is an LLDP mac address.
+     *
      * @return {@code true} if the MAC address is an LLDP mac address.
      */
     public boolean isLLDPAddress() {
@@ -257,15 +261,15 @@ public class MacAddress implements OFValueType<MacAddress> {
 
     /**
      * Generate a MAC address corresponding to multicast IPv6  address.
-     *
+     * <p>
      * Take the last 4 bytes of IPv6 address and copy them to the base IPv6
      * multicast mac address - 33:33:00:00:00:00.
      *
      * @param ipv6 - IPv6 address corresponding to which multicast MAC addr
-     * need to be generated.
+     *             need to be generated.
      * @return - the generated multicast mac address.
      * @throws IllegalArgumentException if ipv6 address is not a valid IPv6
-     * multicast address.
+     *                                  multicast address.
      */
     @Nonnull
     public static MacAddress forIPv6MulticastAddr(IPv6Address ipv6)
@@ -275,7 +279,7 @@ public class MacAddress implements OFValueType<MacAddress> {
                     "Not a Multicast IPv6Address\"" + ipv6 + "\"");
         }
         long ipLong = ((ipv6.getUnsignedShortWord(6) << 16) |
-                                         ipv6.getUnsignedShortWord(7));
+                ipv6.getUnsignedShortWord(7));
         long ipMask = 0xFFFFFFFFl;
         ipLong = ipLong & ipMask;
 

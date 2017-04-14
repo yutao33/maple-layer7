@@ -6,11 +6,11 @@ import org.snlab.maple.packet.exceptions.OFParseError;
 import com.google.common.hash.PrimitiveSink;
 
 public enum IpEcn implements OFValueType<IpEcn> {
-    ECN_00((byte)0),
-    ECN_01((byte)1),
-    ECN_10((byte)2),
-    ECN_11((byte)3),
-    ECN_NO_MASK((byte)0xFF);
+    ECN_00((byte) 0),
+    ECN_01((byte) 1),
+    ECN_10((byte) 2),
+    ECN_11((byte) 3),
+    ECN_NO_MASK((byte) 0xFF);
 
     public static final IpEcn NONE = ECN_00;
     public static final IpEcn NO_MASK = ECN_NO_MASK;
@@ -54,12 +54,12 @@ public enum IpEcn implements OFValueType<IpEcn> {
     }
 
     public static IpEcn readByte(ByteBuf c) throws OFParseError {
-        return IpEcn.of((byte)(c.readUnsignedByte()));
+        return IpEcn.of((byte) (c.readUnsignedByte()));
     }
 
     @Override
     public IpEcn applyMask(IpEcn mask) {
-        return IpEcn.of((byte)(this.ecn & mask.ecn));
+        return IpEcn.of((byte) (this.ecn & mask.ecn));
     }
 
     public byte getEcnValue() {

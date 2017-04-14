@@ -6,9 +6,7 @@ import com.google.common.hash.PrimitiveSink;
 import com.google.common.primitives.Shorts;
 
 /**
- *
  * @author Yotam Harchol (yotam.harchol@bigswitch.com)
- *
  */
 public class ICMPv4Code implements OFValueType<ICMPv4Code> {
 
@@ -20,15 +18,15 @@ public class ICMPv4Code implements OFValueType<ICMPv4Code> {
     private static final short NONE_VAL = 0;
     public static final ICMPv4Code NONE = new ICMPv4Code(NONE_VAL);
 
-    public static final ICMPv4Code NO_MASK = new ICMPv4Code((short)0xFFFF);
-    public static final ICMPv4Code FULL_MASK = new ICMPv4Code((short)0x0000);
+    public static final ICMPv4Code NO_MASK = new ICMPv4Code((short) 0xFFFF);
+    public static final ICMPv4Code FULL_MASK = new ICMPv4Code((short) 0x0000);
 
     private ICMPv4Code(short code) {
         this.code = code;
     }
 
     public static ICMPv4Code of(short code) {
-        if(code == NONE_VAL)
+        if (code == NONE_VAL)
             return NONE;
 
         if (code > MAX_CODE || code < 0)
@@ -55,7 +53,7 @@ public class ICMPv4Code implements OFValueType<ICMPv4Code> {
 
     @Override
     public ICMPv4Code applyMask(ICMPv4Code mask) {
-        return ICMPv4Code.of((short)(this.code & mask.code));
+        return ICMPv4Code.of((short) (this.code & mask.code));
     }
 
 

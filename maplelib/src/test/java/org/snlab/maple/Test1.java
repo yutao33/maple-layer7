@@ -24,7 +24,8 @@ public class Test1 {
 
     @Test
     public void test1(){
-
+        MapleMatchField field=MapleMatchField.ETH_DST;
+        System.out.println(field);
     }
 
 }

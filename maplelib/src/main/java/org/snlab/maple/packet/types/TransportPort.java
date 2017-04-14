@@ -30,7 +30,7 @@ public class TransportPort implements OFValueType<TransportPort> {
     }
 
     public static TransportPort of(int port) {
-        if(port == NONE_VAL)
+        if (port == NONE_VAL)
             return NONE;
         else if (port == NO_MASK.port)
             return NO_MASK;
@@ -53,7 +53,7 @@ public class TransportPort implements OFValueType<TransportPort> {
     public boolean equals(Object obj) {
         if (!(obj instanceof TransportPort))
             return false;
-        TransportPort other = (TransportPort)obj;
+        TransportPort other = (TransportPort) obj;
         if (other.port != this.port)
             return false;
         return true;
@@ -87,7 +87,7 @@ public class TransportPort implements OFValueType<TransportPort> {
 
     @Override
     public int compareTo(TransportPort o) {
-        return Ints.compare(port,  o.port);
+        return Ints.compare(port, o.port);
     }
 
     @Override

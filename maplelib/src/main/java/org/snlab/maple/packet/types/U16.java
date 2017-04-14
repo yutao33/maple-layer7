@@ -1,18 +1,18 @@
 /**
- *    Copyright (c) 2008 The Board of Trustees of The Leland Stanford Junior
- *    University
- *
- *    Licensed under the Apache License, Version 2.0 (the "License"); you may
- *    not use this file except in compliance with the License. You may obtain
- *    a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- *    License for the specific language governing permissions and limitations
- *    under the License.
+ * Copyright (c) 2008 The Board of Trustees of The Leland Stanford Junior
+ * University
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License. You may obtain
+ * a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
  **/
 
 package org.snlab.maple.packet.types;
@@ -29,7 +29,7 @@ public class U16 implements Writeable, OFValueType<U16> {
     private final static short ZERO_VAL = 0;
     public final static U16 ZERO = new U16(ZERO_VAL);
 
-    private static final short NO_MASK_VAL = (short)0xFFff;
+    private static final short NO_MASK_VAL = (short) 0xFFff;
     public final static U16 NO_MASK = new U16(NO_MASK_VAL);
     public static final U16 FULL_MASK = ZERO;
 
@@ -52,7 +52,7 @@ public class U16 implements Writeable, OFValueType<U16> {
     }
 
     public static final U16 ofRaw(short raw) {
-        if(raw == ZERO_VAL)
+        if (raw == ZERO_VAL)
             return ZERO;
         return new U16(raw);
     }
@@ -61,10 +61,10 @@ public class U16 implements Writeable, OFValueType<U16> {
         return f(raw);
     }
 
-    public byte[] getBytes(){
+    public byte[] getBytes() {
         return new byte[]{
-                (byte)((raw>>8)&0xFF),
-                (byte)(raw&0xFF)
+                (byte) ((raw >> 8) & 0xFF),
+                (byte) (raw & 0xFF)
         };
     }
 
@@ -122,7 +122,7 @@ public class U16 implements Writeable, OFValueType<U16> {
 
     @Override
     public U16 applyMask(U16 mask) {
-        return ofRaw( (short) (raw & mask.raw));
+        return ofRaw((short) (raw & mask.raw));
     }
 
     @Override

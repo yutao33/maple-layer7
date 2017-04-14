@@ -19,7 +19,7 @@ import java.util.Set;
 
 public final class Trace {
 
-    private Trace(){
+    private Trace() {
         throw new UnsupportedOperationException();
     }
 
@@ -106,10 +106,10 @@ public final class Trace {
             if (mask != null) {
                 super.mask = new ByteArray(mask);
             }
-            if(value1!=null) {
+            if (value1 != null) {
                 this.value1 = new ByteArray(value1);
             }
-            if(value2!=null) {
+            if (value2 != null) {
                 this.value2 = new ByteArray(value2);
             }
             this.result = ret;

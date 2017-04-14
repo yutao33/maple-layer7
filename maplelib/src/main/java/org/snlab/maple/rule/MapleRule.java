@@ -73,4 +73,12 @@ public class MapleRule {
         }
     }
 
+    @Override
+    public String toString() {
+        return "MapleRule{" +
+                "priority=" + priority +
+                ", matches=" + matches +
+                ", route=" + route +
+                '}';
+    }
 }

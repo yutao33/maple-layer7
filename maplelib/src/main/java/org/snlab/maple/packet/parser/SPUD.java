@@ -10,7 +10,7 @@ import java.util.Arrays;
  */
 public class SPUD extends BasePacket {
     public static final byte[] MAGIC_CONSTANT =
-        { (byte) 0xd8, 0x00, 0x00, (byte) 0xd8 };
+            {(byte) 0xd8, 0x00, 0x00, (byte) 0xd8};
     public static final int HEADER_LENGTH = 13;
     public static final byte COMMAND_DATA = 0x0;
     public static final byte COMMAND_OPEN = 0x1;
@@ -108,7 +108,7 @@ public class SPUD extends BasePacket {
         reserved = (byte) (lastByte & 0xF);
         // TODO: make sure reserved bits are 0 for this version.
         this.payload = new Data();
-        this.payload = payload.deserialize(data, bb.position(), bb.limit()-bb.position());
+        this.payload = payload.deserialize(data, bb.position(), bb.limit() - bb.position());
         this.payload.setParent(this);
         return this;
     }

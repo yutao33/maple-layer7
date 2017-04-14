@@ -1,18 +1,18 @@
 /**
-*    Copyright 2012, Big Switch Networks, Inc.
-*
-*    Licensed under the Apache License, Version 2.0 (the "License"); you may
-*    not use this file except in compliance with the License. You may obtain
-*    a copy of the License at
-*
-*         http://www.apache.org/licenses/LICENSE-2.0
-*
-*    Unless required by applicable law or agreed to in writing, software
-*    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-*    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-*    License for the specific language governing permissions and limitations
-*    under the License.
-**/
+ * Copyright 2012, Big Switch Networks, Inc.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License. You may obtain
+ * a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
 
 /**
  *
@@ -35,7 +35,7 @@ public class BSN extends BasePacket {
     public static final int BSN_MAGIC = 0x20000604;
     public static final short BSN_VERSION_CURRENT = 0x0;
     public static final short BSN_TYPE_PROBE = 0x1;
-    public static final short BSN_TYPE_BDDP  = 0x2;
+    public static final short BSN_TYPE_BDDP = 0x2;
     public static Map<Short, Class<? extends IPacket>> typeClassMap;
 
     static {
@@ -94,7 +94,7 @@ public class BSN extends BasePacket {
             bb.put(payloadData);
 
         if (this.parent != null && this.parent instanceof Ethernet)
-            ((Ethernet)this.parent).setEtherType(EthType.of(Ethernet.TYPE_BSN & 0xffff)); /* treat as unsigned */
+            ((Ethernet) this.parent).setEtherType(EthType.of(Ethernet.TYPE_BSN & 0xffff)); /* treat as unsigned */
 
         return data;
     }
@@ -114,7 +114,7 @@ public class BSN extends BasePacket {
         if (this.version != BSN_VERSION_CURRENT) {
             throw new PacketParsingException(
                     "Invalid BSN packet version " + this.version + ", should be "
-                    + BSN_VERSION_CURRENT);
+                            + BSN_VERSION_CURRENT);
         }
 
         IPacket payload;

@@ -15,8 +15,8 @@ public class VlanPcp implements OFValueType<VlanPcp> {
     private final byte pcp;
 
     public static final VlanPcp NONE = new VlanPcp(NONE_VAL);
-    public static final VlanPcp NO_MASK = new VlanPcp((byte)0xFF);
-    public static final VlanPcp FULL_MASK = VlanPcp.of((byte)0x0);
+    public static final VlanPcp NO_MASK = new VlanPcp((byte) 0xFF);
+    public static final VlanPcp FULL_MASK = VlanPcp.of((byte) 0x0);
 
     private VlanPcp(byte pcp) {
         this.pcp = pcp;
@@ -32,7 +32,7 @@ public class VlanPcp implements OFValueType<VlanPcp> {
     public boolean equals(Object obj) {
         if (!(obj instanceof VlanPcp))
             return false;
-        VlanPcp other = (VlanPcp)obj;
+        VlanPcp other = (VlanPcp) obj;
         if (other.pcp != this.pcp)
             return false;
         return true;
@@ -63,18 +63,19 @@ public class VlanPcp implements OFValueType<VlanPcp> {
     }
 
     public static VlanPcp readByte(ByteBuf c) throws OFParseError {
-        return VlanPcp.of((byte)(c.readUnsignedByte() & 0xFF));
+        return VlanPcp.of((byte) (c.readUnsignedByte() & 0xFF));
     }
 
     @Override
     public VlanPcp applyMask(VlanPcp mask) {
-        return VlanPcp.of((byte)(this.pcp & mask.pcp));
+        return VlanPcp.of((byte) (this.pcp & mask.pcp));
     }
 
     @Override
     public int compareTo(VlanPcp o) {
         return UnsignedBytes.compare(pcp, o.pcp);
     }
+
     @Override
     public void putTo(PrimitiveSink sink) {
         sink.putByte(pcp);

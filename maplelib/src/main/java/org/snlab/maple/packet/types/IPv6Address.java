@@ -72,8 +72,7 @@ public class IPv6Address extends IPAddress<IPv6Address> implements Writeable {
         else if (Long.bitCount((~mask) + 1) == 1) {
             // represent a true CIDR prefix length
             return Long.bitCount(mask);
-        }
-        else {
+        } else {
             // Not a true prefix
             return NOT_A_CIDR_MASK;
         }
@@ -145,7 +144,7 @@ public class IPv6Address extends IPAddress<IPv6Address> implements Writeable {
     /**
      * Returns the Modified EUI-64 format interface identifier that
      * corresponds to the specified MAC address.
-     *
+     * <p>
      * <p>Refer to the followings for the conversion details:
      * <ul>
      * <li>RFC 7042 - Section 2.2.1
@@ -155,7 +154,7 @@ public class IPv6Address extends IPAddress<IPv6Address> implements Writeable {
      */
     private static long toModifiedEui64(@Nonnull MacAddress macAddress) {
         checkNotNull(macAddress, "macAddress must not be null");
-        return   ((0xFFFF_FF00_0000_0000L & (macAddress.getLong() << 16))
+        return ((0xFFFF_FF00_0000_0000L & (macAddress.getLong() << 16))
                 ^ (0x0200_0000_0000_0000L))
                 | (0x0000_00FF_FE00_0000L)
                 | (0x0000_0000_00FF_FFFFL & macAddress.getLong());
@@ -165,7 +164,7 @@ public class IPv6Address extends IPAddress<IPv6Address> implements Writeable {
      * Returns {@code true} if the second (lower-order) 64-bit block of
      * this address is equal to the Modified EUI-64 format interface
      * identifier that corresponds to the specified MAC address.
-     *
+     * <p>
      * <p>Refer to the followings for the details of conversions between
      * MAC addresses and Modified EUI-64 format interface identifiers:
      * <ul>
@@ -173,9 +172,10 @@ public class IPv6Address extends IPAddress<IPv6Address> implements Writeable {
      * <li>RFC 5342 - Section 2.2.1 (Obsoleted by RFC 7042)
      * <li>RFC 4291 - Appendix A
      * </ul>
-     *
+     * <p>
      * <p>This method assumes the second (lower-order) 64-bit block to be
      * a 64-bit interface identifier, which may not always be true.
+     *
      * @param macAddress the MAC address to check
      * @return boolean true or false
      */
@@ -213,12 +213,12 @@ public class IPv6Address extends IPAddress<IPv6Address> implements Writeable {
      * <p>
      * Similar to {@link InetAddress#getByAddress(byte[])}.
      *
-     * @param address  the raw IP address in network byte order
-     * @return         an {@code IPv6Address} object that represents the given
-     *                 raw IP address
-     * @throws NullPointerException      if the given address was {@code null}
-     * @throws IllegalArgumentException  if the given address was of an invalid
-     *                                   byte array length
+     * @param address the raw IP address in network byte order
+     * @return an {@code IPv6Address} object that represents the given
+     * raw IP address
+     * @throws NullPointerException     if the given address was {@code null}
+     * @throws IllegalArgumentException if the given address was of an invalid
+     *                                  byte array length
      * @see InetAddress#getByAddress(byte[])
      */
     @Nonnull
@@ -281,13 +281,13 @@ public class IPv6Address extends IPAddress<IPv6Address> implements Writeable {
      * Does <b>not</b> currently support embedding a dotted-quad IPv4 address
      * into the IPv6 address (e.g., 2001:db8::192.168.0.1).
      *
-     * @param string  the IP address in the conventional string representation
-     *                of IPv6 addresses
-     * @return        an {@code IPv6Address} object that represents the given
-     *                IP address
-     * @throws NullPointerException      if the given string was {@code null}
-     * @throws IllegalArgumentException  if the given string was not a valid
-     *                                   IPv6 address
+     * @param string the IP address in the conventional string representation
+     *               of IPv6 addresses
+     * @return an {@code IPv6Address} object that represents the given
+     * IP address
+     * @throws NullPointerException     if the given string was {@code null}
+     * @throws IllegalArgumentException if the given string was not a valid
+     *                                  IPv6 address
      */
     @Nonnull
     public static IPv6Address of(@Nonnull final String string) throws IllegalArgumentException {
@@ -360,14 +360,14 @@ public class IPv6Address extends IPAddress<IPv6Address> implements Writeable {
      * the first (higher-order) and second (lower-order) 64-bit blocks
      * of the IP address.
      *
-     * @param raw1  the first (higher-order) 64-bit block of the IP address
-     * @param raw2  the second (lower-order) 64-bit block of the IP address
-     * @return      an {@code IPv6Address} object that represents the given
-     *              raw IP address
+     * @param raw1 the first (higher-order) 64-bit block of the IP address
+     * @param raw2 the second (lower-order) 64-bit block of the IP address
+     * @return an {@code IPv6Address} object that represents the given
+     * raw IP address
      */
     @Nonnull
     public static IPv6Address of(final long raw1, final long raw2) {
-        if(raw1==NONE_VAL1 && raw2 == NONE_VAL2)
+        if (raw1 == NONE_VAL1 && raw2 == NONE_VAL2)
             return NONE;
         return new IPv6Address(raw1, raw2);
     }
@@ -376,11 +376,11 @@ public class IPv6Address extends IPAddress<IPv6Address> implements Writeable {
      * Returns an {@code IPv6Address} object that represents the given
      * IP address. The argument is given as an {@code Inet6Address} object.
      *
-     * @param address  the IP address as an {@code Inet6Address} object
-     * @return         an {@code IPv6Address} object that represents the
-     *                 given IP address
-     * @throws NullPointerException  if the given {@code Inet6Address} was
-     *                               {@code null}
+     * @param address the IP address as an {@code Inet6Address} object
+     * @return an {@code IPv6Address} object that represents the
+     * given IP address
+     * @throws NullPointerException if the given {@code Inet6Address} was
+     *                              {@code null}
      */
     @Nonnull
     public static IPv6Address of(@Nonnull final Inet6Address address) {
@@ -391,7 +391,7 @@ public class IPv6Address extends IPAddress<IPv6Address> implements Writeable {
     /**
      * Returns an {@code IPv6Address} object that represents the given
      * MAC address in the specified network.
-     *
+     * <p>
      * <p>The first (higher-order) 64-bit block of the returned address
      * will be the network prefix derived from the specified network.
      * The specified network must satisfy the followings:
@@ -399,11 +399,11 @@ public class IPv6Address extends IPAddress<IPv6Address> implements Writeable {
      * <li>{@link #isCidrMask()} {@code == true}
      * <li>{@literal 0 <= } {@link #asCidrMaskLength()} {@literal <= 64}
      * </ul>
-     *
+     * <p>
      * <p>The second (lower-order) 64-bit block of the returned address
      * will be equal to the Modified EUI-64 format interface identifier
      * that corresponds to the specified MAC address.
-     *
+     * <p>
      * <p>Refer to the followings for the details of conversions between
      * MAC addresses and Modified EUI-64 format interface identifiers:
      * <ul>
@@ -412,12 +412,12 @@ public class IPv6Address extends IPAddress<IPv6Address> implements Writeable {
      * <li>RFC 4291 - Appendix A
      * </ul>
      *
-     * @throws IllegalArgumentException if the specified network does not
-     *         meet the aforementioned requirements
-     * @param network the IPv6 network
+     * @param network    the IPv6 network
      * @param macAddress the MAC address
      * @return an {@code IPv6Address} object that represents the given
      * MAC address in the specified network
+     * @throws IllegalArgumentException if the specified network does not
+     *                                  meet the aforementioned requirements
      */
     @Nonnull
     public static IPv6Address of(
@@ -426,9 +426,9 @@ public class IPv6Address extends IPAddress<IPv6Address> implements Writeable {
 
         checkNotNull(network, "network must not be null");
         checkArgument(network.getMask().isCidrMask()
-                && network.getMask().asCidrMaskLength() <= 64,
+                        && network.getMask().asCidrMaskLength() <= 64,
                 "network must consist of a mask of 64 or less leading 1 bits"
-                + " and no other 1 bits: %s", network);
+                        + " and no other 1 bits: %s", network);
 
         long raw1 = network.getValue().raw1;
         long raw2 = toModifiedEui64(macAddress);
@@ -440,12 +440,12 @@ public class IPv6Address extends IPAddress<IPv6Address> implements Writeable {
      * Returns an {@code IPv6Address} object that represents the
      * CIDR subnet mask of the given prefix length.
      *
-     * @param cidrMaskLength  the prefix length of the CIDR subnet mask
-     *                        (i.e. the number of leading one-bits),
-     *                        where {@code 0 <= cidrMaskLength <= 128}
-     * @return                an {@code IPv6Address} object that represents the
-     *                        CIDR subnet mask of the given prefix length
-     * @throws IllegalArgumentException  if the given prefix length was invalid
+     * @param cidrMaskLength the prefix length of the CIDR subnet mask
+     *                       (i.e. the number of leading one-bits),
+     *                       where {@code 0 <= cidrMaskLength <= 128}
+     * @return an {@code IPv6Address} object that represents the
+     * CIDR subnet mask of the given prefix length
+     * @throws IllegalArgumentException if the given prefix length was invalid
      */
     @Nonnull
     public static IPv6Address ofCidrMaskLength(final int cidrMaskLength) {
@@ -470,10 +470,10 @@ public class IPv6Address extends IPAddress<IPv6Address> implements Writeable {
      * Returns an {@code IPv6AddressWithMask} object that represents this
      * IP address masked by the given IP address mask.
      *
-     * @param mask  the {@code IPv6Address} object that represents the mask
-     * @return      an {@code IPv6AddressWithMask} object that represents this
-     *              IP address masked by the given mask
-     * @throws NullPointerException  if the given mask was {@code null}
+     * @param mask the {@code IPv6Address} object that represents the mask
+     * @return an {@code IPv6AddressWithMask} object that represents this
+     * IP address masked by the given mask
+     * @throws NullPointerException if the given mask was {@code null}
      */
     @Nonnull
     @Override
@@ -485,13 +485,13 @@ public class IPv6Address extends IPAddress<IPv6Address> implements Writeable {
      * Returns an {@code IPv6AddressWithMask} object that represents this
      * IP address masked by the CIDR subnet mask of the given prefix length.
      *
-     * @param cidrMaskLength  the prefix length of the CIDR subnet mask
-     *                        (i.e. the number of leading one-bits),
-     *                        where {@code 0 <= cidrMaskLength <= 128}
-     * @return                an {@code IPv6AddressWithMask} object that
-     *                        represents this IP address masked by the CIDR
-     *                        subnet mask of the given prefix length
-     * @throws IllegalArgumentException  if the given prefix length was invalid
+     * @param cidrMaskLength the prefix length of the CIDR subnet mask
+     *                       (i.e. the number of leading one-bits),
+     *                       where {@code 0 <= cidrMaskLength <= 128}
+     * @return an {@code IPv6AddressWithMask} object that
+     * represents this IP address masked by the CIDR
+     * subnet mask of the given prefix length
+     * @throws IllegalArgumentException if the given prefix length was invalid
      * @see #ofCidrMaskLength(int)
      */
     @Nonnull
@@ -508,7 +508,7 @@ public class IPv6Address extends IPAddress<IPv6Address> implements Writeable {
             synchronized (this) {
                 if (bytesCache == null) {
                     bytesCache =
-                            new byte[] { (byte) ((raw1 >> 56) & 0xFF),
+                            new byte[]{(byte) ((raw1 >> 56) & 0xFF),
                                     (byte) ((raw1 >> 48) & 0xFF),
                                     (byte) ((raw1 >> 40) & 0xFF),
                                     (byte) ((raw1 >> 32) & 0xFF),
@@ -524,7 +524,7 @@ public class IPv6Address extends IPAddress<IPv6Address> implements Writeable {
                                     (byte) ((raw2 >> 24) & 0xFF),
                                     (byte) ((raw2 >> 16) & 0xFF),
                                     (byte) ((raw2 >> 8) & 0xFF),
-                                    (byte) ((raw2 >> 0) & 0xFF) };
+                                    (byte) ((raw2 >> 0) & 0xFF)};
                 }
             }
         }
@@ -561,8 +561,8 @@ public class IPv6Address extends IPAddress<IPv6Address> implements Writeable {
             throw new IllegalArgumentException("16 bit word index must be in [0,7]");
     }
 
-    /** 
-     * get the index of the first word where to apply IPv6 zero compression 
+    /**
+     * get the index of the first word where to apply IPv6 zero compression
      *
      * @return the index
      */
@@ -680,7 +680,7 @@ public class IPv6Address extends IPAddress<IPv6Address> implements Writeable {
     @Override
     public int compareTo(IPv6Address o) {
         int res = UnsignedLongs.compare(raw1, o.raw1);
-        if(res != 0)
+        if (res != 0)
             return res;
         else
             return UnsignedLongs.compare(raw2, o.raw2);

@@ -1,19 +1,19 @@
 /**
-*    Copyright 2011, Big Switch Networks, Inc. 
-*    Originally created by David Erickson, Stanford University
-* 
-*    Licensed under the Apache License, Version 2.0 (the "License"); you may
-*    not use this file except in compliance with the License. You may obtain
-*    a copy of the License at
-*
-*         http://www.apache.org/licenses/LICENSE-2.0
-*
-*    Unless required by applicable law or agreed to in writing, software
-*    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-*    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-*    License for the specific language governing permissions and limitations
-*    under the License.
-**/
+ * Copyright 2011, Big Switch Networks, Inc.
+ * Originally created by David Erickson, Stanford University
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License. You may obtain
+ * a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ **/
 
 package org.snlab.maple.packet.parser;
 
@@ -57,7 +57,7 @@ public class DHCP extends BasePacket {
      * ------------------------------------------
      * |            options (312)               |
      * ------------------------------------------
-     * 
+     *
      */
     // Header + magic without options
     public static int MIN_HEADER_LENGTH = 240;
@@ -65,31 +65,31 @@ public class DHCP extends BasePacket {
     public static byte OPCODE_REPLY = 0x2;
 
     public static byte HWTYPE_ETHERNET = 0x1;
-    
+
     public enum DHCPOptionCode {
-        OptionCode_SubnetMask           ((byte)1),
-        OptionCode_Hostname             ((byte)12),
-        OptionCode_RequestedIP          ((byte)50),
-        OptionCode_LeaseTime            ((byte)51),
-        OptionCode_MessageType          ((byte)53),
-        OptionCode_DHCPServerIp         ((byte)54),
-        OptionCode_RequestedParameters  ((byte)55),
-        OptionCode_RenewalTime          ((byte)58),
-        OPtionCode_RebindingTime        ((byte)59),
-        OptionCode_ClientID             ((byte)61),
-        OptionCode_END                  ((byte)255);
-    
+        OptionCode_SubnetMask((byte) 1),
+        OptionCode_Hostname((byte) 12),
+        OptionCode_RequestedIP((byte) 50),
+        OptionCode_LeaseTime((byte) 51),
+        OptionCode_MessageType((byte) 53),
+        OptionCode_DHCPServerIp((byte) 54),
+        OptionCode_RequestedParameters((byte) 55),
+        OptionCode_RenewalTime((byte) 58),
+        OPtionCode_RebindingTime((byte) 59),
+        OptionCode_ClientID((byte) 61),
+        OptionCode_END((byte) 255);
+
         protected byte value;
-        
+
         private DHCPOptionCode(byte value) {
             this.value = value;
         }
-        
+
         public byte getValue() {
             return value;
         }
     }
-    
+
     protected byte opCode;
     protected byte hardwareType;
     protected byte hardwareAddressLength;
@@ -285,7 +285,7 @@ public class DHCP extends BasePacket {
         this.clientHardwareAddress = clientHardwareAddress;
         return this;
     }
-    
+
     /**
      * Gets a specific DHCP option parameter
      * @param optionCode The option code to get
@@ -328,7 +328,7 @@ public class DHCP extends BasePacket {
         }
         return null;
     }
-    
+
     /**
      * @return the serverName
      */
@@ -367,7 +367,7 @@ public class DHCP extends BasePacket {
         // minimum size 240 including magic cookie, options generally padded to 300
         int optionsLength = 0;
         for (DHCPOption option : this.options) {
-            if (option.getCode() == 0 || option.getCode() == ((byte)255)) {
+            if (option.getCode() == 0 || option.getCode() == ((byte) 255)) {
                 optionsLength += 1;
             } else {
                 optionsLength += 2 + (0xff & option.getLength());
@@ -377,7 +377,7 @@ public class DHCP extends BasePacket {
         if (optionsLength < 60)
             optionsPadLength = 60 - optionsLength;
 
-        byte[] data = new byte[240+optionsLength+optionsPadLength];
+        byte[] data = new byte[240 + optionsLength + optionsPadLength];
         ByteBuffer bb = ByteBuffer.wrap(data);
         bb.put(this.opCode);
         bb.put(this.hardwareType);
@@ -423,7 +423,7 @@ public class DHCP extends BasePacket {
         } else {
             byte[] bytes = null;
             try {
-                 bytes = string.getBytes("ascii");
+                bytes = string.getBytes("ascii");
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException("Failure encoding server name", e);
             }
@@ -444,7 +444,7 @@ public class DHCP extends BasePacket {
         if (bb.remaining() < MIN_HEADER_LENGTH) {
             return this;
         }
-        
+
         this.opCode = bb.get();
         this.hardwareType = bb.get();
         this.hardwareAddressLength = bb.get();
@@ -489,13 +489,13 @@ public class DHCP extends BasePacket {
                     } else {
                         // Skip the invalid option and set the END option
                         code = 0xff;
-                        option.setCode((byte)code);
+                        option.setCode((byte) code);
                         option.setLength((byte) 0);
                     }
                 } else {
                     // Skip the invalid option and set the END option
                     code = 0xff;
-                    option.setCode((byte)code);
+                    option.setCode((byte) code);
                     option.setLength((byte) 0);
                 }
             }

@@ -8,28 +8,28 @@ public class IPv6AddressWithMask extends IPAddressWithMask<IPv6Address> {
     /**
      * Represents the link-local network configuration used in practice,
      * i.e. {@code fe80::/64}.
-     *
+     * <p>
      * <p>See Section 2.5.6 of RFC 4291.
      *
      * @see #LINK_LOCAL_RESERVED
      */
     public final static IPv6AddressWithMask LINK_LOCAL_NETWORK
             = IPv6Address
-                    .of(0xFE80_0000_0000_0000L, 0x0000_0000_0000_0000L)
-                    .withMaskOfLength(64);
+            .of(0xFE80_0000_0000_0000L, 0x0000_0000_0000_0000L)
+            .withMaskOfLength(64);
 
     /**
      * Contains all addresses reserved for link-local usages,
      * i.e. {@code fe80::/10}.
-     *
+     * <p>
      * <p>See Section 2.4 of RFC 4291.
      *
      * @see #LINK_LOCAL_NETWORK
      */
     public final static IPv6AddressWithMask LINK_LOCAL_RESERVED
             = IPv6Address
-                    .of(0xFE80_0000_0000_0000L, 0x0000_0000_0000_0000L)
-                    .withMaskOfLength(10);
+            .of(0xFE80_0000_0000_0000L, 0x0000_0000_0000_0000L)
+            .withMaskOfLength(10);
 
     private IPv6AddressWithMask(IPv6Address value, IPv6Address mask) {
         super(value, mask);
@@ -89,7 +89,7 @@ public class IPv6AddressWithMask extends IPAddressWithMask<IPv6Address> {
     public boolean contains(IPAddress<?> ip) {
         Preconditions.checkNotNull(ip, "ip must not be null");
 
-        if(ip.getIpVersion() == IPVersion.IPv6) {
+        if (ip.getIpVersion() == IPVersion.IPv6) {
             IPv6Address ipv6 = (IPv6Address) ip;
             return this.matches(ipv6);
         }

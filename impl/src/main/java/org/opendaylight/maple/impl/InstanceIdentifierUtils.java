@@ -16,8 +16,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeCon
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-/* InstanceIdentifierUtils provides utility functions related to InstanceIdentifiers.
- */
+
 public final class InstanceIdentifierUtils {
 
     private InstanceIdentifierUtils() {

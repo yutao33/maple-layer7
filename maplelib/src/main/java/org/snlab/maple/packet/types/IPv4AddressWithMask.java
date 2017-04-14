@@ -25,15 +25,15 @@ public class IPv4AddressWithMask extends IPAddressWithMask<IPv4Address> {
      * Returns an {@code IPv4AddressWithMask} object that represents the given
      * raw IP address masked by the given raw IP address mask.
      *
-     * @param rawValue  the raw IP address to be masked
-     * @param rawMask   the raw IP address mask
-     * @return          an {@code IPv4AddressWithMask} object that represents
-     *                  the given raw IP address masked by the given raw IP
-     *                  address mask
-     * @deprecated      replaced by {@link IPv4Address#of(int)} and
-     *                  {@link IPv4Address#withMask(IPv4Address)}, e.g. <code>
-     *                  IPv4Address.of(int).withMask(IPv4Address.of(int))
-     *                  </code>
+     * @param rawValue the raw IP address to be masked
+     * @param rawMask  the raw IP address mask
+     * @return an {@code IPv4AddressWithMask} object that represents
+     * the given raw IP address masked by the given raw IP
+     * address mask
+     * @deprecated replaced by {@link IPv4Address#of(int)} and
+     * {@link IPv4Address#withMask(IPv4Address)}, e.g. <code>
+     * IPv4Address.of(int).withMask(IPv4Address.of(int))
+     * </code>
      */
     @Nonnull
     @Deprecated
@@ -46,12 +46,12 @@ public class IPv4AddressWithMask extends IPAddressWithMask<IPv4Address> {
      * IP address masked by the given IP address mask. Both arguments are given
      * as {@code IPv4Address} objects.
      *
-     * @param value  the IP address to be masked
-     * @param mask   the IP address mask
-     * @return       an {@code IPv4AddressWithMask} object that represents
-     *               the given IP address masked by the given IP address mask
-     * @throws NullPointerException  if any of the given {@code IPv4Address}
-     *                               objects were {@code null}
+     * @param value the IP address to be masked
+     * @param mask  the IP address mask
+     * @return an {@code IPv4AddressWithMask} object that represents
+     * the given IP address masked by the given IP address mask
+     * @throws NullPointerException if any of the given {@code IPv4Address}
+     *                              objects were {@code null}
      */
     @Nonnull
     public static IPv4AddressWithMask of(
@@ -79,11 +79,11 @@ public class IPv4AddressWithMask extends IPAddressWithMask<IPv4Address> {
      * <td>CIDR notation</td><td>{@code 1.2.3.4/24}</td>
      * </tr></table>
      *
-     * @param string  the string in acceptable notations
-     * @return        an {@code IPv4AddressWithMask} object that corresponds to
-     *                the given string in acceptable notations
-     * @throws NullPointerException      if the given string was {@code null}
-     * @throws IllegalArgumentException  if the given string was malformed
+     * @param string the string in acceptable notations
+     * @return an {@code IPv4AddressWithMask} object that corresponds to
+     * the given string in acceptable notations
+     * @throws NullPointerException     if the given string was {@code null}
+     * @throws IllegalArgumentException if the given string was malformed
      */
     @Nonnull
     public static IPv4AddressWithMask of(@Nonnull final String string) {
@@ -129,7 +129,7 @@ public class IPv4AddressWithMask extends IPAddressWithMask<IPv4Address> {
     public boolean contains(IPAddress<?> ip) {
         Preconditions.checkNotNull(ip, "ip must not be null");
 
-        if(ip.getIpVersion() == IPVersion.IPv4) {
+        if (ip.getIpVersion() == IPVersion.IPv4) {
             IPv4Address ipv4 = (IPv4Address) ip;
             return this.matches(ipv4);
         }

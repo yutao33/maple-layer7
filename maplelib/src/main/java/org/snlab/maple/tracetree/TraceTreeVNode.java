@@ -30,29 +30,29 @@ public class TraceTreeVNode extends TraceTreeNode {
     public TraceTreeVNode(MapleMatchField field, ByteArray mask) {
         this.field = field;
         this.mask = mask;
-        matchentries=new HashMap<>();
+        matchentries = new HashMap<>();
     }
 
     @Nonnull
-    public VNodeEntry getEntryOrConstruct(@Nonnull ByteArray value){
+    public VNodeEntry getEntryOrConstruct(@Nonnull ByteArray value) {
         VNodeEntry v = matchentries.get(value);
-        if(v==null){
-            v=new VNodeEntry(null,null);//TODO match
-            matchentries.put(value,v);
+        if (v == null) {
+            v = new VNodeEntry(null, null);//TODO match
+            matchentries.put(value, v);
         }
         return v;
     }
 
     @Override
     public boolean isConsistentWith(@Nullable Trace.TraceItem item) {
-        if(item instanceof Trace.TraceGet) {
+        if (item instanceof Trace.TraceGet) {
             return this.field.equals(item.getField())
                     && Objects.equals(mask, item.getMask());
         }
         return false;
     }
 
-    public Iterator<TraceTreeNode> iterator(){
+    public Iterator<TraceTreeNode> iterator() {
         return new Iterator<TraceTreeNode>() {
 
             private Iterator<VNodeEntry> iter = matchentries.values().iterator();
@@ -78,30 +78,29 @@ public class TraceTreeVNode extends TraceTreeNode {
     //-------------------------------build node-----------------------------
 
     @Nullable
-    public static TraceTreeVNode buildNodeIfNeedOrNull(@Nonnull Trace.TraceGet item, @Nonnull Map<MapleMatchField,MapleMatch> matchMapBefore){
+    public static TraceTreeVNode buildNodeIfNeedOrNull(@Nonnull Trace.TraceGet item, @Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
         MapleMatchField field = item.getField();
         MapleMatch oldMatch = matchMapBefore.get(field);
         MapleMatch subMatch = null;
         ValueMaskPair vmp = new ValueMaskPair(item.getValue(), item.getMask());
-        Set<ValueMaskPair> subset=new HashSet<>();
+        Set<ValueMaskPair> subset = new HashSet<>();
         subset.add(vmp);
-        if(oldMatch!=null){
-            Set<ValueMaskPair> newset=new HashSet<>();
+        if (oldMatch != null) {
+            Set<ValueMaskPair> newset = new HashSet<>();
             boolean ret = oldMatch.getMatchProperSubSetOrfalse(subset, newset);
-            if(ret&&!newset.isEmpty()){
-                subMatch=new MapleMatch(field,newset);
+            if (ret && !newset.isEmpty()) {
+                subMatch = new MapleMatch(field, newset);
             }
         } else {
-            subMatch=new MapleMatch(field,subset);
+            subMatch = new MapleMatch(field, subset);
         }
-        if(subMatch!=null){
-            TraceTreeVNode VNode = new TraceTreeVNode(field,item.getMask());
-            VNode.matchentries.put(item.getValue(),new VNodeEntry(null,subMatch));
+        if (subMatch != null) {
+            TraceTreeVNode VNode = new TraceTreeVNode(field, item.getMask());
+            VNode.matchentries.put(item.getValue(), new VNodeEntry(null, subMatch));
             return VNode;
         }
         return null;
     }
-
 
 
     //-------------------------------inner class-----------------------------
@@ -109,7 +108,7 @@ public class TraceTreeVNode extends TraceTreeNode {
     /**
      * VNodeEntry.
      */
-    public static class VNodeEntry{
+    public static class VNodeEntry {
         TraceTreeNode child;
 
         MapleMatch match;//NOTE for generate rules

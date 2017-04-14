@@ -2,13 +2,15 @@ package org.snlab.maple.packet.util;
 
 import io.netty.util.internal.EmptyArrays;
 
-/** Utility method to convert hexadecimal string from/to longs and byte arrays.
+/**
+ * Utility method to convert hexadecimal string from/to longs and byte arrays.
  *
  * @author Andreas Wundsam {@literal <}andreas.wundsam@bigswitch.com{@literal >}
  */
 public final class HexString {
 
-    private HexString() {}
+    private HexString() {
+    }
 
     /* ================================================================================
      * Implementation note:
@@ -21,7 +23,7 @@ public final class HexString {
      */
 
     private final static char[] CHARS =
-        { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+            {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
     /**
      * Convert a string of bytes to a ':' separated hex string
@@ -34,14 +36,14 @@ public final class HexString {
         if (lenBytes == 0) {
             return "";
         }
-        char arr[] = new char[lenBytes * 2 + (lenBytes -1)];
+        char arr[] = new char[lenBytes * 2 + (lenBytes - 1)];
 
         int charPos = 0;
         int i = 0;
 
-        for (;;) {
-            arr[charPos++] = CHARS[ (bytes[i] >>> 4) & 0xF ];
-            arr[charPos++] = CHARS[ bytes[i] & 0xF ];
+        for (; ; ) {
+            arr[charPos++] = CHARS[(bytes[i] >>> 4) & 0xF];
+            arr[charPos++] = CHARS[bytes[i] & 0xF];
             if (++i >= lenBytes) {
                 break;
             }
@@ -52,10 +54,10 @@ public final class HexString {
     }
 
     public static String toHexString(long val, final int padTo) {
-        int valBytes = (64 - Long.numberOfLeadingZeros(val) + 7)/8;
+        int valBytes = (64 - Long.numberOfLeadingZeros(val) + 7) / 8;
         int lenBytes = valBytes > padTo ? valBytes : padTo;
 
-        char arr[] = new char[lenBytes * 2 + (lenBytes -1)];
+        char arr[] = new char[lenBytes * 2 + (lenBytes - 1)];
 
         // fill char array from the last position, shifting val by 4 bits
         for (int charPos = arr.length - 1; charPos >= 0; charPos--) {
@@ -75,12 +77,13 @@ public final class HexString {
     }
 
 
-    /** Deprecated version of {@link #toBytes(String)}.
+    /**
+     * Deprecated version of {@link #toBytes(String)}.
      *
-     * @throws NumberFormatException upon values parse error
      * @param values the hexstring to parse into a byte[]
      * @return a byte[] representing the hexstring
      * {@link Deprecated} because of inconsistent naming
+     * @throws NumberFormatException upon values parse error
      */
     @Deprecated
     public static byte[] fromHexString(final String values) throws NumberFormatException {
@@ -88,23 +91,29 @@ public final class HexString {
     }
 
     /** state constants for toBytes */
-    /** expecting first digit */
+    /**
+     * expecting first digit
+     */
     private final static int FIRST_DIGIT = 1;
-    /** expecting second digit or colon */
+    /**
+     * expecting second digit or colon
+     */
     private static final int SECOND_DIGIT_OR_COLON = 2;
-    /** expecting colon */
+    /**
+     * expecting colon
+     */
     private static final int COLON = 3;
-    /** save byte and move back to FIRST_DIGIT */
+    /**
+     * save byte and move back to FIRST_DIGIT
+     */
     private static final int SAVE_BYTE = 4;
 
     /**
      * Convert a string of hex values into a string of bytes.
      *
-     * @param values
-     *            "0f:ca:fe:de:ad:be:ef"
+     * @param values "0f:ca:fe:de:ad:be:ef"
      * @return [15, 5 ,2, 5, 17]
-     * @throws NumberFormatException
-     *             If the string can not be parsed
+     * @throws NumberFormatException If the string can not be parsed
      */
     public static byte[] toBytes(final String values) throws NumberFormatException {
         int start = 0;
@@ -115,13 +124,13 @@ public final class HexString {
         }
 
         int numColons = 0;
-        for (int i=0; i < len; i++) {
+        for (int i = 0; i < len; i++) {
             if (values.charAt(i) == ':') {
                 numColons++;
             }
         }
 
-        byte[] res = new byte[numColons+1];
+        byte[] res = new byte[numColons + 1];
         int pos = 0;
 
         int state = FIRST_DIGIT;
@@ -132,26 +141,26 @@ public final class HexString {
             switch (state) {
                 case FIRST_DIGIT:
                     int digit = Character.digit(c, 16);
-                    if(digit < 0) {
+                    if (digit < 0) {
                         throw new NumberFormatException("Invalid char at index " + start + ": " + values);
                     }
                     b = (byte) digit;
                     state = start < len ? SECOND_DIGIT_OR_COLON : SAVE_BYTE;
                     break;
                 case SECOND_DIGIT_OR_COLON:
-                    if(c != ':') {
+                    if (c != ':') {
                         int digit2 = Character.digit(c, 16);
-                        if(digit2 < 0) {
+                        if (digit2 < 0) {
                             throw new NumberFormatException("Invalid char at index " + start + ": " + values);
                         }
-                        b =  (byte) ((b<<4) | digit2);
+                        b = (byte) ((b << 4) | digit2);
                         state = start < len ? COLON : SAVE_BYTE;
                     } else {
                         state = SAVE_BYTE;
                     }
                     break;
                 case COLON:
-                    if(c != ':') {
+                    if (c != ':') {
                         throw new NumberFormatException("Separator expected at index " + start + ": " + values);
                     }
                     state = SAVE_BYTE;
@@ -178,25 +187,25 @@ public final class HexString {
         long result = 0L;
 
         int sinceLastSeparator = 0;
-        for (int charPos=value.length() - 1; charPos >= 0; charPos--) {
+        for (int charPos = value.length() - 1; charPos >= 0; charPos--) {
             char c = value.charAt(charPos);
             if (c == ':') {
                 if (sinceLastSeparator == 0) {
-                    throw new NumberFormatException("Expected hex digit at index " + charPos +": " + value);
-                } else if(sinceLastSeparator == 1) {
+                    throw new NumberFormatException("Expected hex digit at index " + charPos + ": " + value);
+                } else if (sinceLastSeparator == 1) {
                     shift += 4;
                 }
                 sinceLastSeparator = 0;
             } else {
                 int digit = Character.digit(c, 16);
                 if (digit < 0) {
-                    throw new NumberFormatException("Invalid hex digit at index " + charPos +": " + value);
+                    throw new NumberFormatException("Invalid hex digit at index " + charPos + ": " + value);
                 }
                 result |= ((long) digit) << shift;
-                shift +=4;
+                shift += 4;
                 sinceLastSeparator++;
                 if (sinceLastSeparator > 2) {
-                    throw new NumberFormatException("Expected colon at index " + charPos +": " + value);
+                    throw new NumberFormatException("Expected colon at index " + charPos + ": " + value);
                 }
             }
             if (shift > 64) {

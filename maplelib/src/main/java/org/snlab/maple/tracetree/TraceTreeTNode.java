@@ -58,17 +58,17 @@ public class TraceTreeTNode extends TraceTreeNode {
         return barrierRule;
     }
 
-    public void genBarrierRule(@Nonnull Map<MapleMatchField,MapleMatch> matchMapBefore){
-        Map<MapleMatchField,MapleMatch> match=new EnumMap<>(matchMapBefore);
-        match.put(this.field,this.match);
-        this.barrierRule=new MapleRule(match, Forward.DEFAULT_PuntForwards);
+    public void genBarrierRule(@Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
+        Map<MapleMatchField, MapleMatch> match = new EnumMap<>(matchMapBefore);
+        match.put(this.field, this.match);
+        this.barrierRule = new MapleRule(match, Forward.DEFAULT_PuntForwards);
     }
 
     @Override
     public boolean isConsistentWith(Trace.TraceItem item) {
-        if(item instanceof Trace.TestItem){
-            if(this.field.equals(item.getField())&&
-                    this.condition.isConsistentWith((Trace.TestItem)item)){
+        if (item instanceof Trace.TestItem) {
+            if (this.field.equals(item.getField()) &&
+                    this.condition.isConsistentWith((Trace.TestItem) item)) {
                 return true;
             }
         }
@@ -79,38 +79,38 @@ public class TraceTreeTNode extends TraceTreeNode {
     //-------------------------------build node-----------------------------
 
     @Nonnull
-    private static TestCondition genTNodeCondition(@Nonnull Trace.TestItem item){
-        if(item instanceof Trace.TraceIs){
-            Trace.TraceIs i=(Trace.TraceIs)item;
-            return new SingleValue(i.getValue(),i.getMask());
-        } else if(item instanceof Trace.TraceIn){
-            Trace.TraceIn i=(Trace.TraceIn)item;
-            return new ValueSet(i.getValues(),i.getMask());
-        } else if(item instanceof Trace.TraceRange){
-            Trace.TraceRange i=(Trace.TraceRange)item;
-            return new ValueRange(i.getValue1(),i.getValue2(),i.getMask());
+    private static TestCondition genTNodeCondition(@Nonnull Trace.TestItem item) {
+        if (item instanceof Trace.TraceIs) {
+            Trace.TraceIs i = (Trace.TraceIs) item;
+            return new SingleValue(i.getValue(), i.getMask());
+        } else if (item instanceof Trace.TraceIn) {
+            Trace.TraceIn i = (Trace.TraceIn) item;
+            return new ValueSet(i.getValues(), i.getMask());
+        } else if (item instanceof Trace.TraceRange) {
+            Trace.TraceRange i = (Trace.TraceRange) item;
+            return new ValueRange(i.getValue1(), i.getValue2(), i.getMask());
         } else {
             throw new RuntimeException("impossible");
         }
     }
 
     @Nullable
-    public static TraceTreeTNode buildNodeIfNeedOrNull(@Nonnull Trace.TestItem item, @Nonnull Map<MapleMatchField,MapleMatch> matchMapBefore){
+    public static TraceTreeTNode buildNodeIfNeedOrNull(@Nonnull Trace.TestItem item, @Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
         TestCondition condition = genTNodeCondition(item);
         MapleMatchField field = item.getField();
         Set<ValueMaskPair> valueMaskPairs = condition.toMatchSet(field);
         MapleMatch oldMatch = matchMapBefore.get(field);
         MapleMatch subMatch = null;
-        if(oldMatch!=null){
-            Set<ValueMaskPair> newset=new HashSet<>();
+        if (oldMatch != null) {
+            Set<ValueMaskPair> newset = new HashSet<>();
             boolean ret = oldMatch.getMatchProperSubSetOrfalse(valueMaskPairs, newset);
-            if(ret&&!newset.isEmpty()){
-                subMatch=new MapleMatch(field,newset);
+            if (ret && !newset.isEmpty()) {
+                subMatch = new MapleMatch(field, newset);
             }
         } else {
-            subMatch=new MapleMatch(field,valueMaskPairs);
+            subMatch = new MapleMatch(field, valueMaskPairs);
         }
-        if(subMatch!=null){
+        if (subMatch != null) {
             TraceTreeTNode TNode = new TraceTreeTNode(field, condition);
             TNode.match = subMatch;
             return TNode;
@@ -130,7 +130,7 @@ public class TraceTreeTNode extends TraceTreeNode {
             throw new UnsupportedOperationException();
         }
 
-        public boolean isConsistentWith(Trace.TestItem item){
+        public boolean isConsistentWith(Trace.TestItem item) {
             throw new UnsupportedOperationException();
         }
 
@@ -153,10 +153,10 @@ public class TraceTreeTNode extends TraceTreeNode {
 
         @Override
         public boolean isConsistentWith(Trace.TestItem item) {
-            if(item instanceof Trace.TraceIs){
-                Trace.TraceIs i=(Trace.TraceIs)item;
-                if(Objects.equals(this.value,i.getValue())&&
-                        Objects.equals(this.mask,i.getMask())){
+            if (item instanceof Trace.TraceIs) {
+                Trace.TraceIs i = (Trace.TraceIs) item;
+                if (Objects.equals(this.value, i.getValue()) &&
+                        Objects.equals(this.mask, i.getMask())) {
                     return true;
                 }
             }
@@ -183,10 +183,10 @@ public class TraceTreeTNode extends TraceTreeNode {
 
         @Override
         public boolean isConsistentWith(Trace.TestItem item) {
-            if(item instanceof Trace.TraceIn){
-                Trace.TraceIn i=(Trace.TraceIn)item;
-                if(Objects.equals(this.values,i.getValues())&&
-                        Objects.equals(this.mask,i.getMask())){
+            if (item instanceof Trace.TraceIn) {
+                Trace.TraceIn i = (Trace.TraceIn) item;
+                if (Objects.equals(this.values, i.getValues()) &&
+                        Objects.equals(this.mask, i.getMask())) {
                     return true;
                 }
             }
@@ -211,11 +211,11 @@ public class TraceTreeTNode extends TraceTreeNode {
 
         @Override
         public boolean isConsistentWith(Trace.TestItem item) {
-            if(item instanceof Trace.TraceRange){
-                Trace.TraceRange i=(Trace.TraceRange)item;
-                if(Objects.equals(this.value1,i.getValue1())&&
-                        Objects.equals(this.value2,i.getValue2())&&
-                        Objects.equals(this.mask,i.getMask())){
+            if (item instanceof Trace.TraceRange) {
+                Trace.TraceRange i = (Trace.TraceRange) item;
+                if (Objects.equals(this.value1, i.getValue1()) &&
+                        Objects.equals(this.value2, i.getValue2()) &&
+                        Objects.equals(this.mask, i.getMask())) {
                     return true;
                 }
             }

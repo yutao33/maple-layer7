@@ -17,6 +17,8 @@ public interface IMaplePacket {
 
     MaplePacket.PktFieldMaskable ethDst();
 
+    MaplePacket.PktField ethType();
+
     MaplePacket.PktFieldMaskable ipSrc();
 
     MaplePacket.PktFieldMaskable ipDst();

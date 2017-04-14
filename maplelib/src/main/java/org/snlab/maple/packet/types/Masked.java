@@ -3,13 +3,13 @@ package org.snlab.maple.packet.types;
 import com.google.common.hash.PrimitiveSink;
 
 
-
 public class Masked<T extends OFValueType<T>> implements OFValueType<Masked<T>> {
     protected final T value;
 
-    /** bitmask of the value. Note: a set (1) bit in this mask means 'match on this value'.
-     *  This the natural mask represenation as in IPv[46] netmasks. It is the inverse of the
-     *  OpenFlow 1.0 'wildcard' meaning.
+    /**
+     * bitmask of the value. Note: a set (1) bit in this mask means 'match on this value'.
+     * This the natural mask represenation as in IPv[46] netmasks. It is the inverse of the
+     * OpenFlow 1.0 'wildcard' meaning.
      */
     protected final T mask;
 
@@ -43,13 +43,14 @@ public class Masked<T extends OFValueType<T>> implements OFValueType<Masked<T>> 
         return sb.toString();
     }
 
-    /** Determine whether candidate value is matched by this masked value
-     *  (i.e., does candiate lie in the 'network/range' specified by this masked
-     *  value).
+    /**
+     * Determine whether candidate value is matched by this masked value
+     * (i.e., does candiate lie in the 'network/range' specified by this masked
+     * value).
      *
      * @param candidate the candidate value to test
      * @return true iff the candidate lies in the area specified by this masked
-     *         value.
+     * value.
      */
     public boolean matches(T candidate) {
         // candidate lies in the area of this masked value if its
@@ -67,7 +68,7 @@ public class Masked<T extends OFValueType<T>> implements OFValueType<Masked<T>> 
     public boolean equals(Object obj) {
         if (!(obj instanceof Masked<?>))
             return false;
-        Masked<?> mobj = (Masked<?>)obj;
+        Masked<?> mobj = (Masked<?>) obj;
         return this.value.equals(mobj.value) && this.mask.equals(mobj.mask);
     }
 
@@ -83,7 +84,7 @@ public class Masked<T extends OFValueType<T>> implements OFValueType<Masked<T>> 
     @Override
     public int compareTo(Masked<T> o) {
         int res = value.compareTo(o.value);
-        if(res != 0)
+        if (res != 0)
             return res;
         else
             return mask.compareTo(o.mask);

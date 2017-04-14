@@ -3,7 +3,8 @@ package org.snlab.maple.packet.types;
 import com.google.common.base.Preconditions;
 
 public class HashValueUtils {
-    private HashValueUtils() { }
+    private HashValueUtils() {
+    }
 
     public static long combineWithValue(long key, long value, int keyBits) {
         Preconditions.checkArgument(keyBits >= 0 && keyBits <= 64, "keyBits must be [0,64]");
@@ -18,7 +19,7 @@ public class HashValueUtils {
         Preconditions.checkArgument(numBits >= 0 && numBits <= 32,
                 "numBits must be in range [0, 32]");
 
-        if(numBits == 0)
+        if (numBits == 0)
             return 0;
 
         final int shiftDown = 64 - numBits;

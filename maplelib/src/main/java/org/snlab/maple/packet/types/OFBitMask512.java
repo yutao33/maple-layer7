@@ -18,9 +18,9 @@ public class OFBitMask512 implements OFValueType<OFBitMask512> {
     private final long raw8;
 
     public static final OFBitMask512 ALL = new OFBitMask512(-1, -1, -1, -1,
-                                                            -1, -1, -1, -1);
+            -1, -1, -1, -1);
     public static final OFBitMask512 NONE = new OFBitMask512(0, 0, 0, 0,
-                                                             0, 0, 0, 0);
+            0, 0, 0, 0);
 
     public static final OFBitMask512 NO_MASK = ALL;
     public static final OFBitMask512 FULL_MASK = NONE;
@@ -56,9 +56,9 @@ public class OFBitMask512 implements OFValueType<OFBitMask512> {
     @Override
     public OFBitMask512 applyMask(OFBitMask512 mask) {
         return of(this.raw1 & mask.raw1, this.raw2 & mask.raw2,
-                  this.raw3 & mask.raw3, this.raw4 & mask.raw4,
-                  this.raw5 & mask.raw5, this.raw6 & mask.raw6,
-                  this.raw7 & mask.raw7, this.raw8 & mask.raw8);
+                this.raw3 & mask.raw3, this.raw4 & mask.raw4,
+                this.raw5 & mask.raw5, this.raw6 & mask.raw6,
+                this.raw7 & mask.raw7, this.raw8 & mask.raw8);
     }
 
     @Override
@@ -122,7 +122,7 @@ public class OFBitMask512 implements OFValueType<OFBitMask512> {
             word = raw1;
             bit -= 448;
         }
-        return (word & ((long)1 << bit)) != 0;
+        return (word & ((long) 1 << bit)) != 0;
     }
 
     public void write64Bytes(ByteBuf cb) {

@@ -40,14 +40,14 @@ public class TraceTree {
 
     //-------------------------------update-----------------------------
 
-    private Map<MapleMatchField,MapleMatch> matchMap=new EnumMap<>(MapleMatchField.class);
+    private Map<MapleMatchField, MapleMatch> matchMap = new EnumMap<>(MapleMatchField.class);
 
-    private Map<MapleMatchField,Set<ValueMaskPair>> unmatchMap=new EnumMap<>(MapleMatchField.class);//TODO for generate rules
+    private Map<MapleMatchField, Set<ValueMaskPair>> unmatchMap = new EnumMap<>(MapleMatchField.class);//TODO for generate rules
 
     public synchronized void update(List<Trace.TraceItem> items, MaplePacket pkt) {
         List<Forward> route = pkt.getRoute();
-        if (route==null||route.isEmpty()) {
-            route= Collections.singletonList(new Forward(null, ForwardAction.drop()));
+        if (route == null || route.isEmpty()) {
+            route = Collections.singletonList(new Forward(null, ForwardAction.drop()));
         }
         if (items.isEmpty()) {
             treeroot = testifLNodeexpected_ornew(treeroot, route);
@@ -58,7 +58,7 @@ public class TraceTree {
 
         TraceTreeNode nodep = treeroot;
 
-        Trace.TraceItem preitem=items.get(0);
+        Trace.TraceItem preitem = items.get(0);
         for (int i = 0; i < items.size(); i++) {
             if (nodep instanceof TraceTreeTNode) {
                 Trace.TestItem ti = (Trace.TestItem) preitem;
@@ -68,13 +68,13 @@ public class TraceTree {
 
                 MapleMatch match = t.getMatch();
                 MapleMatchField matchfield = match.getField();
-                if(testresult) {
+                if (testresult) {
                     matchMap.put(matchfield, match);
                 } else {
                     Set<ValueMaskPair> unmatchset = unmatchMap.get(matchfield);
-                    if(unmatchset==null){
-                        unmatchset=new HashSet<>(match.getMatchSet());
-                        unmatchMap.put(matchfield,unmatchset);
+                    if (unmatchset == null) {
+                        unmatchset = new HashSet<>(match.getMatchSet());
+                        unmatchMap.put(matchfield, unmatchset);
                     } else {
                         unmatchset.addAll(match.getMatchSet());
                     }
@@ -84,17 +84,17 @@ public class TraceTree {
                     nodep = testifLNodeexpected_ornew(oldtestbranch, route);
                 } else {
                     TraceTreeNode ttn = testifexpected_ornew(oldtestbranch, items.get(i + 1));
-                    if(ttn==null){
+                    if (ttn == null) {
                         continue;
                     } else {
-                        nodep=ttn;
-                        preitem=items.get(i+1);
+                        nodep = ttn;
+                        preitem = items.get(i + 1);
                     }
                 }
-                if(nodep!=oldtestbranch) {
+                if (nodep != oldtestbranch) {
                     t.setBranch(testresult, nodep);
                 }
-                if(t.getBranch(false)!=null&&t.getBarrierRule()==null){  //NOTE testresult=false at this time
+                if (t.getBranch(false) != null && t.getBarrierRule() == null) {  //NOTE testresult=false at this time
                     t.genBarrierRule(matchMap);
                 }
             } else if (nodep instanceof TraceTreeVNode) {
@@ -103,21 +103,21 @@ public class TraceTree {
                 ByteArray value = ti.getValue();
                 TraceTreeVNode.VNodeEntry oldentry = v.getEntryOrConstruct(value);
 
-                matchMap.put(oldentry.match.getField(),oldentry.match);
+                matchMap.put(oldentry.match.getField(), oldentry.match);
 
-                TraceTreeNode oldchild=oldentry.child;
+                TraceTreeNode oldchild = oldentry.child;
                 if (i == items.size() - 1) {
                     nodep = testifLNodeexpected_ornew(oldchild, route);
                 } else {
                     TraceTreeNode ttn = testifexpected_ornew(oldchild, items.get(i + 1));
-                    if(ttn==null){
+                    if (ttn == null) {
                         continue;
                     } else {
-                        nodep=ttn;
-                        preitem=items.get(i+1);
+                        nodep = ttn;
+                        preitem = items.get(i + 1);
                     }
                 }
-                if(nodep!=oldchild) {
+                if (nodep != oldchild) {
                     oldentry.child = nodep;
                 }
             } else {
@@ -128,7 +128,7 @@ public class TraceTree {
 
     @Nullable
     private TraceTreeNode testifexpected_ornew(@Nullable TraceTreeNode node, @Nonnull Trace.TraceItem item) {
-        if(node!=null&&node.isConsistentWith(item)){
+        if (node != null && node.isConsistentWith(item)) {
             return node;  //NOTE no need to update
         }
 
@@ -137,11 +137,11 @@ public class TraceTree {
         if (item instanceof Trace.TestItem) {
 
             Trace.TestItem ti = (Trace.TestItem) item;
-            return TraceTreeTNode.buildNodeIfNeedOrNull(ti,matchMap); //NOTE will generate match
+            return TraceTreeTNode.buildNodeIfNeedOrNull(ti, matchMap); //NOTE will generate match
 
         } else if (item instanceof Trace.TraceGet) {
-            Trace.TraceGet ti=(Trace.TraceGet)item;
-            return TraceTreeVNode.buildNodeIfNeedOrNull(ti,matchMap);
+            Trace.TraceGet ti = (Trace.TraceGet) item;
+            return TraceTreeVNode.buildNodeIfNeedOrNull(ti, matchMap);
         } else {
             throw new RuntimeException("impossible");
         }
@@ -150,13 +150,13 @@ public class TraceTree {
     private TraceTreeNode testifLNodeexpected_ornew(@Nullable TraceTreeNode node, List<Forward> route) {
         if (node instanceof TraceTreeLNode) {
             TraceTreeLNode l = (TraceTreeLNode) node;
-            if(l.getRoute().equals(route)){
+            if (l.getRoute().equals(route)) {
                 //TODO generate tmp drop rule if route is null
                 return node;
             }
         }
         recurseMarkDeleted(node);
-        return TraceTreeLNode.build(route,matchMap);
+        return TraceTreeLNode.build(route, matchMap);
     }
 
     private void recurseMarkDeleted(@Nullable TraceTreeNode node) {
@@ -168,7 +168,7 @@ public class TraceTree {
         } else if (node instanceof TraceTreeTNode) {
             TraceTreeTNode t = (TraceTreeTNode) node;
             recurseMarkDeleted(t.getBranch(false));
-            if(t.getBarrierRule()!=null){
+            if (t.getBarrierRule() != null) {
                 t.getBarrierRule().setIsDeleted(true);
             }
             recurseMarkDeleted(t.getBranch(true));
@@ -191,25 +191,25 @@ public class TraceTree {
     private int globalpriority;
 
     public synchronized List<MapleRule> generateRules() {
-        rules=new ArrayList<>();
-        globalpriority=1;
+        rules = new ArrayList<>();
+        globalpriority = 1;
         recurseUpdatePriority(treeroot);
         return rules;
     }
 
-    private void recurseUpdatePriority(TraceTreeNode node){
-        if(node==null){
+    private void recurseUpdatePriority(TraceTreeNode node) {
+        if (node == null) {
             return;
         }
-        if(node instanceof TraceTreeLNode){
-            node.priority=globalpriority;
+        if (node instanceof TraceTreeLNode) {
+            node.priority = globalpriority;
             MapleRule rule = ((TraceTreeLNode) node).getRule();
             rule.setPriority(globalpriority);
             rules.add(rule);
-        } else if(node instanceof TraceTreeTNode){
-            TraceTreeTNode t=(TraceTreeTNode)node;
+        } else if (node instanceof TraceTreeTNode) {
+            TraceTreeTNode t = (TraceTreeTNode) node;
             TraceTreeNode branchfalse = t.getBranch(false);
-            if(branchfalse!=null) {
+            if (branchfalse != null) {
                 recurseUpdatePriority(branchfalse);
                 globalpriority++;
                 MapleRule barrierRule = t.getBarrierRule();
@@ -218,8 +218,8 @@ public class TraceTree {
                 globalpriority++;
             }
             recurseUpdatePriority(t.getBranch(true));
-        } else if(node instanceof TraceTreeVNode){
-            TraceTreeVNode v=(TraceTreeVNode)node;
+        } else if (node instanceof TraceTreeVNode) {
+            TraceTreeVNode v = (TraceTreeVNode) node;
 
             Iterator<TraceTreeNode> iter = v.iterator();
             while (iter.hasNext()) {

@@ -9,10 +9,10 @@ import org.snlab.maple.packet.exceptions.OFParseError;
 import com.google.common.hash.PrimitiveSink;
 import com.google.common.primitives.Shorts;
 
-/** Represents an 802.1Q Vlan VID (12 bits).
+/**
+ * Represents an 802.1Q Vlan VID (12 bits).
  *
  * @author Andreas Wundsam {@literal <}andreas.wundsam@bigswitch.com{@literal >}
- *
  */
 public class VlanVid implements OFValueType<VlanVid> {
 
@@ -20,11 +20,15 @@ public class VlanVid implements OFValueType<VlanVid> {
     private static final short ZERO_VAL = 0x0000;
     final static int LENGTH = 2;
 
-    /** this value means 'not set' in OF1.0 (e.g., in a match). not used elsewhere */
+    /**
+     * this value means 'not set' in OF1.0 (e.g., in a match). not used elsewhere
+     */
     public static final VlanVid ZERO = new VlanVid(ZERO_VAL);
 
-    /** for use with masking operations */
-    public static final VlanVid NO_MASK = new VlanVid((short)0xFFFF);
+    /**
+     * for use with masking operations
+     */
+    public static final VlanVid NO_MASK = new VlanVid((short) 0xFFFF);
     public static final VlanVid FULL_MASK = ZERO;
 
     private final short vid;
@@ -41,7 +45,9 @@ public class VlanVid implements OFValueType<VlanVid> {
         return new VlanVid((short) vid);
     }
 
-    /** @return the actual VLAN tag this vid identifies */
+    /**
+     * @return the actual VLAN tag this vid identifies
+     */
     public short getVlan() {
         return vid;
     }
@@ -50,7 +56,7 @@ public class VlanVid implements OFValueType<VlanVid> {
     public boolean equals(Object obj) {
         if (!(obj instanceof VlanVid))
             return false;
-        VlanVid other = (VlanVid)obj;
+        VlanVid other = (VlanVid) obj;
         if (other.vid != this.vid)
             return false;
         return true;
@@ -79,8 +85,8 @@ public class VlanVid implements OFValueType<VlanVid> {
             synchronized (this) {
                 if (bytesCache == null) {
                     bytesCache =
-                            new byte[] { (byte) ((vid >>> 8) & 0xFF),
-                                         (byte) ((vid >>> 0) & 0xFF) };
+                            new byte[]{(byte) ((vid >>> 8) & 0xFF),
+                                    (byte) ((vid >>> 0) & 0xFF)};
                 }
             }
         }
@@ -101,7 +107,7 @@ public class VlanVid implements OFValueType<VlanVid> {
 
     @Override
     public VlanVid applyMask(VlanVid mask) {
-        return VlanVid.ofVlan((short)(this.vid & mask.vid));
+        return VlanVid.ofVlan((short) (this.vid & mask.vid));
     }
 
     @Override

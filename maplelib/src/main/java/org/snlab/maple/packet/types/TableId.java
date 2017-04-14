@@ -26,7 +26,7 @@ public class TableId implements OFValueType<TableId>, Comparable<TableId> {
     }
 
     public static TableId of(short id) {
-        switch(id) {
+        switch (id) {
             case NONE_VAL:
                 return NONE;
             case ALL_VAL:
@@ -39,8 +39,8 @@ public class TableId implements OFValueType<TableId>, Comparable<TableId> {
     }
 
     public static TableId of(int id) {
-        if((id & VALIDATION_MASK) != id)
-            throw new IllegalArgumentException("Illegal Table id value: "+id);
+        if ((id & VALIDATION_MASK) != id)
+            throw new IllegalArgumentException("Illegal Table id value: " + id);
         return of((short) id);
     }
 
@@ -68,14 +68,14 @@ public class TableId implements OFValueType<TableId>, Comparable<TableId> {
 
     @Override
     public TableId applyMask(TableId mask) {
-        return TableId.of((short)(this.id & mask.id));
+        return TableId.of((short) (this.id & mask.id));
     }
 
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof TableId))
             return false;
-        TableId other = (TableId)obj;
+        TableId other = (TableId) obj;
         if (other.id != this.id)
             return false;
         return true;

@@ -14,21 +14,21 @@ import org.snlab.maple.packet.parser.IPv4;
 
 public class M2 extends MapleAppBase {
 
-	private static final String TOPO_URL       = "/root/network-topology/topology";
-	private static final String HOST_TABLE_URL = "/root/host-table";
+    private static final String TOPO_URL = "/root/network-topology/topology";
+    private static final String HOST_TABLE_URL = "/root/host-table";
 
-	private static final String H1     = "10.0.0.1";
-	private static final int    H1_IP  = IPv4.toIPv4Address(H1);
+    private static final String H1 = "10.0.0.1";
+    private static final int H1_IP = IPv4.toIPv4Address(H1);
 
-	private static final String H2     = "10.0.0.2";
-	private static final int    H2_IP  = IPv4.toIPv4Address(H2);
+    private static final String H2 = "10.0.0.2";
+    private static final int H2_IP = IPv4.toIPv4Address(H2);
 
-	private static final int HTTP_PORT = 80;
+    private static final int HTTP_PORT = 80;
 
-	private static final String[] H12_HIGH_PATH = { H1, "openflow:1:3", "openflow:2:2", "openflow:4:1" };
-	private static final String[] H12_LOW_PATH  = { H1, "openflow:1:4", "openflow:3:2", "openflow:4:1" };
-	private static final String[] H21_HIGH_PATH = { H2, "openflow:4:4", "openflow:2:1", "openflow:1:1" };
-	private static final String[] H21_LOW_PATH  = { H2, "openflow:4:5", "openflow:3:1", "openflow:1:1" };
+    private static final String[] H12_HIGH_PATH = {H1, "openflow:1:3", "openflow:2:2", "openflow:4:1"};
+    private static final String[] H12_LOW_PATH = {H1, "openflow:1:4", "openflow:3:2", "openflow:4:1"};
+    private static final String[] H21_HIGH_PATH = {H2, "openflow:4:4", "openflow:2:1", "openflow:1:1"};
+    private static final String[] H21_LOW_PATH = {H2, "openflow:4:5", "openflow:3:1", "openflow:1:1"};
 
 //	public void staticRoute(MaplePacket pkt) {
 //		// H1 (client) -> H2 (server)
@@ -91,6 +91,6 @@ public class M2 extends MapleAppBase {
 //		return false;
 //
 //	}
-	
+
 }
 

@@ -15,21 +15,21 @@ import java.util.logging.Logger;
 
 public class MapleEnv implements IMapleEnv {
 
-    private static final Logger LOG= Logger.getLogger(MapleEnv.class.toString());
+    private static final Logger LOG = Logger.getLogger(MapleEnv.class.toString());
 
-    private MapleTopology topology=new MapleTopology();
+    private MapleTopology topology = new MapleTopology();
 
     public void updateTopology(List<MapleTopology.Element> putList,
-                               List<MapleTopology.Element> deleteList){
-        boolean ret=topology.update(putList,deleteList);
-        String info="updateTopology:\nputList="
-                +putList.toString()
-                +"\ndeleteList="+deleteList.toString()
-                +"\nreturn="+ret;
-        if(ret){
-            info+="\nTopology=\n"+topology.toString();
+                               List<MapleTopology.Element> deleteList) {
+        boolean ret = topology.update(putList, deleteList);
+        String info = "updateTopology:\nputList="
+                + putList.toString()
+                + "\ndeleteList=" + deleteList.toString()
+                + "\nreturn=" + ret;
+        if (ret) {
+            info += "\nTopology=\n" + topology.toString();
         }
-        LOG.info(info+"\n");
+        LOG.info(info + "\n");
     }
 
 

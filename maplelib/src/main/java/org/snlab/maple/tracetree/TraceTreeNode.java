@@ -14,7 +14,7 @@ package org.snlab.maple.tracetree;
 public abstract class TraceTreeNode {
     protected int priority;
 
-    public boolean isConsistentWith(Trace.TraceItem item){
+    public boolean isConsistentWith(Trace.TraceItem item) {
         throw new UnsupportedOperationException();
     }
 }

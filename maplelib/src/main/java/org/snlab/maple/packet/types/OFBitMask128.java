@@ -44,13 +44,13 @@ public class OFBitMask128 implements OFValueType<OFBitMask128> {
     public boolean equals(Object obj) {
         if (!(obj instanceof OFBitMask128))
             return false;
-        OFBitMask128 other = (OFBitMask128)obj;
+        OFBitMask128 other = (OFBitMask128) obj;
         return (other.raw1 == this.raw1 && other.raw2 == this.raw2);
     }
 
     @Override
     public int hashCode() {
-        return (int)(31 * raw1 + raw2);
+        return (int) (31 * raw1 + raw2);
     }
 
     protected static boolean isBitOn(long raw1, long raw2, int bit) {
@@ -63,7 +63,7 @@ public class OFBitMask128 implements OFValueType<OFBitMask128> {
             word = raw1; // ports 64-127
             bit -= 64;
         }
-        return (word & ((long)1 << bit)) != 0;
+        return (word & ((long) 1 << bit)) != 0;
     }
 
     public void write16Bytes(ByteBuf cb) {
