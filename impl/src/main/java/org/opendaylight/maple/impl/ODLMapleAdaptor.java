@@ -142,7 +142,7 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
         builder.setNode(new NodeRef(nodeInstanceId));
         builder.setFlowRef(new FlowRef(flowPath));
         builder.setFlowTable(new FlowTableRef(tableInstanceId));
-        builder.setTransactionUri(new Uri(flow.getId().getValueMasked()));
+        builder.setTransactionUri(new Uri(flow.getId().getValue()));
 
         try {
             RpcResult<AddFlowOutput> addFlowOutputRpcResult = salFlowService.addFlow(builder.build()).get();

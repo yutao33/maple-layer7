@@ -35,18 +35,31 @@ public class MapleMatch {
         return Collections.unmodifiableSet(matchSet);
     }
 
-    public MapleMatch getMatchProperSubSetOrNull(@Nonnull Set<ValueMaskPair> subset){
+    public boolean getMatchProperSubSetOrfalse(@Nonnull Set<ValueMaskPair> subset,Set<ValueMaskPair> newset){
         int size = matchSet.size();
         ValueMaskPair[] pairs =(ValueMaskPair[]) matchSet.toArray();
         boolean [] allcontain=new boolean[size];
         for(int i=0;i<size;i++){
             allcontain[i]=false;
         }
-        for (ValueMaskPair v : subset) {
+        newset.clear();
+        for (ValueMaskPair a : subset) {
             for(int i=0;i<size;i++){
-
+                ValueMaskPair b=ValueMaskPair.getSubSet(pairs[i],a);
+                if(b!=null){
+                    if(b.equals(pairs[i])){
+                        allcontain[i]=true;
+                    }
+                    newset.add(b);
+                }
             }
         }
+        for(int i=0;i<size;i++){
+            if(!allcontain[i]){
+                return true;
+            }
+        }
+        return false;
     }
 
 

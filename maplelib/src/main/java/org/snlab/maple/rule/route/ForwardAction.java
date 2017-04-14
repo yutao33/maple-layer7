@@ -27,6 +27,10 @@ public final class ForwardAction {
         return new OutPut(port);
     }
 
+    public static Drop drop(){
+        return new Drop();
+    }
+
     //-------------------static Action class------------------------
 
     public static abstract class Action {
@@ -66,6 +70,10 @@ public final class ForwardAction {
         public Punt(PuntPktListener listener) {
             this.listener = listener;
         }
+
+    }
+
+    public static class Drop extends Action{
 
     }
 

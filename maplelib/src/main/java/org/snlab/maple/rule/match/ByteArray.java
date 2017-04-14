@@ -42,6 +42,23 @@ public class ByteArray {
         return new ByteArray(v);
     }
 
+    public ByteArray bitOr(@Nonnull ByteArray a2){
+        assert value.length==a2.value.length;
+        byte[] v = value.clone();
+        for(int i=0;i<v.length;i++){
+            v[i]|=a2.value[i];
+        }
+        return new ByteArray(v);
+    }
+
+    public ByteArray not(){
+        byte[] v = value.clone();
+        for(int i=0;i<v.length;i++){
+            v[i]=(byte)~v[i];
+        }
+        return new ByteArray(v);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

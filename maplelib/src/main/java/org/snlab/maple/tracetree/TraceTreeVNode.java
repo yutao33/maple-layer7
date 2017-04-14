@@ -11,13 +11,16 @@ package org.snlab.maple.tracetree;
 import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.rule.match.ByteArray;
 import org.snlab.maple.rule.match.MapleMatch;
+import org.snlab.maple.rule.match.ValueMaskPair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public class TraceTreeVNode extends TraceTreeNode {
     private final MapleMatchField field;
@@ -75,7 +78,27 @@ public class TraceTreeVNode extends TraceTreeNode {
     //-------------------------------build node-----------------------------
 
     @Nullable
-    public static TraceTreeTNode buildNodeIfNeedOrNull(@Nonnull Trace.TestItem item, @Nonnull Map<MapleMatchField,MapleMatch> matchMapBefore){
+    public static TraceTreeVNode buildNodeIfNeedOrNull(@Nonnull Trace.TraceGet item, @Nonnull Map<MapleMatchField,MapleMatch> matchMapBefore){
+        MapleMatchField field = item.getField();
+        MapleMatch oldMatch = matchMapBefore.get(field);
+        MapleMatch subMatch = null;
+        ValueMaskPair vmp = new ValueMaskPair(item.getValue(), item.getMask());
+        Set<ValueMaskPair> subset=new HashSet<>();
+        subset.add(vmp);
+        if(oldMatch!=null){
+            Set<ValueMaskPair> newset=new HashSet<>();
+            boolean ret = oldMatch.getMatchProperSubSetOrfalse(subset, newset);
+            if(ret&&!newset.isEmpty()){
+                subMatch=new MapleMatch(field,newset);
+            }
+        } else {
+            subMatch=new MapleMatch(field,subset);
+        }
+        if(subMatch!=null){
+            TraceTreeVNode VNode = new TraceTreeVNode(field,item.getMask());
+            VNode.matchentries.put(item.getValue(),new VNodeEntry(null,subMatch));
+            return VNode;
+        }
         return null;
     }
 

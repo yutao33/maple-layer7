@@ -8,13 +8,16 @@
 
 package org.snlab.maple.tracetree;
 
+import org.snlab.maple.rule.MapleRule;
 import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.rule.match.ByteArray;
 import org.snlab.maple.rule.match.MapleMatch;
 import org.snlab.maple.rule.match.ValueMaskPair;
+import org.snlab.maple.rule.route.Forward;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
@@ -29,6 +32,7 @@ public class TraceTreeTNode extends TraceTreeNode {
     private TraceTreeNode branchfalse;
 
     private MapleMatch match;//NOTE for generate rules
+    private MapleRule barrierRule;
 
     public TraceTreeTNode(MapleMatchField field, TestCondition condition) {
         this.field = field;
@@ -48,6 +52,16 @@ public class TraceTreeTNode extends TraceTreeNode {
 
     public MapleMatch getMatch() {
         return match;
+    }
+
+    public MapleRule getBarrierRule() {
+        return barrierRule;
+    }
+
+    public void genBarrierRule(@Nonnull Map<MapleMatchField,MapleMatch> matchMapBefore){
+        Map<MapleMatchField,MapleMatch> match=new EnumMap<>(matchMapBefore);
+        match.put(this.field,this.match);
+        this.barrierRule=new MapleRule(match, Forward.DEFAULT_PuntForwards);
     }
 
     @Override
@@ -83,12 +97,16 @@ public class TraceTreeTNode extends TraceTreeNode {
     @Nullable
     public static TraceTreeTNode buildNodeIfNeedOrNull(@Nonnull Trace.TestItem item, @Nonnull Map<MapleMatchField,MapleMatch> matchMapBefore){
         TestCondition condition = genTNodeCondition(item);
-        Set<ValueMaskPair> valueMaskPairs = condition.toMatchSet();
         MapleMatchField field = item.getField();
+        Set<ValueMaskPair> valueMaskPairs = condition.toMatchSet(field);
         MapleMatch oldMatch = matchMapBefore.get(field);
         MapleMatch subMatch = null;
         if(oldMatch!=null){
-            subMatch=oldMatch.getMatchProperSubSetOrNull(valueMaskPairs);
+            Set<ValueMaskPair> newset=new HashSet<>();
+            boolean ret = oldMatch.getMatchProperSubSetOrfalse(valueMaskPairs, newset);
+            if(ret&&!newset.isEmpty()){
+                subMatch=new MapleMatch(field,newset);
+            }
         } else {
             subMatch=new MapleMatch(field,valueMaskPairs);
         }
@@ -108,7 +126,7 @@ public class TraceTreeTNode extends TraceTreeNode {
     public abstract static class TestCondition {
         protected ByteArray mask;
 
-        public Set<ValueMaskPair> toMatchSet() {
+        public Set<ValueMaskPair> toMatchSet(MapleMatchField field) {
             throw new UnsupportedOperationException();
         }
 
@@ -127,7 +145,7 @@ public class TraceTreeTNode extends TraceTreeNode {
         }
 
         @Override
-        public Set<ValueMaskPair> toMatchSet() {
+        public Set<ValueMaskPair> toMatchSet(MapleMatchField field) {
             Set<ValueMaskPair> set = new HashSet<>();
             set.add(new ValueMaskPair(value, mask));
             return set;
@@ -155,7 +173,7 @@ public class TraceTreeTNode extends TraceTreeNode {
         }
 
         @Override
-        public Set<ValueMaskPair> toMatchSet() {
+        public Set<ValueMaskPair> toMatchSet(MapleMatchField field) {
             Set<ValueMaskPair> set = new HashSet<>();
             for (ByteArray value : values) {
                 set.add(new ValueMaskPair(value, mask));
@@ -181,14 +199,13 @@ public class TraceTreeTNode extends TraceTreeNode {
         private ByteArray value2;
 
         private ValueRange(ByteArray value1, ByteArray value2, ByteArray mask) {
-            this.value1 = value1;
-            this.value2 = value2;
-            this.mask = mask;
+            this.value1 = value1;//0x 1 01101001
+            this.value2 = value2;//0x 0 10010101
+            this.mask = mask;    //0x 0 11110100
         }
 
         @Override
-        public Set<ValueMaskPair> toMatchSet() {
-
+        public Set<ValueMaskPair> toMatchSet(MapleMatchField field) {
             throw new UnsupportedOperationException();
         }
 

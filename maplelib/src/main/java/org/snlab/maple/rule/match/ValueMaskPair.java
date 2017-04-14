@@ -16,19 +16,69 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class ValueMaskPair {
     private final ByteArray mask;
-    private final ByteArray valueMasked;
+    private final ByteArray value;
 
     public ValueMaskPair(@Nonnull ByteArray value,@Nullable ByteArray mask) {
         this.mask = mask;
-        this.valueMasked = value.bitAnd(mask);
+        this.value = value;
     }
 
     public ByteArray getMask() {
         return mask;
     }
 
-    public ByteArray getValueMasked() {
-        return valueMasked;
+    public ByteArray getValue() {
+        return value;
+    }
+
+
+    private static ByteArray getfullone(int l){
+        byte[] bytes = new byte[l];
+        for(int i=0;i<l;i++){
+            bytes[i]=(byte)0xff;
+        }
+        return new ByteArray(bytes);
+    }
+
+    private static boolean allone(ByteArray a){
+        for(int i=0;i<a.length();i++){
+            if(a.get(i)!=(byte)0xff){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Nullable
+    public static ValueMaskPair getSubSet(ValueMaskPair a,ValueMaskPair b){
+        //        1xxx0   xxx10   1xx10
+        //mask    10001   00011   10011
+        //value   10000   00010   10010
+        assert a.value.length()==b.value.length();
+        ByteArray maska=a.mask;
+        if(maska==null){
+            maska=getfullone(a.value.length());
+        }
+        ByteArray maskb=b.mask;
+        if(maskb==null){
+            maskb=getfullone(b.value.length());
+        }
+        ByteArray j1 = a.value.bitOr(maska.not().bitAnd(b.value)).bitAnd(b.mask);
+        if(j1.equals(b.value)){
+            ByteArray j2 = b.value.bitOr(maskb.not().bitAnd(a.value)).bitAnd(a.mask);
+            if(j2.equals(b.value)){
+                ByteArray m=maska.bitOr(maskb);
+                ByteArray v=a.value.bitOr(b.value);
+                if(allone(m)){
+                    m=null;
+                }
+                return new ValueMaskPair(v,m);
+            } else{
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -39,13 +89,13 @@ public class ValueMaskPair {
         ValueMaskPair that = (ValueMaskPair) o;
 
         if (mask != null ? !mask.equals(that.mask) : that.mask != null) return false;
-        return valueMasked.equals(that.valueMasked);
+        return value.equals(that.value);
     }
 
     @Override
     public int hashCode() {
         int result = mask != null ? mask.hashCode() : 0;
-        result = 31 * result + valueMasked.hashCode();
+        result = 31 * result + value.hashCode();
         return result;
     }
 }

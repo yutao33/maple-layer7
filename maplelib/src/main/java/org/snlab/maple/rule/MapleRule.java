@@ -21,6 +21,8 @@ public class MapleRule {
     private final Map<MapleMatchField, MapleMatch> matches;
     private final List<Forward> route;
 
+    private int priority;
+
     private int flags;
     private static final int ISDELETED_MASK = 0x1;
     private static final int ISNEW_MASK = 0x2;
@@ -37,6 +39,14 @@ public class MapleRule {
 
     public List<Forward> getRoute() {
         return route;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 
     public boolean isDeleted() {
