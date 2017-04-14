@@ -13,6 +13,7 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
@@ -56,10 +57,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snlab.maple.IMapleAdaptor;
 import org.snlab.maple.rule.MapleRule;
+import org.snlab.maple.rule.field.MapleMatchField;
+import org.snlab.maple.rule.match.MapleMatch;
+import org.snlab.maple.rule.match.ValueMaskPair;
+import org.snlab.maple.rule.route.Forward;
 
 import javax.annotation.Nullable;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class ODLMapleAdaptor implements IMapleAdaptor {
@@ -90,32 +97,66 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
     }
 
     @Override
-    public void outputtracetree() {
+    public void outPutTraceTree() {
 
+        LOG.info("outPutTraceTree");
     }
 
     @Override
     public void updateRules(List<MapleRule> rules) {
+        ReadWriteTransaction rwt = dataBroker.newReadWriteTransaction();
+
+        deleteAllRules(rwt);
+
+        for (MapleRule rule : rules) {
+            installRule(rwt,rule);
+        }
+
+        rwtSubmit(rwt);
+    }
+
+    private void rwtSubmit(ReadWriteTransaction rwt){
+        CheckedFuture<Void, TransactionCommitFailedException> future = rwt.submit();
+        Futures.addCallback(future, new FutureCallback<Void>() {
+            @Override
+            public void onSuccess(@Nullable Void result) {
+                LOG.info("success");
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                LOG.info("failed "+t.getMessage());
+            }
+        });
+    }
+
+    private void deleteAllRules(ReadWriteTransaction rwt){
+        InstanceIdentifier<Nodes> nodesIId = InstanceIdentifier.builder(Nodes.class).build();
+        rwt.delete(LogicalDatastoreType.CONFIGURATION,nodesIId);
+    }
+
+    private void installRule1(WriteTransaction wt,MapleRule rule){
+        Map<MapleMatchField, MapleMatch> matches = rule.getMatches();
+        List<Forward> route = rule.getRoute();
+        MapleMatch eth_dst = rule.getMatches().get(MapleMatchField.ETH_DST);
+        Set<ValueMaskPair> matchSet = eth_dst.getMatchSet();
 
     }
 
-    private void installRule(){
-
+    private void installRule(WriteTransaction wt,MapleRule rule){
         FlowId flowId = new FlowId("maple" + flowIdInc.getAndIncrement());
 
-        InstanceIdentifier<Node> iid = InstanceIdentifier.builder(Nodes.class).child(Node.class, new NodeKey(new NodeId("openflow:1"))).build();
+        InstanceIdentifier<Node> iid = InstanceIdentifier.builder(Nodes.class)
+                .child(Node.class, new NodeKey(new NodeId("openflow:1")))
+                .build();
         InstanceIdentifier<Flow> flowPath = iid.builder().augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey((short) 0))
                 .child(Flow.class, new FlowKey(flowId))
                 .build();
 
-        //TcpMatch tcpMatch = new TcpMatchBuilder().setTcpDestinationPort(new PortNumber(12)).build();
+        Match match = buildODLMatch(rule);
 
-
-        MatchBuilder builder1=new MatchBuilder();
-        //builder1.setLayer4Match(tcpMatch);
-        builder1.setInPort(new NodeConnectorId("openflow:1:2"));
-        Match match = builder1.build();
+        int priority = rule.getPriority();
 
         OutputAction outputAction = new OutputActionBuilder().setOutputNodeConnector(new NodeConnectorId("openflow:1:1")).build();
         OutputActionCase outputActionCase = new OutputActionCaseBuilder().setOutputAction(outputAction).build();
@@ -129,7 +170,7 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
                 .setInstructions(new InstructionsBuilder()
                         .setInstruction(ImmutableList.of(instruction))
                         .build())
-                .setPriority(0)
+                .setPriority(priority)
                 .setBufferId(OFConstants.OFP_NO_BUFFER)
                 .setHardTimeout(null)
                 .setIdleTimeout(null)
@@ -138,54 +179,16 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
 
         Flow flow = flowBuilder.build();
 
-
-        final InstanceIdentifier<Table> tableInstanceId = flowPath.<Table>firstIdentifierOf(Table.class);
-        final InstanceIdentifier<Node> nodeInstanceId = flowPath.<Node>firstIdentifierOf(Node.class);
-/*
-        final AddFlowInputBuilder builder = new AddFlowInputBuilder(flow);
-
-        builder.setNode(new NodeRef(nodeInstanceId));
-        builder.setFlowRef(new FlowRef(flowPath));
-        builder.setFlowTable(new FlowTableRef(tableInstanceId));
-        builder.setTransactionUri(new Uri(flow.getId().getValue()));
-
-        try {
-            RpcResult<AddFlowOutput> addFlowOutputRpcResult = salFlowService.addFlow(builder.build()).get();
-            if(addFlowOutputRpcResult.isSuccessful()){
-                //AddFlowOutput result = addFlowOutputRpcResult.getResult();
-                //LOG.warn(result.toString());
-            } else {
-                Collection<RpcError> errors = addFlowOutputRpcResult.getErrors();
-                Iterator<RpcError> iterator = errors.iterator();
-                while (iterator.hasNext()) {
-                    RpcError next = iterator.next();
-                    LOG.warn(next.toString());
-                }
-            }
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }*/
-
-        //KeyedInstanceIdentifier<Flow, FlowKey> flowiid = tableInstanceId.child(Flow.class, new FlowKey(new FlowId("1")));
-        WriteTransaction wt = dataBroker.newWriteOnlyTransaction();
-        //ReadWriteTransaction wt = dataBroker.newReadWriteTransaction();
         wt.put(LogicalDatastoreType.CONFIGURATION,flowPath,flow,true);
-        CheckedFuture<Void, TransactionCommitFailedException> submit = wt.submit();
-        Futures.addCallback(submit, new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(@Nullable Void result) {
-                LOG.info("success");
-            }
+    }
 
-            @Override
-            public void onFailure(Throwable t) {
-                LOG.warn("failed");
-            }
-        });
+    private Match buildODLMatch(MapleRule rule){
+        MatchBuilder matchBuilder = new MatchBuilder();
 
+        matchBuilder.setInPort(new NodeConnectorId("openflow:1:2"));
+
+
+        return matchBuilder.build();
     }
 
 }

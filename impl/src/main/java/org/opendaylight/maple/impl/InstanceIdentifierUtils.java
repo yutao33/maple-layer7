@@ -23,11 +23,16 @@ public final class InstanceIdentifierUtils {
         throw new UnsupportedOperationException("Utility class should never be instantiated");
     }
 
+
+
+
+
+
     /**
      * @param nodeConnectorRef
      * @return
      */
-    public static InstanceIdentifier<Node> generateNodeInstanceIdentifier(final NodeConnectorRef nodeConnectorRef) {
+    public static InstanceIdentifier<Node> genNodeIId(final NodeConnectorRef nodeConnectorRef) {
         return nodeConnectorRef.getValue().firstIdentifierOf(Node.class);
     }
 
@@ -36,9 +41,9 @@ public final class InstanceIdentifierUtils {
      * @param flowTableKey
      * @return
      */
-    public static InstanceIdentifier<Table> generateFlowTableInstanceIdentifier(final NodeConnectorRef nodeConnectorRef,
-                                                                                final TableKey flowTableKey) {
-        return generateNodeInstanceIdentifier(nodeConnectorRef).builder().augmentation(FlowCapableNode.class)
+    public static InstanceIdentifier<Table> genFlowTableIId(final NodeConnectorRef nodeConnectorRef,
+                                                            final TableKey flowTableKey) {
+        return genNodeIId(nodeConnectorRef).builder().augmentation(FlowCapableNode.class)
                 .child(Table.class, flowTableKey).build();
     }
 
@@ -48,9 +53,9 @@ public final class InstanceIdentifierUtils {
      * @param flowKey
      * @return
      */
-    public static InstanceIdentifier<Flow> generateFlowInstanceIdentifier(final NodeConnectorRef nodeConnectorRef,
-                                                                          final TableKey flowTableKey, final FlowKey flowKey) {
-        return generateFlowTableInstanceIdentifier(nodeConnectorRef, flowTableKey).child(Flow.class, flowKey);
+    public static InstanceIdentifier<Flow> genFlowIId(final NodeConnectorRef nodeConnectorRef,
+                                                      final TableKey flowTableKey, final FlowKey flowKey) {
+        return genFlowTableIId(nodeConnectorRef, flowTableKey).child(Flow.class, flowKey);
     }
 
 }

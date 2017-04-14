@@ -174,7 +174,7 @@ public class FlowWriterServiceImpl implements FlowWriterService {
         FlowId flowId = new FlowId(FLOW_ID_PREFIX+String.valueOf(flowIdInc.getAndIncrement()));
         FlowKey flowKey = new FlowKey(flowId);
 
-        return InstanceIdentifierUtils.generateFlowInstanceIdentifier(nodeConnectorRef, flowTableKey, flowKey);
+        return InstanceIdentifierUtils.genFlowIId(nodeConnectorRef, flowTableKey, flowKey);
     }
 
     /**

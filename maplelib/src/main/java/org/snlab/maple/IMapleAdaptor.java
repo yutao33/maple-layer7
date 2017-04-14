@@ -19,6 +19,6 @@ public interface IMapleAdaptor {
 
     void updateRules(List<MapleRule> rules);
 
-    void outputtracetree();
+    void outPutTraceTree();
 
 }
