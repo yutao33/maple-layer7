@@ -19,6 +19,9 @@ public class ValueMaskPair {
     private final ByteArray value;
 
     public ValueMaskPair(@Nonnull ByteArray value, @Nullable ByteArray mask) {
+        if(mask!=null&&!value.bitAnd(mask.not()).isFullZero()){
+            throw new RuntimeException("bad ValueMaskPair");
+        }
         this.mask = mask;
         this.value = value;
     }

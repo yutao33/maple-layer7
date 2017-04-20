@@ -28,41 +28,34 @@ public class TraceTreeTNode extends TraceTreeNode {
     private final MapleMatchField field;
     private final TestCondition condition;
 
-    private TraceTreeNode branchtrue;
+    private Map<MapleMatch,TNodeEntry> branchtrueMap;
     private TraceTreeNode branchfalse;
-
-    private MapleMatch match;//NOTE for generate rules
-    private MapleRule barrierRule;
 
     public TraceTreeTNode(MapleMatchField field, TestCondition condition) {
         this.field = field;
         this.condition = condition;
     }
 
-    @Nullable
-    TraceTreeNode getBranch(boolean b) {
-        if (b) return branchtrue;
-        else return branchfalse;
-    }
-
-    void setBranch(boolean b, TraceTreeNode branch) {
-        if (b) branchtrue = branch;
-        else branchfalse = branch;
-    }
-
-    public MapleMatch getMatch() {
-        return match;
-    }
-
-    public MapleRule getBarrierRule() {
-        return barrierRule;
-    }
-
-    public void genBarrierRule(@Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
-        Map<MapleMatchField, MapleMatch> match = new EnumMap<>(matchMapBefore);
-        match.put(this.field, this.match);
-        this.barrierRule = new MapleRule(match, Forward.DEFAULT_PuntForwards);
-    }
+//    @Nullable
+//    TraceTreeNode getBranch(boolean b) {
+//        if (b) return branchtrue;
+//        else return branchfalse;
+//    }
+//
+//    void setBranch(boolean b, TraceTreeNode branch) {
+//        if (b) branchtrue = branch;
+//        else branchfalse = branch;
+//    }
+//
+//    public MapleMatch getMatch() {
+//        return match;
+//    }
+//
+//    public void genBarrierRule(@Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
+//        Map<MapleMatchField, MapleMatch> match = new EnumMap<>(matchMapBefore);
+//        match.put(this.field, this.match);
+//        this.barrierRule = new MapleRule(match, Forward.DEFAULT_PuntForwards);
+//    }
 
     @Override
     public boolean isConsistentWith(Trace.TraceItem item) {
@@ -94,31 +87,36 @@ public class TraceTreeTNode extends TraceTreeNode {
         }
     }
 
-    @Nullable
-    public static TraceTreeTNode buildNodeIfNeedOrNull(@Nonnull Trace.TestItem item, @Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
-        TestCondition condition = genTNodeCondition(item);
-        MapleMatchField field = item.getField();
-        Set<ValueMaskPair> valueMaskPairs = condition.toMatchSet(field);
-        MapleMatch oldMatch = matchMapBefore.get(field);
-        MapleMatch subMatch = null;
-        if (oldMatch != null) {
-            Set<ValueMaskPair> newset = new HashSet<>();
-            boolean ret = oldMatch.getMatchProperSubSetOrfalse(valueMaskPairs, newset);
-            if (ret && !newset.isEmpty()) {
-                subMatch = new MapleMatch(field, newset);
-            }
-        } else {
-            subMatch = new MapleMatch(field, valueMaskPairs);
-        }
-        if (subMatch != null) {
-            TraceTreeTNode TNode = new TraceTreeTNode(field, condition);
-            TNode.match = subMatch;
-            return TNode;
-        }
-        return null;
-    }
+//    @Nullable
+//    public static TraceTreeTNode buildNodeIfNeedOrNull(@Nonnull Trace.TestItem item, @Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
+//        TestCondition condition = genTNodeCondition(item);
+//        MapleMatchField field = item.getField();
+//        Set<ValueMaskPair> valueMaskPairs = condition.toMatchSet(field);
+//        MapleMatch oldMatch = matchMapBefore.get(field);
+//        MapleMatch subMatch = null;
+//        if (oldMatch != null) {
+//            Set<ValueMaskPair> newset = new HashSet<>();
+//            boolean ret = oldMatch.getMatchProperSubSetOrfalse(valueMaskPairs, newset);
+//            if (ret && !newset.isEmpty()) {
+//                subMatch = new MapleMatch(field, newset);
+//            }
+//        } else {
+//            subMatch = new MapleMatch(field, valueMaskPairs);
+//        }
+//        if (subMatch != null) {
+//            TraceTreeTNode TNode = new TraceTreeTNode(field, condition);
+//            TNode.match = subMatch;
+//            return TNode;
+//        }
+//        return null;
+//    }
 
     //-------------------------------inner class-----------------------------
+
+    public static class TNodeEntry{
+        MapleRule barrierRule;
+        TraceTreeNode child;
+    }
 
     /**
      * abstract static class TestCondition.
@@ -197,7 +195,6 @@ public class TraceTreeTNode extends TraceTreeNode {
     public static class ValueRange extends TestCondition {
         private ByteArray value1;
         private ByteArray value2;
-
         private ValueRange(ByteArray value1, ByteArray value2, ByteArray mask) {
             this.value1 = value1;//0x 1 01101001
             this.value2 = value2;//0x 0 10010101

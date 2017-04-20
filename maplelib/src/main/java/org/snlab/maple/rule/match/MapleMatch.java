@@ -20,53 +20,53 @@ import java.util.Set;
 @Immutable
 public class MapleMatch {
     private final MapleMatchField field;
-    private final Set<ValueMaskPair> matchSet; //NOTE matchSet is not intersectant
+    private final ValueMaskPair match; //NOTE matchSet is not intersectant
 
-    public MapleMatch(MapleMatchField field, Set<ValueMaskPair> matchset) {
+    public MapleMatch(MapleMatchField field, ValueMaskPair match) {
         this.field = field;
-        this.matchSet = new HashSet<>(matchset);
+        this.match = match;
     }
 
     public MapleMatchField getField() {
         return field;
     }
 
-    public Set<ValueMaskPair> getMatchSet() {
-        return Collections.unmodifiableSet(matchSet);
+    public ValueMaskPair getMatch() {
+        return match;
     }
 
-    public boolean getMatchProperSubSetOrfalse(@Nonnull Set<ValueMaskPair> subset, Set<ValueMaskPair> newset) {
-        int size = matchSet.size();
-        Object[] pairs = matchSet.toArray();
-        boolean[] allcontain = new boolean[size];
-        for (int i = 0; i < size; i++) {
-            allcontain[i] = false;
-        }
-        newset.clear();
-        for (ValueMaskPair a : subset) {
-            for (int i = 0; i < size; i++) {
-                ValueMaskPair b = ValueMaskPair.getSubSet((ValueMaskPair) pairs[i], a);
-                if (b != null) {
-                    if (b.equals(pairs[i])) {
-                        allcontain[i] = true;
-                    }
-                    newset.add(b);
-                }
-            }
-        }
-        for (int i = 0; i < size; i++) {
-            if (!allcontain[i]) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    public boolean getMatchProperSubSetOrfalse(@Nonnull Set<ValueMaskPair> subset, Set<ValueMaskPair> newset) {
+//        int size = matchSet.size();
+//        Object[] pairs = matchSet.toArray();
+//        boolean[] allcontain = new boolean[size];
+//        for (int i = 0; i < size; i++) {
+//            allcontain[i] = false;
+//        }
+//        newset.clear();
+//        for (ValueMaskPair a : subset) {
+//            for (int i = 0; i < size; i++) {
+//                ValueMaskPair b = ValueMaskPair.getSubSet((ValueMaskPair) pairs[i], a);
+//                if (b != null) {
+//                    if (b.equals(pairs[i])) {
+//                        allcontain[i] = true;
+//                    }
+//                    newset.add(b);
+//                }
+//            }
+//        }
+//        for (int i = 0; i < size; i++) {
+//            if (!allcontain[i]) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     @Override
     public String toString() {
         return "MapleMatch{" +
                 "field=" + field +
-                ", matchSet=" + matchSet +
+                ", match=" + match +
                 '}';
     }
 }

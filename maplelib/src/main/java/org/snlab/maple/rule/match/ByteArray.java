@@ -30,6 +30,7 @@ public class ByteArray {
         return value.length;
     }
 
+    @Nonnull
     public ByteArray bitAnd(@Nullable ByteArray a2) {
         if (a2 == null) {
             return this;
@@ -42,6 +43,7 @@ public class ByteArray {
         return new ByteArray(v);
     }
 
+    @Nonnull
     public ByteArray bitOr(@Nonnull ByteArray a2) {
         assert value.length == a2.value.length;
         byte[] v = value.clone();
@@ -51,12 +53,21 @@ public class ByteArray {
         return new ByteArray(v);
     }
 
+    @Nonnull
     public ByteArray not() {
         byte[] v = value.clone();
         for (int i = 0; i < v.length; i++) {
             v[i] = (byte) ~v[i];
         }
         return new ByteArray(v);
+    }
+
+    public boolean isFullZero(){
+        for(int i=0;i<value.length;i++){
+            if(value[i]!=0)
+                return false;
+        }
+        return true;
     }
 
     @Override
