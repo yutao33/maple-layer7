@@ -87,21 +87,29 @@ public final class Trace {
 
     public static class TraceIn extends TestItem {
         private Set<ByteArray> values;
+        private ByteArray pktvalue;
 
-        public TraceIn(MapleMatchField field, byte[] mask, @Nonnull List<byte[]> values, boolean ret) {
-            super.field = field;
+        public TraceIn(MapleMatchField field,@Nullable byte[] mask, @Nonnull List<byte[]> values,@Nullable byte[] pktvalue, boolean ret) {
+            this.field = field;
             if (mask != null) {
-                super.mask = new ByteArray(mask);
+                this.mask = new ByteArray(mask);
             }
             this.values = new HashSet<>();
             for (byte[] value : values) {
                 this.values.add(new ByteArray(value));
+            }
+            if(pktvalue!=null){
+                this.pktvalue=new ByteArray(pktvalue);
             }
             this.result = ret;
         }
 
         public Set<ByteArray> getValues() {
             return values;
+        }
+
+        public ByteArray getPktvalue() {
+            return pktvalue;
         }
     }
 

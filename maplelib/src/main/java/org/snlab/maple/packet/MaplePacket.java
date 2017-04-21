@@ -192,7 +192,7 @@ public class MaplePacket implements IMaplePacket {
                     ret = true;
                 }
             }
-            TraceItem ti = new Trace.TraceIn(MapleMatchField.INGRESS, null, values, ret);
+            TraceItem ti = new Trace.TraceIn(MapleMatchField.INGRESS, null, values,null, ret);
             addTraceItem(ti);
             return ret;
         }
@@ -248,6 +248,9 @@ public class MaplePacket implements IMaplePacket {
         }
 
         public boolean in(byte[]... values) {
+            if(values.length==0){
+                return false;
+            }
             byte[] value = fieldMap.get(field);
             boolean ret = false;
             List<byte[]> list = new ArrayList<>(values.length);
@@ -257,7 +260,7 @@ public class MaplePacket implements IMaplePacket {
                     ret = true;
                 }
             }
-            TraceItem ti = new Trace.TraceIn(field, mask, list, ret);
+            TraceItem ti = new Trace.TraceIn(field, mask, list, value, ret);
             addTraceItem(ti);
             return ret;
         }

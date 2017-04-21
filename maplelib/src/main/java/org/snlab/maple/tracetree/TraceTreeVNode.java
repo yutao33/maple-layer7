@@ -34,7 +34,7 @@ public class TraceTreeVNode extends TraceTreeNode {
     }
 
     @Nonnull
-    public VNodeEntry getEntryOrConstruct(@Nonnull ByteArray value) {
+    VNodeEntry getEntryOrConstruct(@Nonnull ByteArray value) {
         VNodeEntry v = matchentries.get(value);
         if (v == null) {
             v = new VNodeEntry(null, null);//TODO match
@@ -101,6 +101,34 @@ public class TraceTreeVNode extends TraceTreeNode {
 //        }
 //        return null;
 //    }
+
+
+    @Nullable
+    public static TraceTreeVNode buildNodeIfNeedOrNull(@Nonnull Trace.TraceGet item, @Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
+        MapleMatchField field = item.getField();
+        MapleMatch oldMatch = matchMapBefore.get(field);
+        ValueMaskPair oldpair=null;
+        if(oldMatch!=null){
+            oldpair=oldMatch.getMatch();
+        }
+
+        MapleMatch subMatch = null;
+        ValueMaskPair newpair = new ValueMaskPair(item.getValue(), item.getMask());
+        if (oldpair != null) {
+            ValueMaskPair subpair = ValueMaskPair.getSubSet(oldpair, newpair);
+            if(!subpair.equals(oldpair)){
+                subMatch=new MapleMatch(field,subpair);
+            }
+        } else {
+            subMatch = new MapleMatch(field, newpair);
+        }
+        if (subMatch != null) {
+            TraceTreeVNode VNode = new TraceTreeVNode(field, item.getMask());
+            VNode.matchentries.put(item.getValue(), new VNodeEntry(null, subMatch));
+            return VNode;
+        }
+        return null;
+    }
 
 
     //-------------------------------inner class-----------------------------

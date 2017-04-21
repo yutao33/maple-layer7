@@ -18,7 +18,9 @@ import org.snlab.maple.rule.route.Forward;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -45,9 +47,20 @@ public class TraceTreeTNode extends TraceTreeNode {
         branchfalse=branch;
     }
 
+    TNodeEntry getEntryOrConstruct(MapleMatch key){
+        //TODO
+        return branchtrueMap.get(key);
+    }
 
+    public MapleMatchField getField() {
+        return field;
+    }
 
-//    void setBranch(boolean b, TraceTreeNode branch) {
+    public Map<MapleMatch, TNodeEntry> getBranchtrueMap() {
+        return branchtrueMap;
+    }
+
+    //    void setBranch(boolean b, TraceTreeNode branch) {
 //        if (b) branchtrue = branch;
 //        else branchfalse = branch;
 //    }
@@ -56,11 +69,11 @@ public class TraceTreeTNode extends TraceTreeNode {
 //        return match;
 //    }
 //
-//    public void genBarrierRule(@Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
-//        Map<MapleMatchField, MapleMatch> match = new EnumMap<>(matchMapBefore);
-//        match.put(this.field, this.match);
-//        this.barrierRule = new MapleRule(match, Forward.DEFAULT_PuntForwards);
-//    }
+    public void genBarrierRule(@Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
+        Map<MapleMatchField, MapleMatch> match = new EnumMap<>(matchMapBefore);
+        //match.put(this.field, this.match);
+        //this.barrierRule = new MapleRule(match, Forward.DEFAULT_PuntForwards);
+    }
 
     @Override
     public boolean isConsistentWith(Trace.TraceItem item) {
@@ -115,6 +128,44 @@ public class TraceTreeTNode extends TraceTreeNode {
 //        }
 //        return null;
 //    }
+
+    @Nullable
+    public static TraceTreeTNode buildNodeIfNeedOrNull(@Nonnull Trace.TestItem item, @Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
+        TestCondition condition = genTNodeCondition(item);
+        MapleMatchField field = item.getField();
+        Set<ValueMaskPair> valueMaskPairs = condition.toMatchSet(field);
+
+        MapleMatch oldMatch = matchMapBefore.get(field);
+        ValueMaskPair oldpair=null;
+        if(oldMatch!=null){
+            oldpair=oldMatch.getMatch();
+        }
+
+        Map<MapleMatch,TNodeEntry> matchmap=new HashMap<>();
+
+        if (oldpair != null) {
+            for (ValueMaskPair valueMaskPair : valueMaskPairs) {
+                ValueMaskPair pair = ValueMaskPair.getSubSet(valueMaskPair, oldpair);
+                if(pair!=null&&pair.equals(oldpair)){
+                    return null;
+                }
+                if(pair!=null) {
+                    matchmap.put(new MapleMatch(field, pair), null);
+                }
+            }
+        } else {
+            for (ValueMaskPair valueMaskPair : valueMaskPairs) {
+                matchmap.put(new MapleMatch(field,valueMaskPair),null);
+            }
+        }
+
+        if (!matchmap.isEmpty()) {
+            TraceTreeTNode tNode = new TraceTreeTNode(field, condition);
+            tNode.branchtrueMap=matchmap;
+            return tNode;
+        }
+        return null;
+    }
 
     //-------------------------------inner class-----------------------------
 
