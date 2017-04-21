@@ -36,12 +36,17 @@ public class TraceTreeTNode extends TraceTreeNode {
         this.condition = condition;
     }
 
-//    @Nullable
-//    TraceTreeNode getBranch(boolean b) {
-//        if (b) return branchtrue;
-//        else return branchfalse;
-//    }
-//
+    @Nullable
+    TraceTreeNode getBranchFalse() {
+        return branchfalse;
+    }
+
+    void setBranchFalse(TraceTreeNode branch){
+        branchfalse=branch;
+    }
+
+
+
 //    void setBranch(boolean b, TraceTreeNode branch) {
 //        if (b) branchtrue = branch;
 //        else branchfalse = branch;

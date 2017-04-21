@@ -64,6 +64,13 @@ public class TraceTree {
                 Trace.TestItem ti = (Trace.TestItem) preitem;
                 TraceTreeTNode t = (TraceTreeTNode) nodep;
                 boolean testresult = ti.getresult();
+
+                if(testresult){
+                    
+                } else {
+
+                }
+
                 TraceTreeNode oldtestbranch = t.getBranch(testresult);
 
                 MapleMatch match = t.getMatch();

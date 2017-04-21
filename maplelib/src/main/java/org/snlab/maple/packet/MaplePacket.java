@@ -237,12 +237,10 @@ public class MaplePacket implements IMaplePacket {
 
         public boolean is(byte[] context) {
             assert field.getByteLength() == context.length; //TODO
-            boolean ret;
             byte[] value = fieldMap.get(field);
+            boolean ret=false;
             if (value != null) {
                 ret = test(value, context);
-            } else {
-                ret = false;
             }
             TraceItem ti = new Trace.TraceIs(field, mask, context, ret);
             addTraceItem(ti);
@@ -250,12 +248,12 @@ public class MaplePacket implements IMaplePacket {
         }
 
         public boolean in(byte[]... values) {
-            byte[] value = fieldMap.get(field).clone();
+            byte[] value = fieldMap.get(field);
             boolean ret = false;
-            List<byte[]> list = new ArrayList<>();
+            List<byte[]> list = new ArrayList<>(values.length);
             for (byte[] i : values) {
                 list.add(i);
-                if (test(value, i)) {
+                if (value!=null&&test(value, i)) {
                     ret = true;
                 }
             }
@@ -269,20 +267,23 @@ public class MaplePacket implements IMaplePacket {
             assert len == value1.length && len == value2.length;//TODO
             boolean ret = false;
 
+            TraceItem ti = new Trace.TraceRange(field, mask, value1, value2, ret);
+
             return ret;
         }
 
         public byte[] get() {
-            byte[] value = fieldMap.get(field).clone();
-            assert value != null;
+            byte[] value = fieldMap.get(field);
+            assert value != null; //TODO
+            byte[] value1=new byte[value.length];
             if (mask != null) {
-                for (int i = 0; i < value.length; i++) {
-                    value[i] &= mask[i];
+                for (int i = 0; i < value1.length; i++) {
+                    value1[i] =(byte)(value[i]&mask[i]);
                 }
             }
             TraceItem ti = new Trace.TraceGet(field, mask, value);
             addTraceItem(ti);
-            return value;
+            return value1;
         }
 
     }

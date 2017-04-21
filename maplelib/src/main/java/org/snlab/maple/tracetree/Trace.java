@@ -13,6 +13,7 @@ import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.rule.match.ByteArray;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,6 +32,7 @@ public final class Trace {
             return field;
         }
 
+        @Nullable
         public ByteArray getMask() {
             return mask;
         }
@@ -38,16 +40,22 @@ public final class Trace {
 
     public static abstract class TestItem extends TraceItem {
         protected boolean result;
+        protected ByteArray value;
 
         public boolean getresult() {
             return result;
+        }
+
+        @Nullable
+        public ByteArray getValue(){
+            return value;
         }
     }
 
     public static class TraceGet extends TraceItem {
         private ByteArray value;
 
-        public TraceGet(MapleMatchField field, byte[] mask, @Nonnull byte[] value) {
+        public TraceGet(MapleMatchField field,@Nullable byte[] mask, @Nonnull byte[] value) {
             super.field = field;
             if (mask != null) {
                 super.mask = new ByteArray(mask);
@@ -63,10 +71,10 @@ public final class Trace {
     public static class TraceIs extends TestItem {
         private ByteArray value;
 
-        public TraceIs(MapleMatchField field, byte[] mask, @Nonnull byte[] value, boolean ret) {
-            super.field = field;
+        public TraceIs(MapleMatchField field,@Nullable byte[] mask, @Nonnull byte[] value, boolean ret) {
+            this.field = field;
             if (mask != null) {
-                super.mask = new ByteArray(mask);
+                this.mask = new ByteArray(mask);
             }
             this.value = new ByteArray(value);
             this.result = ret;
