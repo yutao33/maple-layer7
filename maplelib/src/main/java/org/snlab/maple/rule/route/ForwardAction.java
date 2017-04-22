@@ -71,17 +71,12 @@ public final class ForwardAction {
         }
     }
 
-    public interface PuntPktListener {
-        void onPunt(Ethernet originPkt);
-    }
+//    public interface PuntPktListener {
+//        void onPunt(Ethernet originPkt);
+//    }
 
     public static class Punt extends Action {
-        private PuntPktListener listener;
-
-        public Punt(PuntPktListener listener) {
-            this.listener = listener;
-        }
-
+//        private PuntPktListener listener;
     }
 
     public static class Drop extends Action {
@@ -97,7 +92,11 @@ public final class ForwardAction {
     }
 
     public static class PushVlan extends Action {
+        private short vlanId;
 
+        public PushVlan(short vlanId){
+            this.vlanId=vlanId;
+        }
     }
 
     public static class PopVlan extends Action {

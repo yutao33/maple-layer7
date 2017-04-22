@@ -18,6 +18,7 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
@@ -151,7 +152,9 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
     private void installRule1(WriteTransaction wt,MapleRule rule){
         Map<MapleMatchField, MapleMatch> matches = rule.getMatches();
         List<Forward> route = rule.getRoute();
+        for (Forward forward : route) {
 
+        }
     }
 
     private void installRule(WriteTransaction wt,MapleRule rule){
@@ -232,11 +235,18 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
                     ethernetMatchBuilder.setEthernetSource(ethernetSourceBuilder.build());
                     break;
                 case ETH_TYPE:
-                    EthernetType ethernetType = new EthernetTypeBuilder().setType(new EtherType(0L)).build();
+                    int type=value.toShort()&0xffff;
+                    EthernetType ethernetType = new EthernetTypeBuilder().setType(new EtherType((long)type)).build();
                     if(ethernetMatchBuilder==null){
                         ethernetMatchBuilder=new EthernetMatchBuilder();
                     }
                     ethernetMatchBuilder.setEthernetType(ethernetType);
+                    if(type==0x0800||type==0x86dd){
+                        if(ipMatchBuilder==null){
+                            ipMatchBuilder=new IpMatchBuilder();
+                        }
+                        ipMatchBuilder.setIpProto(type==0x0800?IpVersion.Ipv4:IpVersion.Ipv6);
+                    }
                     break;
                 case IPv4_SRC:
                     if(ipv4MatchBuilder==null){
@@ -255,11 +265,13 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
                         ipMatchBuilder=new IpMatchBuilder();
                     }
                     ipMatchBuilder.setIpProtocol(value.toShort());
-                default:
+                case IPv6_SRC:
                     if(ipv6MatchBuilder==null){
                         ipv6MatchBuilder=new Ipv6MatchBuilder();
                     }
                     //ipv6MatchBuilder.setIpv6Source(new IPv6Prefix())
+                    break;
+                case IPv6_DST:
                     break;
             }
         }

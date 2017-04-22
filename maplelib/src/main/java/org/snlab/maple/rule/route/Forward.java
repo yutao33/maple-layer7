@@ -19,13 +19,14 @@ import java.util.List;
 
 @Immutable
 public class Forward {
+
     private final Port ingress;
     private final List<? extends ForwardAction.Action> actions;
     private final int bandwidthlimit;
     //private int timeout;
 
     public static final List<? extends ForwardAction.Action> DEFAULT_PuntActions =
-            Collections.singletonList(new ForwardAction.Punt(null));
+            Collections.singletonList(new ForwardAction.Punt());
     public static final List<Forward> DEFAULT_PuntForwards =
             Collections.singletonList(new Forward(null, DEFAULT_PuntActions, 0, 0));
     public static final Forward DROP =
@@ -57,9 +58,9 @@ public class Forward {
         this.bandwidthlimit = 0;
     }
 
-
-    public static String[] extractIngress(String... path) {
-        throw new UnsupportedOperationException();
+    @Nullable
+    public Port getIngress() {
+        return ingress;
     }
 
     public List<? extends ForwardAction.Action> getActions() {
@@ -96,6 +97,16 @@ public class Forward {
                 "ingress=" + ingress +
                 ", actions=" + actions +
                 '}';
+    }
+
+
+    /**
+     * static method
+     * @param path
+     * @return
+     */
+    public static String[] extractIngress(String... path) {
+        throw new UnsupportedOperationException();
     }
 }
 

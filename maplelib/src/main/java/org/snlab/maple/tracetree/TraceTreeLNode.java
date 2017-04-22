@@ -40,6 +40,11 @@ public class TraceTreeLNode extends TraceTreeNode {
     }
 
     public static TraceTreeLNode build(@Nonnull List<Forward> route, @Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
+        //route:
+        //      ingress=null, actions=output:openflow:2:3
+        //      ingress=null, actions=output:openflow:1:2
+        //      ingress=null, actions=output:openflow:3:3
+        //      ingress=null, actions=output:openflow:1:1
         Map<MapleMatchField, MapleMatch> match = new EnumMap<>(matchMapBefore);
         TraceTreeLNode l = new TraceTreeLNode(route);
         l.rule = new MapleRule(match, route);

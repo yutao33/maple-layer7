@@ -35,8 +35,9 @@ set-vlan-pcp-action
 strip-vlan-action
 sw-path-action
 
+ "drop" must not be accompanied by any other action or instruction
 
-
+output drop tocontroller push_xx pop_xx set-field
 
 
 

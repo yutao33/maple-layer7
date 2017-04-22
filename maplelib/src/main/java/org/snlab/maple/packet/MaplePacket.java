@@ -156,10 +156,6 @@ public class MaplePacket implements IMaplePacket {
         //TODO
     }
 
-    public void setTimeOut(int timeout) {
-        //TODO
-    }
-
     public List<Forward> getRoute() {
         return route;
     }
