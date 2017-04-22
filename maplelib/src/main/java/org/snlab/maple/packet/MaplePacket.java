@@ -93,12 +93,12 @@ public class MaplePacket implements IMaplePacket {
 
     @Override
     public PktFieldMaskable ipSrc() {
-        return new PktFieldMaskable(MapleMatchField.IP_SRC);
+        return new PktFieldMaskable(MapleMatchField.IPv4_SRC);
     }
 
     @Override
     public PktFieldMaskable ipDst() {
-        return new PktFieldMaskable(MapleMatchField.IP_DST);
+        return new PktFieldMaskable(MapleMatchField.IPv4_DST);
     }
 
     @Override
@@ -175,7 +175,7 @@ public class MaplePacket implements IMaplePacket {
         public boolean is(String ingress) {
             assert ingress.matches("^openflow:\\d+:\\w+$");//TODO
             boolean ret = MaplePacket.this.ingress.getId().equals(ingress);
-            TraceItem ti = new Trace.TraceIs(MapleMatchField.INGRESS, null, ingress.getBytes(), ret);
+            TraceItem ti = new Trace.TraceIs(MapleMatchField.INGRESS, null, ingress.getBytes(), null,ret);
             addTraceItem(ti);
             return ret;
         }
@@ -199,7 +199,7 @@ public class MaplePacket implements IMaplePacket {
 
         public boolean belongto(String node) {
             boolean ret = MaplePacket.this.ingress.getOwner().getId().equals(node);
-            TraceItem ti = new Trace.TraceRange(MapleMatchField.INGRESS, null, node.getBytes(), null, ret);
+            TraceItem ti = new Trace.TraceRange(MapleMatchField.INGRESS, null, node.getBytes(), null,null, ret);
             addTraceItem(ti);
             return ret;
         }
@@ -242,7 +242,7 @@ public class MaplePacket implements IMaplePacket {
             if (value != null) {
                 ret = test(value, context);
             }
-            TraceItem ti = new Trace.TraceIs(field, mask, context, ret);
+            TraceItem ti = new Trace.TraceIs(field, mask, context, value,ret);
             addTraceItem(ti);
             return ret;
         }
@@ -268,11 +268,13 @@ public class MaplePacket implements IMaplePacket {
         public boolean range(byte[] value1, byte[] value2) {
             int len = field.getByteLength();
             assert len == value1.length && len == value2.length;//TODO
+
+            byte[] value = fieldMap.get(field);
             boolean ret = false;
 
-            TraceItem ti = new Trace.TraceRange(field, mask, value1, value2, ret);
+            TraceItem ti = new Trace.TraceRange(field, mask, value1, value2,value, ret);
 
-            return ret;
+            throw new UnsupportedOperationException();
         }
 
         public byte[] get() {

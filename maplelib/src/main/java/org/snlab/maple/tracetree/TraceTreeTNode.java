@@ -47,9 +47,14 @@ public class TraceTreeTNode extends TraceTreeNode {
         branchfalse=branch;
     }
 
-    TNodeEntry getEntryOrConstruct(MapleMatch key){
+    Map.Entry<MapleMatch, TNodeEntry> findEntry(ByteArray key){
         //TODO
-        return branchtrueMap.get(key);
+        for (Map.Entry<MapleMatch, TNodeEntry> entry : branchtrueMap.entrySet()) {
+            if(entry.getKey().getMatch().testMatch(key)){
+                return entry;
+            }
+        }
+        return null;
     }
 
     public MapleMatchField getField() {
@@ -70,9 +75,14 @@ public class TraceTreeTNode extends TraceTreeNode {
 //    }
 //
     public void genBarrierRule(@Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
-        Map<MapleMatchField, MapleMatch> match = new EnumMap<>(matchMapBefore);
+        //Map<MapleMatchField, MapleMatch> match = new EnumMap<>(matchMapBefore);
         //match.put(this.field, this.match);
         //this.barrierRule = new MapleRule(match, Forward.DEFAULT_PuntForwards);
+        for (Map.Entry<MapleMatch, TNodeEntry> mentry : branchtrueMap.entrySet()) {
+            Map<MapleMatchField, MapleMatch> match = new EnumMap<>(matchMapBefore);
+            match.put(this.field,mentry.getKey());
+            mentry.getValue().barrierRule=new MapleRule(match,Forward.DEFAULT_PuntForwards);
+        }
     }
 
     @Override
@@ -150,12 +160,12 @@ public class TraceTreeTNode extends TraceTreeNode {
                     return null;
                 }
                 if(pair!=null) {
-                    matchmap.put(new MapleMatch(field, pair), null);
+                    matchmap.put(new MapleMatch(field, pair), new TNodeEntry());
                 }
             }
         } else {
             for (ValueMaskPair valueMaskPair : valueMaskPairs) {
-                matchmap.put(new MapleMatch(field,valueMaskPair),null);
+                matchmap.put(new MapleMatch(field,valueMaskPair),new TNodeEntry());
             }
         }
 

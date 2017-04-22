@@ -27,9 +27,9 @@ public class MapleMatch {
         this.match = match;
     }
 
-    public MapleMatchField getField() {
-        return field;
-    }
+//    public MapleMatchField getField() {
+//        return field;
+//    }
 
     public ValueMaskPair getMatch() {
         return match;

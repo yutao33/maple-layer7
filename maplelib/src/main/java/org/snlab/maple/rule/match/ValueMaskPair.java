@@ -26,10 +26,12 @@ public class ValueMaskPair {
         this.value = value;
     }
 
+    @Nullable
     public ByteArray getMask() {
         return mask;
     }
 
+    @Nonnull
     public ByteArray getValue() {
         return value;
     }
@@ -57,6 +59,11 @@ public class ValueMaskPair {
         //        1xxx0   xxx10   1xx10
         //mask    10001   00011   10011
         //value   10000   00010   10010
+
+        //        xxxx_1111  xxxx_x111
+        //mask    0000_1111  0000_0111
+        //value   0000_1111  0000_0111
+
         assert a.value.length() == b.value.length();
         ByteArray maska = a.mask;
         if (maska == null) {
@@ -66,22 +73,40 @@ public class ValueMaskPair {
         if (maskb == null) {
             maskb = getfullone(b.value.length());
         }
-        ByteArray j1 = a.value.bitOr(maska.not().bitAnd(b.value)).bitAnd(b.mask);
-        if (j1.equals(b.value)) {
-            ByteArray j2 = b.value.bitOr(maskb.not().bitAnd(a.value)).bitAnd(a.mask);
-            if (j2.equals(b.value)) {
-                ByteArray m = maska.bitOr(maskb);
-                ByteArray v = a.value.bitOr(b.value);
-                if (allone(m)) {
-                    m = null;
-                }
-                return new ValueMaskPair(v, m);
-            } else {
-                return null;
+        if(a.value.bitAnd(maskb).equals(b.value.bitAnd(maska))){
+            ByteArray m = maska.bitOr(maskb);
+            ByteArray v = a.value.bitOr(b.value);
+            if (allone(m)) {
+                m = null;
             }
+            return new ValueMaskPair(v, m);
         } else {
             return null;
         }
+
+//        ByteArray j1 = a.value.bitOr(maska.not().bitAnd(b.value)).bitAnd(b.mask);
+//        if (j1.equals(b.value)) {
+//            ByteArray j2 = b.value.bitOr(maskb.not().bitAnd(a.value)).bitAnd(a.mask);
+//            if (j2.equals(b.value)) {
+//                ByteArray m = maska.bitOr(maskb);
+//                ByteArray v = a.value.bitOr(b.value);
+//                if (allone(m)) {
+//                    m = null;
+//                }
+//                return new ValueMaskPair(v, m);
+//            } else {
+//                return null;
+//            }
+//        } else {
+//            return null;
+//        }
+    }
+
+    public boolean testMatch(@Nonnull ByteArray value){
+        if(mask!=null){
+            value=value.bitAnd(mask);
+        }
+        return value.equals(this.value);
     }
 
     @Override

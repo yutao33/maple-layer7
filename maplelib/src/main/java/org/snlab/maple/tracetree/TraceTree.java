@@ -71,11 +71,20 @@ public class TraceTree {
 
                 TraceTreeTNode.TNodeEntry trueentry=null;
                 if(testresult){
-                    trueentry=t.getEntryOrConstruct(null);
+                    Map.Entry<MapleMatch, TraceTreeTNode.TNodeEntry> mapEntry = t.findEntry(ti.getPktValue());
+                    trueentry=mapEntry.getValue();
                     oldtestbranch=trueentry.child;
-                    //matchMap.put(matchfield, match);
+                    matchMap.put(matchfield,mapEntry.getKey());
                 } else {
                     oldtestbranch=t.getBranchFalse();
+                    Set<ValueMaskPair> unmatchset = unmatchMap.get(matchfield);
+                    if(unmatchset==null){
+                        unmatchset=new HashSet<>();
+                        unmatchMap.put(matchfield,unmatchset);
+                    }
+                    for (MapleMatch mmatch : t.getBranchtrueMap().keySet()) {
+                        unmatchset.add(mmatch.getMatch());
+                    }
 //                    Set<ValueMaskPair> unmatchset = unmatchMap.get(matchfield);
 //                    if (unmatchset == null) {
 //                        unmatchset = new HashSet<>(match.getMatchSet());
@@ -118,7 +127,7 @@ public class TraceTree {
                 ByteArray value = ti.getValue();
                 TraceTreeVNode.VNodeEntry oldentry = v.getEntryOrConstruct(value);
 
-                matchMap.put(oldentry.match.getField(), oldentry.match);
+                matchMap.put(ti.getField(), oldentry.match);
 
                 TraceTreeNode oldchild = oldentry.child;
                 if (i == items.size() - 1) {
@@ -251,9 +260,11 @@ public class TraceTree {
             Map<MapleMatch, TraceTreeTNode.TNodeEntry> bm = t.getBranchtrueMap();
             for (TraceTreeTNode.TNodeEntry te : bm.values()) {
                 globalpriority=barrierpri;
-                te.barrierRule.setPriority(barrierpri);
-                rules.add(te.barrierRule);
-                globalpriority++;
+                if(te.barrierRule!=null) {
+                    te.barrierRule.setPriority(barrierpri);
+                    rules.add(te.barrierRule);
+                    globalpriority++;
+                }
                 recurseUpdatePriority(te.child);
             }
         } else if (node instanceof TraceTreeVNode) {

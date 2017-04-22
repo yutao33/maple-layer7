@@ -9,6 +9,11 @@
 package org.snlab.maple.rule.match;
 
 
+import com.google.common.base.Preconditions;
+import org.snlab.maple.packet.types.IPv4Address;
+import org.snlab.maple.packet.types.MacAddress;
+import org.snlab.maple.packet.util.HexString;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -70,6 +75,49 @@ public class ByteArray {
         return true;
     }
 
+    public String toMacAddressString(){
+        if(value.length!=6){
+            throw new Error("toMacAddressString value.length!=6");
+        }
+        return MacAddress.of(value).toString();
+    }
+
+    public String toIpv4AddressString(){
+        Preconditions.checkState(value.length==4);
+        return IPv4Address.of(value).toString();
+    }
+
+    private boolean bittest(int i){
+        int k=value[i/8];
+        return ((k>>(i%8))&0x1)>0;
+    }
+
+    public int toPrefixMaskNum(int bitlength){
+        Preconditions.checkArgument(bitlength<=value.length*8 && bitlength>0);
+        int c=0;
+        int i=bitlength-1;
+        for(;i>=0;i--){
+            if(bittest(i)){
+                c++;
+            } else {
+                break;
+            }
+        }
+        for(;i>=0;i--){
+            if(bittest(i)){
+                throw new RuntimeException("error prefix");
+            }
+        }
+        return c;
+    }
+
+
+    public short toShort(){
+        Preconditions.checkState(value.length==2);
+        return (short)((value[1]<<8)&(value[0]));
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -87,6 +135,6 @@ public class ByteArray {
 
     @Override
     public String toString() {
-        return Arrays.toString(value);
+        return HexString.toHexString(value);
     }
 }

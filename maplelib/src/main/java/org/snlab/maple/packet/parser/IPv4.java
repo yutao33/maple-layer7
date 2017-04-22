@@ -447,8 +447,8 @@ public class IPv4 extends BasePacket {
     @Override
     public Map<MapleMatchField, byte[]> buildMatchFieldMap() {
         Map<MapleMatchField, byte[]> map = new EnumMap<>(MapleMatchField.class);
-        map.put(MapleMatchField.IP_SRC, sourceAddress.getBytes());
-        map.put(MapleMatchField.IP_DST, destinationAddress.getBytes());
+        map.put(MapleMatchField.IPv4_SRC, sourceAddress.getBytes());
+        map.put(MapleMatchField.IPv4_DST, destinationAddress.getBytes());
         map.put(MapleMatchField.IP_PROTO, U8.of(protocol.getIpProtocolNumber()).getBytes());
         map.putAll(((BasePacket) payload).buildMatchFieldMap());
         return map;

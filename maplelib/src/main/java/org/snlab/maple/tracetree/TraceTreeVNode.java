@@ -123,9 +123,9 @@ public class TraceTreeVNode extends TraceTreeNode {
             subMatch = new MapleMatch(field, newpair);
         }
         if (subMatch != null) {
-            TraceTreeVNode VNode = new TraceTreeVNode(field, item.getMask());
-            VNode.matchentries.put(item.getValue(), new VNodeEntry(null, subMatch));
-            return VNode;
+            TraceTreeVNode vNode = new TraceTreeVNode(field, item.getMask());
+            vNode.matchentries.put(item.getValue(), new VNodeEntry(null, subMatch));
+            return vNode;
         }
         return null;
     }

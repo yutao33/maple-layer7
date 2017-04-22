@@ -68,6 +68,14 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
         <scope>import</scope>
       </dependency>
 
+      <dependency>
+        <groupId>org.snlab.maple</groupId>
+        <artifactId>maplelib</artifactId>
+        <version>2.0.0</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
@@ -143,6 +151,11 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
       <groupId>${project.groupId}</groupId>
       <artifactId>odlmaple-cli</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.snlab.maple</groupId>
+      <artifactId>maplelib</artifactId>
+      <version>2.0.0</version>
     </dependency>
 
   </dependencies>
