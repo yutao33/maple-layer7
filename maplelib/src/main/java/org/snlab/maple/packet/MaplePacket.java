@@ -9,14 +9,18 @@
 package org.snlab.maple.packet;
 
 
+import com.google.common.base.Preconditions;
 import org.snlab.maple.api.IMaplePacket;
 import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.packet.parser.Ethernet;
 import org.snlab.maple.rule.field.MapleMatchField;
+import org.snlab.maple.rule.match.ByteArray;
 import org.snlab.maple.rule.route.Forward;
+import org.snlab.maple.rule.route.ForwardAction;
 import org.snlab.maple.tracetree.Trace;
 import org.snlab.maple.tracetree.Trace.TraceItem;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -122,6 +126,10 @@ public class MaplePacket implements IMaplePacket {
 
     @Override
     public void setRoute(String... path) {
+        Preconditions.checkArgument(path.length%2==0);
+        if(path.length==0){
+            return;
+        }
         if (route != null) {
             route.clear();
         }
@@ -130,6 +138,10 @@ public class MaplePacket implements IMaplePacket {
 
     @Override
     public void addRoute(String... path) {
+        Preconditions.checkArgument(path.length%2==0);
+        if(path.length==0){
+            return;
+        }
         checkRoute();
         int flen = path.length / 2;
         for (int i = 0; i < flen; i++) {
@@ -140,6 +152,10 @@ public class MaplePacket implements IMaplePacket {
 
     @Override
     public void setRoute(Forward... path) {
+        Preconditions.checkArgument(path.length%2==0);
+        if(path.length==0){
+            return;
+        }
         if (route != null) {
             route.clear();
         }
@@ -148,12 +164,16 @@ public class MaplePacket implements IMaplePacket {
 
     @Override
     public void addRoute(Forward... path) {
+        Preconditions.checkArgument(path.length%2==0);
+        if(path.length==0){
+            return;
+        }
         checkRoute();
         Collections.addAll(route, path);
     }
 
-    public void setPktField(MapleMatchField field, byte[] value) {
-        //TODO
+    public void setPktField(MapleMatchField field,@Nonnull byte[] value) {
+        ForwardAction.SetField action = ForwardAction.setField(field, new ByteArray(value));
     }
 
     public List<Forward> getRoute() {

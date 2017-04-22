@@ -8,9 +8,10 @@
 
 package org.snlab.maple.rule.route;
 
+import com.google.common.base.Preconditions;
 import org.snlab.maple.env.MapleTopology.Port;
-import org.snlab.maple.packet.parser.Ethernet;
 import org.snlab.maple.rule.field.MapleMatchField;
+import org.snlab.maple.rule.match.ByteArray;
 
 import javax.annotation.Nonnull;
 
@@ -29,6 +30,11 @@ public final class ForwardAction {
 
     public static Drop drop() {
         return new Drop();
+    }
+
+    public static SetField setField(MapleMatchField field,ByteArray value){
+        Preconditions.checkArgument(field.getBitLength()==value.length());
+        return new SetField(field,value);
     }
 
     //-------------------static Action class------------------------
@@ -84,10 +90,12 @@ public final class ForwardAction {
     }
 
     public static class SetField extends Action {
-        private MapleMatchField field;
+        private final MapleMatchField field;
+        private final ByteArray value;
 
-        public SetField(MapleMatchField field) {
+        public SetField(MapleMatchField field, ByteArray value) {
             this.field = field;
+            this.value = value;
         }
     }
 
