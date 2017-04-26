@@ -172,10 +172,6 @@ public class MaplePacket implements IMaplePacket {
         Collections.addAll(route, path);
     }
 
-    public void setPktField(MapleMatchField field,@Nonnull byte[] value) {
-        ForwardAction.SetField action = ForwardAction.setField(field, new ByteArray(value));
-    }
-
     public List<Forward> getRoute() {
         return route;
     }
