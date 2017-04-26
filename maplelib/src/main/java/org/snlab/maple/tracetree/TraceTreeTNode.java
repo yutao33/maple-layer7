@@ -48,7 +48,7 @@ public class TraceTreeTNode extends TraceTreeNode {
     }
 
     Map.Entry<MapleMatch, TNodeEntry> findEntry(ByteArray key){
-        //TODO
+        //TODO not efficient
         for (Map.Entry<MapleMatch, TNodeEntry> entry : branchtrueMap.entrySet()) {
             if(entry.getKey().getMatch().testMatch(key)){
                 return entry;

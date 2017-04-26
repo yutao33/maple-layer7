@@ -29,7 +29,7 @@ public class IngressTest extends MapleAppBase {
         } else if (pkt.ingress().in(Forward.extractIngress(path2))) {
             pkt.setRoute(path2);
         } else {
-            pkt.setRoute("DROP");
+            pkt.setRoute(Forward.DROP);
         }
         return true;
     }

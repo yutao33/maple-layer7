@@ -40,7 +40,7 @@ public class ByteArray {
         if (a2 == null) {
             return this;
         }
-        assert value.length == a2.value.length; //TODO
+        Preconditions.checkArgument(value.length == a2.value.length);
         byte[] v = value.clone();
         for (int i = 0; i < v.length; i++) {
             v[i] &= a2.value[i];

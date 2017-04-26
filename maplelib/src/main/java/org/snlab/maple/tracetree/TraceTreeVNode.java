@@ -37,7 +37,7 @@ public class TraceTreeVNode extends TraceTreeNode {
     VNodeEntry getEntryOrConstruct(@Nonnull ByteArray value) {
         VNodeEntry v = matchentries.get(value);
         if (v == null) {
-            v = new VNodeEntry(null, null);//TODO match
+            v = new VNodeEntry(null, null);//TODO no need
             matchentries.put(value, v);
         }
         return v;
@@ -116,7 +116,7 @@ public class TraceTreeVNode extends TraceTreeNode {
         ValueMaskPair newpair = new ValueMaskPair(item.getValue(), item.getMask());
         if (oldpair != null) {
             ValueMaskPair subpair = ValueMaskPair.getSubSet(oldpair, newpair);
-            if(!subpair.equals(oldpair)){
+            if(subpair!=null&&!subpair.equals(oldpair)){
                 subMatch=new MapleMatch(field,subpair);
             }
         } else {

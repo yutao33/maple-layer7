@@ -10,6 +10,7 @@ package org.snlab.maple.packet;
 
 
 import com.google.common.base.Preconditions;
+import com.sun.scenario.effect.impl.prism.PrCropPeer;
 import org.snlab.maple.api.IMaplePacket;
 import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.packet.parser.Ethernet;
@@ -19,6 +20,7 @@ import org.snlab.maple.rule.route.Forward;
 import org.snlab.maple.rule.route.ForwardAction;
 import org.snlab.maple.tracetree.Trace;
 import org.snlab.maple.tracetree.Trace.TraceItem;
+import sun.net.ftp.FtpReplyCode;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -185,7 +187,7 @@ public class MaplePacket implements IMaplePacket {
         }
 
         public boolean is(String ingress) {
-            assert ingress.matches("^openflow:\\d+:\\w+$");//TODO
+            Preconditions.checkArgument(ingress.matches("^openflow:\\d+:\\w+$"));
             boolean ret = MaplePacket.this.ingress.getId().equals(ingress);
             TraceItem ti = new Trace.TraceIs(MapleMatchField.INGRESS, null, ingress.getBytes(), null,ret);
             addTraceItem(ti);
@@ -194,7 +196,7 @@ public class MaplePacket implements IMaplePacket {
 
         public boolean in(String... ingresses) {
             for (String s : ingresses) {
-                assert s.matches("^openflow:\\d+:\\w+$");//TODO
+                Preconditions.checkArgument(s.matches("^openflow:\\d+:\\w+$"));
             }
             boolean ret = false;
             List<byte[]> values = new ArrayList<>();
@@ -248,7 +250,7 @@ public class MaplePacket implements IMaplePacket {
         }
 
         public boolean is(byte[] context) {
-            assert field.getByteLength() == context.length; //TODO
+            Preconditions.checkArgument(field.getByteLength() == context.length);
             byte[] value = fieldMap.get(field);
             boolean ret=false;
             if (value != null) {
@@ -279,7 +281,8 @@ public class MaplePacket implements IMaplePacket {
 
         public boolean range(byte[] value1, byte[] value2) {
             int len = field.getByteLength();
-            assert len == value1.length && len == value2.length;//TODO
+            Preconditions.checkArgument(len==value1.length);
+            Preconditions.checkArgument(len==value2.length);
 
             byte[] value = fieldMap.get(field);
             boolean ret = false;
@@ -291,7 +294,7 @@ public class MaplePacket implements IMaplePacket {
 
         public byte[] get() {
             byte[] value = fieldMap.get(field);
-            assert value != null; //TODO
+            Preconditions.checkArgument(value!=null);
             byte[] value1=new byte[value.length];
             if (mask != null) {
                 for (int i = 0; i < value1.length; i++) {
@@ -312,7 +315,7 @@ public class MaplePacket implements IMaplePacket {
         }
 
         public PktFieldMaskable mask(byte[] context) {  //TODO mask is all zero
-            assert field.getByteLength() == context.length; //TODO
+            Preconditions.checkArgument(field.getByteLength() == context.length);
             if (mask == null) {
                 mask = context;
             } else {

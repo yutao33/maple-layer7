@@ -10,25 +10,25 @@ package org.snlab.maple.rule.field;
 
 public enum MapleMatchField {
 
-    INGRESS("ingress", 0),  //this is special
+    INGRESS(0,false),  //this is special
 
-    ETH_SRC("eth_src", 48),
-    ETH_DST("eth_dst", 48),
-    ETH_TYPE("eth_type", 16),
-    IPv4_SRC("ipv4_src", 32),
-    IPv4_DST("ipv4_dst", 32),
-    IP_PROTO("ip_proto", 8),
-    IPv6_SRC("ipv6_src",128),
-    IPv6_DST("ipv6_dst",128);
+    ETH_SRC(48, true),
+    ETH_DST(48, true),
+    ETH_TYPE(16, true),
+    IPv4_SRC(32, true),
+    IPv4_DST(32, true),
+    IP_PROTO(8, false),
+    IPv6_SRC(128, true),
+    IPv6_DST(128, true);
 
-    private String field;
     private int bitlength;
     private int bytelength;
+    private boolean canMask;
 
-    MapleMatchField(String str, int len) {
-        this.field = str;
+    MapleMatchField(int len, boolean canMask) {
         this.bitlength = len;
         this.bytelength = (len + 7) / 8;
+        this.canMask = canMask;
     }
 
     public int getBitLength() {
@@ -39,4 +39,7 @@ public enum MapleMatchField {
         return bytelength;
     }
 
+    public boolean canMask() {
+        return canMask;
+    }
 }

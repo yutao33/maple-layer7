@@ -8,6 +8,8 @@
 
 package org.snlab.maple.env;
 
+import com.google.common.base.Preconditions;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -312,7 +314,7 @@ public class MapleTopology {
         private Link link;
 
         public Port(String id) {
-            assert id.matches("openflow:\\d+:\\w+");//TODO
+            Preconditions.checkArgument(id.matches("openflow:\\d+:\\w+"));
             this.id = id;
         }
 
