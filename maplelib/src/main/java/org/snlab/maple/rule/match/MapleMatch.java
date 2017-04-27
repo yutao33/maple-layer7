@@ -62,6 +62,25 @@ public class MapleMatch {
 //        return false;
 //    }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MapleMatch match1 = (MapleMatch) o;
+
+        if (field != match1.field) return false;
+        return match.equals(match1.match);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = field.hashCode();
+        result = 31 * result + match.hashCode();
+        return result;
+    }
+
     @Override
     public String toString() {
         return "MapleMatch{" +

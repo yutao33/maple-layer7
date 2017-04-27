@@ -8,10 +8,19 @@
 
 package org.snlab.maple.rule.route;
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Table;
 import org.snlab.maple.env.MapleTopology;
 
-import java.util.Map;
-
 public class Route {
-    private Map<MapleTopology.Node,Map<MapleTopology.Port,Forward>> map;
+
+    private Table<MapleTopology.Node,MapleTopology.Port,Forward> ruleTable=HashBasedTable.create();
+
+    private Multimap<MapleTopology.Node,MapleTopology.Port> tmpDropRuleTable= LinkedHashMultimap.create();
+
+    public Route(){
+
+    }
 }
