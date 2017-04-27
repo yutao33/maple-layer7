@@ -12,6 +12,7 @@ import org.snlab.maple.rule.MapleRule;
 import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.rule.match.ByteArray;
 import org.snlab.maple.rule.match.MapleMatch;
+import org.snlab.maple.rule.match.MapleMatchIngress;
 import org.snlab.maple.rule.match.ValueMaskPair;
 import org.snlab.maple.rule.route.Forward;
 
@@ -141,8 +142,13 @@ public class TraceTreeTNode extends TraceTreeNode {
 
     @Nullable
     public static TraceTreeTNode buildNodeIfNeedOrNull(@Nonnull Trace.TestItem item, @Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
-        TestCondition condition = genTNodeCondition(item);
         MapleMatchField field = item.getField();
+
+        if(field.equals(MapleMatchField.INGRESS)){   //NOTE special ingress
+            return buildIngress(item,(MapleMatchIngress)matchMapBefore.get(MapleMatchField.INGRESS));
+        }
+
+        TestCondition condition = genTNodeCondition(item);
         Set<ValueMaskPair> valueMaskPairs = condition.toMatchSet(field);
 
         MapleMatch oldMatch = matchMapBefore.get(field);
@@ -176,6 +182,13 @@ public class TraceTreeTNode extends TraceTreeNode {
         }
         return null;
     }
+
+    private static TraceTreeTNode buildIngress(Trace.TestItem item, MapleMatchIngress mapleMatchIngress) {
+        TestCondition condition = genTNodeCondition(item);
+
+        return null;
+    }
+
 
     //-------------------------------inner class-----------------------------
 

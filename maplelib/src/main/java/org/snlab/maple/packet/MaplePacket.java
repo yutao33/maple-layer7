@@ -10,19 +10,14 @@ package org.snlab.maple.packet;
 
 
 import com.google.common.base.Preconditions;
-import com.sun.scenario.effect.impl.prism.PrCropPeer;
 import org.snlab.maple.api.IMaplePacket;
 import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.packet.parser.Ethernet;
 import org.snlab.maple.rule.field.MapleMatchField;
-import org.snlab.maple.rule.match.ByteArray;
 import org.snlab.maple.rule.route.Forward;
-import org.snlab.maple.rule.route.ForwardAction;
 import org.snlab.maple.tracetree.Trace;
 import org.snlab.maple.tracetree.Trace.TraceItem;
-import sun.net.ftp.FtpReplyCode;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -189,7 +184,7 @@ public class MaplePacket implements IMaplePacket {
         public boolean is(String ingress) {
             Preconditions.checkArgument(ingress.matches("^openflow:\\d+:\\w+$"));
             boolean ret = MaplePacket.this.ingress.getId().equals(ingress);
-            TraceItem ti = new Trace.TraceIs(MapleMatchField.INGRESS, null, ingress.getBytes(), null,ret);
+            TraceItem ti = new Trace.TraceIs(MapleMatchField.INGRESS, null, ingress.getBytes(), null, ret);
             addTraceItem(ti);
             return ret;
         }
@@ -211,17 +206,62 @@ public class MaplePacket implements IMaplePacket {
             return ret;
         }
 
-        public boolean belongto(String node) {
-            boolean ret = MaplePacket.this.ingress.getOwner().getId().equals(node);
-            TraceItem ti = new Trace.TraceRange(MapleMatchField.INGRESS, null, node.getBytes(), null,null, ret);
-            addTraceItem(ti);
-            return ret;
+//        public boolean belongto(String node) {
+//            boolean ret = MaplePacket.this.ingress.getOwner().getId().equals(node);
+//            TraceItem ti = new Trace.TraceRange(MapleMatchField.INGRESS, null, node.getBytes(), null,null, ret);
+//            addTraceItem(ti);
+//            return ret;
+//        }
+
+        public IngressNode owner(){
+            return new IngressNode();
         }
 
         public MapleTopology.Port getValue() {
             TraceItem ti = new Trace.TraceGet(MapleMatchField.INGRESS, null, MaplePacket.this.ingress.getId().getBytes());
             addTraceItem(ti);
             return MaplePacket.this.ingress;
+        }
+    }
+
+    public class IngressNode {
+
+        private IngressNode(){
+
+        }
+
+        public boolean is(String node) {
+            Preconditions.checkArgument(node.matches("^openflow:\\d+$"));
+            MapleTopology.Node owner = MaplePacket.this.ingress.getOwner();
+            boolean ret = owner.getId().equals(node);
+            TraceItem ti = new Trace.TraceIs(MapleMatchField.INGRESS, "mask".getBytes(), node.getBytes(), null, ret);
+            addTraceItem(ti);
+            return ret;
+        }
+
+        public boolean in(String... nodes) {
+            for (String s : nodes) {
+                Preconditions.checkArgument(s.matches("^openflow:\\d+"));
+            }
+            boolean ret = false;
+            List<byte[]> values = new ArrayList<>();
+            MapleTopology.Node owner = MaplePacket.this.ingress.getOwner();
+            for (String s : nodes) {
+                values.add(s.getBytes());
+                if (owner.getId().equals(s)) {
+                    ret = true;
+                }
+            }
+            TraceItem ti = new Trace.TraceIn(MapleMatchField.INGRESS, "mask".getBytes(), values,null, ret);
+            addTraceItem(ti);
+            return ret;
+        }
+
+        public MapleTopology.Node getValue(){
+            MapleTopology.Node owner = MaplePacket.this.ingress.getOwner();
+            TraceItem ti = new Trace.TraceGet(MapleMatchField.INGRESS, "mask".getBytes(), owner.getId().getBytes());
+            addTraceItem(ti);
+            return MaplePacket.this.ingress.getOwner();
         }
     }
 

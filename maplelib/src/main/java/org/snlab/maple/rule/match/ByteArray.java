@@ -117,6 +117,10 @@ public class ByteArray {
         return (short)((value[1]<<8)&(value[0]));
     }
 
+    public byte[] getBytes(){
+        return value.clone();
+    }
+
 
     @Override
     public boolean equals(Object o) {

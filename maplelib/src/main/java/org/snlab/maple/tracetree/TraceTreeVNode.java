@@ -11,6 +11,7 @@ package org.snlab.maple.tracetree;
 import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.rule.match.ByteArray;
 import org.snlab.maple.rule.match.MapleMatch;
+import org.snlab.maple.rule.match.MapleMatchIngress;
 import org.snlab.maple.rule.match.ValueMaskPair;
 
 import javax.annotation.Nonnull;
@@ -106,6 +107,10 @@ public class TraceTreeVNode extends TraceTreeNode {
     @Nullable
     public static TraceTreeVNode buildNodeIfNeedOrNull(@Nonnull Trace.TraceGet item, @Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
         MapleMatchField field = item.getField();
+        if(field.equals(MapleMatchField.INGRESS)){   //NOTE special ingress
+            return buildIngress(item,(MapleMatchIngress)matchMapBefore.get(MapleMatchField.INGRESS));
+        }
+
         MapleMatch oldMatch = matchMapBefore.get(field);
         ValueMaskPair oldpair=null;
         if(oldMatch!=null){
@@ -127,6 +132,12 @@ public class TraceTreeVNode extends TraceTreeNode {
             vNode.matchentries.put(item.getValue(), new VNodeEntry(null, subMatch));
             return vNode;
         }
+        return null;
+    }
+
+    private static TraceTreeVNode buildIngress(Trace.TraceGet item, MapleMatchIngress oldMatch) {
+        String str=new String(item.getValue().getBytes());
+
         return null;
     }
 
