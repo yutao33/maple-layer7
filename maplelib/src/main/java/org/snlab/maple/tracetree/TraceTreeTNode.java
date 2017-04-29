@@ -183,8 +183,14 @@ public class TraceTreeTNode extends TraceTreeNode {
         return null;
     }
 
-    private static TraceTreeTNode buildIngress(Trace.TestItem item, MapleMatchIngress mapleMatchIngress) {
+    private static TraceTreeTNode buildIngress(Trace.TestItem item, MapleMatchIngress oldMatch) {
         TestCondition condition = genTNodeCondition(item);
+
+        if(oldMatch!=null){
+
+        } else {
+
+        }
 
         return null;
     }

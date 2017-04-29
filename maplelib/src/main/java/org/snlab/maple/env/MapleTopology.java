@@ -256,7 +256,18 @@ public class MapleTopology {
         return sb.toString();
     }
 
-    //-----------------------inner class-----------------------
+    //-----------------------static method-----------------------
+
+    public static boolean isValidNodeId(String id){
+        return id.matches("^openflow:\\d+$");
+    }
+
+    public static boolean isValidPortId(String id){
+        return id.matches("^openflow:\\d+:\\w+$");
+    }
+
+
+    //-----------------------static inner class-----------------------
 
     public static abstract class Element {
 
@@ -267,10 +278,12 @@ public class MapleTopology {
         private Set<Port> ports;
 
         public Node(String id, List<String> ports) {
+            Preconditions.checkArgument(isValidNodeId(id));
             this.id = id;
             this.ports = new HashSet<>();
             if (ports != null) {
                 for (String port : ports) {
+                    Preconditions.checkArgument(isValidPortId(port));
                     this.ports.add(new Port(port));
                 }
             }
@@ -314,7 +327,7 @@ public class MapleTopology {
         private Link link;
 
         public Port(String id) {
-            Preconditions.checkArgument(id.matches("openflow:\\d+:\\w+"));
+            Preconditions.checkArgument(isValidPortId(id));
             this.id = id;
         }
 

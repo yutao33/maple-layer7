@@ -16,6 +16,7 @@ import org.snlab.maple.rule.match.ValueMaskPair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -137,7 +138,14 @@ public class TraceTreeVNode extends TraceTreeNode {
 
     private static TraceTreeVNode buildIngress(Trace.TraceGet item, MapleMatchIngress oldMatch) {
         String str=new String(item.getValue().getBytes());
+        ByteArray mask = item.getMask();
 
+        MapleMatchIngress subMatch=null;
+        if(oldMatch!=null){
+            oldMatch.getSubMatch();
+        } else {
+
+        }
         return null;
     }
 

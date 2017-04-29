@@ -182,7 +182,7 @@ public class MaplePacket implements IMaplePacket {
         }
 
         public boolean is(String ingress) {
-            Preconditions.checkArgument(ingress.matches("^openflow:\\d+:\\w+$"));
+            Preconditions.checkArgument(MapleTopology.isValidPortId(ingress));
             boolean ret = MaplePacket.this.ingress.getId().equals(ingress);
             TraceItem ti = new Trace.TraceIs(MapleMatchField.INGRESS, null, ingress.getBytes(), null, ret);
             addTraceItem(ti);
@@ -191,7 +191,7 @@ public class MaplePacket implements IMaplePacket {
 
         public boolean in(String... ingresses) {
             for (String s : ingresses) {
-                Preconditions.checkArgument(s.matches("^openflow:\\d+:\\w+$"));
+                Preconditions.checkArgument(MapleTopology.isValidPortId(s));
             }
             boolean ret = false;
             List<byte[]> values = new ArrayList<>();
@@ -231,7 +231,7 @@ public class MaplePacket implements IMaplePacket {
         }
 
         public boolean is(String node) {
-            Preconditions.checkArgument(node.matches("^openflow:\\d+$"));
+            Preconditions.checkArgument(MapleTopology.isValidNodeId(node));
             MapleTopology.Node owner = MaplePacket.this.ingress.getOwner();
             boolean ret = owner.getId().equals(node);
             TraceItem ti = new Trace.TraceIs(MapleMatchField.INGRESS, "mask".getBytes(), node.getBytes(), null, ret);
@@ -241,7 +241,7 @@ public class MaplePacket implements IMaplePacket {
 
         public boolean in(String... nodes) {
             for (String s : nodes) {
-                Preconditions.checkArgument(s.matches("^openflow:\\d+"));
+                Preconditions.checkArgument(MapleTopology.isValidNodeId(s));
             }
             boolean ret = false;
             List<byte[]> values = new ArrayList<>();

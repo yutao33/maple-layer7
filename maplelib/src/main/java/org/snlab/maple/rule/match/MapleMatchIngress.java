@@ -11,6 +11,7 @@ package org.snlab.maple.rule.match;
 import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.rule.field.MapleMatchField;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,10 +21,40 @@ public class MapleMatchIngress extends MapleMatch{
 
     public MapleMatchIngress(Set<MapleTopology.Port> ports, Set<MapleTopology.Node> nodes) {
         super(MapleMatchField.INGRESS, null);
-        this.ports = new HashSet<>(ports);
         this.nodes = new HashSet<>(nodes);
+        this.ports = new HashSet<>(ports);
     }
 
+    public Set<MapleTopology.Port> getPorts() {
+        return Collections.unmodifiableSet(ports);
+    }
 
+    public Set<MapleTopology.Node> getNodes() {
+        return Collections.unmodifiableSet(nodes);
+    }
 
+    public MapleMatchIngress getSubMatch(){
+        
+        return null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        MapleMatchIngress that = (MapleMatchIngress) o;
+
+        if (!ports.equals(that.ports)) return false;
+        return nodes.equals(that.nodes);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + ports.hashCode();
+        result = 31 * result + nodes.hashCode();
+        return result;
+    }
 }
