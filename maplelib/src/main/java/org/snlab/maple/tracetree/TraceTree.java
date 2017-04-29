@@ -9,6 +9,7 @@
 package org.snlab.maple.tracetree;
 
 
+import com.google.common.base.Preconditions;
 import org.snlab.maple.packet.MaplePacket;
 import org.snlab.maple.rule.MapleRule;
 import org.snlab.maple.rule.field.MapleMatchField;
@@ -72,6 +73,7 @@ public class TraceTree {
                 TraceTreeTNode.TNodeEntry trueentry=null;
                 if(testresult){
                     Map.Entry<MapleMatch, TraceTreeTNode.TNodeEntry> mapEntry = t.findEntry(ti.getPktValue());
+                    Preconditions.checkState(mapEntry!=null);
                     trueentry=mapEntry.getValue();
                     oldtestbranch=trueentry.child;
                     matchMap.put(matchfield,mapEntry.getKey());

@@ -8,6 +8,7 @@
 
 package org.snlab.maple.tracetree;
 
+import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.rule.match.ByteArray;
 import org.snlab.maple.rule.match.MapleMatch;
@@ -18,7 +19,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
@@ -141,10 +141,25 @@ public class TraceTreeVNode extends TraceTreeNode {
         ByteArray mask = item.getMask();
 
         MapleMatchIngress subMatch=null;
-        if(oldMatch!=null){
-            oldMatch.getSubMatch();
+        Set<MapleTopology.Port> parmPorts =null;
+        Set<MapleTopology.Node> parmNodes =null;
+        if(mask==null){
+            parmPorts = Collections.singleton(new MapleTopology.Port(str));
         } else {
-
+            parmNodes = Collections.singleton(new MapleTopology.Node(str,null));
+        }
+        if(oldMatch!=null){
+            subMatch = oldMatch.getSubMatchIngress(parmPorts,parmNodes);
+            if(subMatch!=null&&oldMatch.equals(subMatch)){
+                subMatch=null;
+            }
+        } else {
+            subMatch = new MapleMatchIngress(parmPorts,parmNodes);
+        }
+        if(subMatch!=null){
+            TraceTreeVNode vNode=new TraceTreeVNode(MapleMatchField.INGRESS,item.getMask());
+            vNode.matchentries.put(item.getValue(),new VNodeEntry(null,subMatch));
+            return vNode;
         }
         return null;
     }

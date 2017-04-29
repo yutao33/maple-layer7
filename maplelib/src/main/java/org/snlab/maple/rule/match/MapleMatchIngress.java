@@ -8,9 +8,12 @@
 
 package org.snlab.maple.rule.match;
 
+import com.google.common.base.Preconditions;
 import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.rule.field.MapleMatchField;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,20 +24,47 @@ public class MapleMatchIngress extends MapleMatch{
 
     public MapleMatchIngress(Set<MapleTopology.Port> ports, Set<MapleTopology.Node> nodes) {
         super(MapleMatchField.INGRESS, null);
-        this.nodes = new HashSet<>(nodes);
-        this.ports = new HashSet<>(ports);
+        this.nodes = nodes==null?Collections.<MapleTopology.Node>emptySet():new HashSet<>(nodes);
+        this.ports = ports==null?Collections.<MapleTopology.Port>emptySet():new HashSet<>(ports);
+        Preconditions.checkState(this.nodes.size()+this.ports.size()>0);
     }
 
+    @Nonnull
     public Set<MapleTopology.Port> getPorts() {
         return Collections.unmodifiableSet(ports);
     }
 
+    @Nonnull
     public Set<MapleTopology.Node> getNodes() {
         return Collections.unmodifiableSet(nodes);
     }
 
-    public MapleMatchIngress getSubMatch(){
-        
+    @Nullable
+    public MapleMatchIngress getSubMatchIngress(Set<MapleTopology.Port> ports, Set<MapleTopology.Node> nodes){
+        Set<MapleTopology.Port> subMatchPorts=new HashSet<>();
+        Set<MapleTopology.Node> subMatchNodes=new HashSet<>();
+        if(ports!=null){
+            for (MapleTopology.Port port : ports) {
+                if(this.ports.contains(port)||this.nodes.contains(port.getOwner())){
+                    subMatchPorts.add(port);
+                }
+            }
+        }
+        if(nodes!=null){
+            for (MapleTopology.Node node : nodes) {
+                if(this.nodes.contains(node)){
+                    subMatchNodes.add(node);
+                }
+            }
+            for (MapleTopology.Port port : this.ports) {
+                if(nodes.contains(port.getOwner())){
+                    subMatchPorts.add(port);
+                }
+            }
+        }
+        if(subMatchNodes.size()+subMatchPorts.size()>0){
+            return new MapleMatchIngress(subMatchPorts,subMatchNodes);
+        }
         return null;
     }
 

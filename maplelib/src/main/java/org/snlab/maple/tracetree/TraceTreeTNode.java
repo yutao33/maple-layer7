@@ -8,6 +8,7 @@
 
 package org.snlab.maple.tracetree;
 
+import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.rule.MapleRule;
 import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.rule.match.ByteArray;
@@ -21,7 +22,6 @@ import javax.annotation.Nullable;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -48,8 +48,12 @@ public class TraceTreeTNode extends TraceTreeNode {
         branchfalse=branch;
     }
 
-    Map.Entry<MapleMatch, TNodeEntry> findEntry(ByteArray key){
+    @Nullable
+    Map.Entry<MapleMatch, TNodeEntry> findEntry(ByteArray key){ //NOTE only when field==INGRESS, key==null
         //TODO not efficient
+        if(field.equals(MapleMatchField.INGRESS)){
+            return branchtrueMap.entrySet().iterator().next();
+        }
         for (Map.Entry<MapleMatch, TNodeEntry> entry : branchtrueMap.entrySet()) {
             if(entry.getKey().getMatch().testMatch(key)){
                 return entry;
@@ -186,12 +190,57 @@ public class TraceTreeTNode extends TraceTreeNode {
     private static TraceTreeTNode buildIngress(Trace.TestItem item, MapleMatchIngress oldMatch) {
         TestCondition condition = genTNodeCondition(item);
 
-        if(oldMatch!=null){
-
+        MapleMatchIngress subMatch=null;
+        Set<MapleTopology.Port> parmPorts =null;
+        Set<MapleTopology.Node> parmNodes =null;
+        ByteArray mask = item.getMask();
+        if(mask==null){
+            parmPorts = new HashSet<>();
+            if(item instanceof Trace.TraceIs){
+                Trace.TraceIs item1 = (Trace.TraceIs) item;
+                String str = new String(item1.getValue().getBytes());
+                parmPorts.add(new MapleTopology.Port(str));
+            } else if(item instanceof Trace.TraceIn){
+                Trace.TraceIn item1 = (Trace.TraceIn) item;
+                for (ByteArray value : item1.getValues()) {
+                    String str = new String(value.getBytes());
+                    parmPorts.add(new MapleTopology.Port(str));
+                }
+            } else {
+                throw new RuntimeException("type error");
+            }
         } else {
-
+            parmNodes = new HashSet<>();
+            if(item instanceof Trace.TraceIs){
+                Trace.TraceIs item1 = (Trace.TraceIs) item;
+                String str = new String(item1.getValue().getBytes());
+                parmNodes.add(new MapleTopology.Node(str,null));
+            } else if(item instanceof Trace.TraceIn){
+                Trace.TraceIn item1 = (Trace.TraceIn) item;
+                for (ByteArray value : item1.getValues()) {
+                    String str = new String(value.getBytes());
+                    parmNodes.add(new MapleTopology.Node(str,null));
+                }
+            } else {
+                throw new RuntimeException("type error");
+            }
         }
 
+        if(oldMatch!=null){
+            subMatch = oldMatch.getSubMatchIngress(parmPorts,parmNodes);
+            if(subMatch!=null&&oldMatch.equals(subMatch)){
+                subMatch=null;
+            }
+        } else {
+            subMatch = new MapleMatchIngress(parmPorts,parmNodes);
+        }
+        if (subMatch!=null) {
+            Map<MapleMatch,TNodeEntry> matchmap=new HashMap<>();
+            matchmap.put(subMatch,new TNodeEntry());
+            TraceTreeTNode tNode = new TraceTreeTNode(MapleMatchField.INGRESS, condition);
+            tNode.branchtrueMap=matchmap;
+            return tNode;
+        }
         return null;
     }
 
