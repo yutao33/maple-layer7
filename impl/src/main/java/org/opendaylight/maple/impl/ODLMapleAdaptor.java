@@ -151,10 +151,7 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
 
     private void installRule1(WriteTransaction wt,MapleRule rule){
         Map<MapleMatchField, MapleMatch> matches = rule.getMatches();
-        List<Forward> route = rule.getRoute();
-        for (Forward forward : route) {
 
-        }
     }
 
     private void installRule(WriteTransaction wt,MapleRule rule){

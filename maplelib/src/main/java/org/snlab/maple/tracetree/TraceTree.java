@@ -10,6 +10,7 @@ package org.snlab.maple.tracetree;
 
 
 import com.google.common.base.Preconditions;
+import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.packet.MaplePacket;
 import org.snlab.maple.rule.MapleRule;
 import org.snlab.maple.rule.field.MapleMatchField;
@@ -18,6 +19,7 @@ import org.snlab.maple.rule.match.MapleMatch;
 import org.snlab.maple.rule.match.ValueMaskPair;
 import org.snlab.maple.rule.route.Forward;
 import org.snlab.maple.rule.route.ForwardAction;
+import org.snlab.maple.rule.route.Route;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -51,7 +53,7 @@ public class TraceTree {
             route = Collections.singletonList(new Forward(null, ForwardAction.drop()));
         }
         if (items.isEmpty()) {
-            treeroot = testifLNodeexpected_ornew(treeroot, route);
+            treeroot = testifLNodeexpected_ornew(treeroot, route, pkt);
             return;
         }
         Trace.TraceItem item0 = items.get(0);
@@ -98,7 +100,7 @@ public class TraceTree {
 
 
                 if (i == items.size() - 1) {
-                    nodep = testifLNodeexpected_ornew(oldtestbranch, route);
+                    nodep = testifLNodeexpected_ornew(oldtestbranch, route, pkt);
                 } else {
                     TraceTreeNode ttn = testifexpected_ornew(oldtestbranch, items.get(i + 1));
                     if (ttn == null) {
@@ -133,7 +135,7 @@ public class TraceTree {
 
                 TraceTreeNode oldchild = oldentry.child;
                 if (i == items.size() - 1) {
-                    nodep = testifLNodeexpected_ornew(oldchild, route);
+                    nodep = testifLNodeexpected_ornew(oldchild, route, pkt);
                 } else {
                     TraceTreeNode ttn = testifexpected_ornew(oldchild, items.get(i + 1));
                     if (ttn == null) {
@@ -173,17 +175,28 @@ public class TraceTree {
         }
     }
 
-    private TraceTreeNode testifLNodeexpected_ornew(@Nullable TraceTreeNode node, List<Forward> route) {
+    private TraceTreeNode testifLNodeexpected_ornew(@Nullable TraceTreeNode node, List<Forward> route,MaplePacket pkt) {
         if (node instanceof TraceTreeLNode) {
             TraceTreeLNode l = (TraceTreeLNode) node;
             if (l.getRoute().equals(route)) {
-                //TODO generate tmp drop rule if route is null
+                //NOTE generate drop rule if route is drop
+                handleIfNeedDrop(l,pkt);
                 return node;
             }
         }
         recurseMarkDeleted(node);
-        return TraceTreeLNode.build(route, matchMap);
+        TraceTreeLNode lNode = TraceTreeLNode.build(route, matchMap);
+        //NOTE generate drop rule if route is drop
+        handleIfNeedDrop(lNode, pkt);
+        return lNode;
     }
+
+    private void handleIfNeedDrop(TraceTreeLNode l, MaplePacket pkt) {
+        MapleTopology.Port ingress = pkt.getIngress();
+        Route route = l.getRule().getRoute();
+        route.addDropIfneed(ingress);
+    }
+
 
     private void recurseMarkDeleted(@Nullable TraceTreeNode node) {
         if (node == null) {

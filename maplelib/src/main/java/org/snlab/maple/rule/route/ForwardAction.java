@@ -21,6 +21,8 @@ public final class ForwardAction {
         throw new RuntimeException("shouldn't construct this instance");
     }
 
+    private final static Drop finalDrop=new Drop();
+    private final static PopVlan finalPopVlan=new PopVlan();
 
     //-------------------static Action function-----------------------
 
@@ -29,12 +31,21 @@ public final class ForwardAction {
     }
 
     public static Drop drop() {
-        return new Drop();
+        return finalDrop;
     }
 
     public static SetField setField(MapleMatchField field,ByteArray value){
         Preconditions.checkArgument(field.getBitLength()==value.length());
         return new SetField(field,value);
+    }
+
+    public static PushVlan pushVlan(short vlanid){
+        Preconditions.checkArgument(vlanid>=0&&vlanid<=4095);
+        return new PushVlan(vlanid);
+    }
+
+    public static PopVlan popVlan(){
+        return finalPopVlan;
     }
 
     //-------------------static Action class------------------------
@@ -64,6 +75,10 @@ public final class ForwardAction {
             return port.equals(outPut.port);
         }
 
+        public Port getPort() {
+            return port;
+        }
+
         @Override
         public int hashCode() {
             return port.hashCode();
@@ -77,12 +92,9 @@ public final class ForwardAction {
         }
     }
 
-//    public interface PuntPktListener {
-//        void onPunt(Ethernet originPkt);
-//    }
 
     public static class Punt extends Action {
-//        private PuntPktListener listener;
+
     }
 
     public static class Drop extends Action {

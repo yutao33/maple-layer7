@@ -8,32 +8,32 @@
 
 package org.snlab.maple.rule.route;
 
+import com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
 import org.snlab.maple.env.MapleTopology.Port;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Immutable
-public class Forward {
+public class Forward {  //TODO actions sequence and only for one node
 
     private final Port ingress;
-    private final List<? extends ForwardAction.Action> actions;
-    private final int bandwidthlimit;
+    private final List<ForwardAction.Action> actions;
+    private int bandwidthlimit;
     //private int timeout;
 
-    public static final List<? extends ForwardAction.Action> DEFAULT_PuntActions =
-            Collections.singletonList(new ForwardAction.Punt());
+    public static final List<ForwardAction.Action> DEFAULT_PuntActions =
+            Collections.<ForwardAction.Action>singletonList(new ForwardAction.Punt());
     public static final List<Forward> DEFAULT_PuntForwards =
             Collections.singletonList(new Forward(null, DEFAULT_PuntActions, 0, 0));
     public static final Forward DROP =
             new Forward(null, ForwardAction.drop());
 
 
-    public Forward(Port ingress, List<? extends ForwardAction.Action> actions, int bandwidthlimit, int timeout) {
+    public Forward(Port ingress, List<ForwardAction.Action> actions, int bandwidthlimit, int timeout) {
         this.ingress = ingress;
         this.actions = new ArrayList<>(actions);
         this.bandwidthlimit = bandwidthlimit;
@@ -54,8 +54,15 @@ public class Forward {
         } else {
             this.ingress = null;
         }
-        this.actions = Collections.singletonList(ForwardAction.output(new Port(output)));
+        this.actions = new ArrayList<>();
+        this.actions.add(ForwardAction.output(new Port(output)));
         this.bandwidthlimit = 0;
+    }
+
+    public void concat(@Nonnull Forward n){
+        Preconditions.checkArgument(Objects.equal(n.ingress,this.ingress));
+        this.actions.addAll(n.actions);
+        this.bandwidthlimit=n.bandwidthlimit;
     }
 
     @Nullable
@@ -63,7 +70,7 @@ public class Forward {
         return ingress;
     }
 
-    public List<? extends ForwardAction.Action> getActions() {
+    public List<ForwardAction.Action> getActions() {
         return actions;
     }
 
