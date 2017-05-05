@@ -89,6 +89,7 @@ import org.snlab.maple.rule.match.ValueMaskPair;
 import org.snlab.maple.rule.route.Forward;
 import org.snlab.maple.rule.route.ForwardAction;
 import org.snlab.maple.rule.route.Route;
+import org.snlab.maple.tracetree.TraceTree;
 
 import javax.annotation.Nullable;
 import java.math.BigInteger;
@@ -125,7 +126,7 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
     }
 
     @Override
-    public void outPutTraceTree() {
+    public void outPutTraceTree(TraceTree traceTree) {
 
         LOG.info("outPutTraceTree");
 
@@ -177,23 +178,23 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
     }
 
     private void rwtSubmit(ReadWriteTransaction rwt){
-//        CheckedFuture<Void, TransactionCommitFailedException> future = rwt.submit();
-//        Futures.addCallback(future, new FutureCallback<Void>() {
-//            @Override
-//            public void onSuccess(@Nullable Void result) {
-//                LOG.info("success");
-//            }
-//
-//            @Override
-//            public void onFailure(Throwable t) {
-//                LOG.info("failed "+t.getMessage());
-//            }
-//        });
-        try {
-            rwt.submit().checkedGet();
-        } catch (TransactionCommitFailedException e) {
-            e.printStackTrace();
-        }
+        CheckedFuture<Void, TransactionCommitFailedException> future = rwt.submit();
+        Futures.addCallback(future, new FutureCallback<Void>() {
+            @Override
+            public void onSuccess(@Nullable Void result) {
+                LOG.info("success");
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                LOG.info("failed "+t.getMessage());
+            }
+        });
+//        try {
+//            rwt.submit().checkedGet();
+//        } catch (TransactionCommitFailedException e) {
+//            e.printStackTrace();
+//        }
     }
 
     private void deleteAllRules(ReadWriteTransaction rwt){
@@ -258,10 +259,14 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
         IpMatchBuilder ipMatchBuilder = null;
 
         for (Map.Entry<MapleMatchField, MapleMatch> entry : matches.entrySet()) {
+            MapleMatchField field = entry.getKey();
+            if(field.equals(MapleMatchField.INGRESS)){
+                continue;
+            }
             ValueMaskPair valuemask=entry.getValue().getMatch();
             ByteArray value = valuemask.getValue();
             ByteArray mask = valuemask.getMask();
-            switch(entry.getKey()){
+            switch(field){
                 case ETH_DST:
                     EthernetDestinationBuilder ethernetDestinationBuilder = new EthernetDestinationBuilder();
                     ethernetDestinationBuilder.setAddress(new MacAddress(value.toMacAddressString()));

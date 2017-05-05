@@ -10,12 +10,12 @@ package org.snlab.maple;
 
 
 import org.snlab.maple.api.MapleAppBase;
-import org.snlab.maple.app.SetRouteTest;
+import org.snlab.maple.app.IngressTest;
 import org.snlab.maple.env.MapleEnv;
 import org.snlab.maple.env.MapleTopology;
+import org.snlab.maple.packet.MaplePacket;
 import org.snlab.maple.packet.types.EthType;
 import org.snlab.maple.rule.MaplePacketInReason;
-import org.snlab.maple.packet.MaplePacket;
 import org.snlab.maple.rule.MapleRule;
 import org.snlab.maple.tracetree.TraceTree;
 
@@ -41,7 +41,7 @@ public class MapleSystem {
         this.mapleAppList = new ArrayList<>();
 
         //test
-        this.mapleAppList.add(new SetRouteTest());
+        this.mapleAppList.add(new IngressTest());
 
     }
 

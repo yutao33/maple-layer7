@@ -23,7 +23,7 @@ public class MapleMatchIngress extends MapleMatch{
     private final Set<MapleTopology.Node> nodes;
 
     public MapleMatchIngress(Set<MapleTopology.Port> ports, Set<MapleTopology.Node> nodes) {
-        super(MapleMatchField.INGRESS, null);
+        super(MapleMatchField.INGRESS, null);  //NOTE match=null
         this.nodes = nodes==null?Collections.<MapleTopology.Node>emptySet():new HashSet<>(nodes);
         this.ports = ports==null?Collections.<MapleTopology.Port>emptySet():new HashSet<>(ports);
         Preconditions.checkState(this.nodes.size()+this.ports.size()>0);
@@ -72,7 +72,7 @@ public class MapleMatchIngress extends MapleMatch{
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+        //if (!super.equals(o)) return false;
 
         MapleMatchIngress that = (MapleMatchIngress) o;
 
@@ -82,9 +82,17 @@ public class MapleMatchIngress extends MapleMatch{
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
+        int result = 0;// super.hashCode();
         result = 31 * result + ports.hashCode();
         result = 31 * result + nodes.hashCode();
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "MapleMatchIngress{" +
+                "ports=" + ports +
+                ", nodes=" + nodes +
+                '}';
     }
 }

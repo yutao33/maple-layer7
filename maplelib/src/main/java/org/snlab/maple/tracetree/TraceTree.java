@@ -48,6 +48,9 @@ public class TraceTree {
     private Map<MapleMatchField, Set<ValueMaskPair>> unmatchMap = new EnumMap<>(MapleMatchField.class);//TODO for generate rules
 
     public synchronized void update(List<Trace.TraceItem> items, MaplePacket pkt) {
+        matchMap.clear();
+        unmatchMap.clear();
+
         List<Forward> route = pkt.getRoute();
         if (route == null || route.isEmpty()) {
             route = Collections.singletonList(new Forward(null, ForwardAction.drop()));

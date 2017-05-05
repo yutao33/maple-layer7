@@ -112,8 +112,17 @@ public class Forward {  //TODO actions sequence and only for one node
      * @param path
      * @return
      */
-    public static String[] extractIngress(String... path) {
-        throw new UnsupportedOperationException();
+    public static String[] extractIngress(String... path) { //TODO
+        Preconditions.checkArgument(path.length%2==0);
+        List<String> l = new ArrayList<>(path.length/2);
+        for(int i=0;i<path.length/2;i++){
+            if(path[i*2]!=null){
+                l.add(path[i*2]);
+            }
+        }
+        String[] ret = new String[l.size()];
+        l.toArray(ret);
+        return ret;
     }
 }
 

@@ -53,4 +53,12 @@ public class Route {
     public Multimap<MapleTopology.Node, MapleTopology.Port> getDropRules() {
         return DropRules;
     }
+
+    @Override
+    public String toString() {
+        return "Route{\n" +
+                "rulesMap=" + rulesMap +
+                ", DropRules=" + DropRules +
+                "\n}";
+    }
 }

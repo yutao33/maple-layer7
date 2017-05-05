@@ -11,6 +11,7 @@ package org.snlab.maple;
 
 
 import org.snlab.maple.rule.MapleRule;
+import org.snlab.maple.tracetree.TraceTree;
 
 import java.util.List;
 
@@ -19,6 +20,6 @@ public interface IMapleAdaptor {
 
     void updateRules(List<MapleRule> rules);
 
-    void outPutTraceTree();
+    void outPutTraceTree(TraceTree traceTree);
 
 }
