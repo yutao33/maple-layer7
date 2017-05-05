@@ -42,7 +42,6 @@ public class M2 extends MapleAppBase {
 //				path = H12_HIGH_PATH;
 //			}
 //
-//			// ***TODO***: Need to agree on either Route or Path, not both
 //			pkt.setRoute(path);
 //
 //			// Reverse: H2 -> H1

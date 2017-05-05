@@ -290,7 +290,7 @@ public class MapleTopology {
         }
 
         public Set<Port> getPorts() {
-            return Collections.unmodifiableSet(ports);  //TODO
+            return Collections.unmodifiableSet(ports);
         }
 
         public String getId() {

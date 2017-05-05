@@ -20,8 +20,8 @@ import org.snlab.maple.rule.route.Forward;
  * h1 h2 ~ h3 h4
  */
 public class SetRouteTest extends MapleAppBase {
-    private static final String[] path1 = {null, "openflow:2:3", null, "openflow:1:2"};
-    private static final String[] path2 = {null, "openflow:3:3", null, "openflow:1:1"};
+    private static final String[] path1 = {null, "openflow:2:3", null, "openflow:1:2",null, "openflow:3:1"};
+    private static final String[] path2 = {null, "openflow:3:3", null, "openflow:1:1",null, "openflow:2:1"};
 
     @Override
     public boolean onPacket(IMaplePacket pkt, IMapleEnv env) {

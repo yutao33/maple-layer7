@@ -9,30 +9,36 @@
 package org.snlab.maple.rule.route;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Table;
 import org.snlab.maple.env.MapleTopology;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Route {
 
-    private Table<MapleTopology.Node,MapleTopology.Port,Forward> ruleTable=HashBasedTable.create();//TODO table is not appreciate
+    private Map<MapleTopology.Node,Map<MapleTopology.Port,Forward>> rulesMap=new HashMap<>();
 
     private Multimap<MapleTopology.Node,MapleTopology.Port> DropRules = HashMultimap.create();
 
     public void addRule(@Nullable MapleTopology.Node node,@Nullable MapleTopology.Port port,Forward forward){
         for (ForwardAction.Action action : forward.getActions()) {
-            Preconditions.checkArgument(!(action instanceof ForwardAction.Drop));
+            Preconditions.checkArgument(!(action instanceof ForwardAction.Drop)); //TODO no need to check
         }
-        Forward f1 = ruleTable.get(node, port);
-        if(f1!=null){
-            f1.concat(forward);
+        Map<MapleTopology.Port, Forward> portForwardMap = rulesMap.get(node);
+        if(portForwardMap!=null){
+            Forward oldForward = portForwardMap.get(port);
+            if(oldForward!=null){
+                oldForward.concat(forward);
+            } else {
+                portForwardMap.put(port,forward);
+            }
         } else {
-            ruleTable.put(node, port, forward);
+            portForwardMap = new HashMap<>();
+            portForwardMap.put(port,forward);
+            rulesMap.put(node,portForwardMap);
         }
     }
 
@@ -40,8 +46,8 @@ public class Route {
 
     }
 
-    public Table<MapleTopology.Node, MapleTopology.Port, Forward> getRuleTable() {
-        return ruleTable;
+    public Map<MapleTopology.Node, Map<MapleTopology.Port, Forward>> getRulesMap() {
+        return rulesMap;
     }
 
     public Multimap<MapleTopology.Node, MapleTopology.Port> getDropRules() {

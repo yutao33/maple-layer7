@@ -28,6 +28,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <feature version="${openflowplugin.version}">odl-openflowplugin-app-table-miss-enforcer</feature>
     <feature version="${openflowplugin.version}">odl-openflowplugin-nxm-extensions</feature>
     <feature version="${openflowplugin.version}">odl-openflowplugin-onf-extensions</feature>
+    <feature version="${openflowplugin.version}">odl-openflowplugin-app-config-pusher</feature>
 
     <feature version='${project.version}'>odl-odlmaple-api</feature>
     <bundle>mvn:org.snlab.maple/maplelib/2.0.0</bundle>

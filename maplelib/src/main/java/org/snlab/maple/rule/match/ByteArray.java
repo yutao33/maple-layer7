@@ -114,7 +114,7 @@ public class ByteArray {
 
     public short toShort(){
         Preconditions.checkState(value.length==2);
-        return (short)((value[1]<<8)&(value[0]));
+        return (short)((value[0]<<8)|(value[1]&0xff));
     }
 
     public byte[] getBytes(){

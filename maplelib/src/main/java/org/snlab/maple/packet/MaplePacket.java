@@ -18,15 +18,20 @@ import org.snlab.maple.rule.route.Forward;
 import org.snlab.maple.tracetree.Trace;
 import org.snlab.maple.tracetree.Trace.TraceItem;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * MaplePacket.
  */
 public class MaplePacket implements IMaplePacket {
+
+    private final static Logger LOG = Logger.getLogger(MaplePacket.class.toString());
 
     private MapleTopology.Port ingress;
 
@@ -149,7 +154,6 @@ public class MaplePacket implements IMaplePacket {
 
     @Override
     public void setRoute(Forward... path) {
-        Preconditions.checkArgument(path.length%2==0);
         if(path.length==0){
             return;
         }
@@ -161,7 +165,6 @@ public class MaplePacket implements IMaplePacket {
 
     @Override
     public void addRoute(Forward... path) {
-        Preconditions.checkArgument(path.length%2==0);
         if(path.length==0){
             return;
         }
@@ -319,13 +322,17 @@ public class MaplePacket implements IMaplePacket {
             return ret;
         }
 
-        public boolean range(byte[] value1, byte[] value2) {
+        public boolean range(@Nullable byte[] value1,@Nullable byte[] value2) {
             int len = field.getByteLength();
-            Preconditions.checkArgument(len==value1.length);
-            Preconditions.checkArgument(len==value2.length);
+            if(value1!=null) {
+                Preconditions.checkArgument(len == value1.length);
+            }
+            if(value2!=null) {
+                Preconditions.checkArgument(len == value2.length);
+            }
 
             byte[] value = fieldMap.get(field);
-            boolean ret = false;
+            boolean ret = false;  //TODO
 
             TraceItem ti = new Trace.TraceRange(field, mask, value1, value2,value, ret);
 
@@ -354,7 +361,7 @@ public class MaplePacket implements IMaplePacket {
             super(field);
         }
 
-        public PktFieldMaskable mask(byte[] context) {  //TODO mask is all zero
+        public PktFieldMaskable mask(@Nonnull byte[] context) {
             Preconditions.checkArgument(field.getByteLength() == context.length);
             if (mask == null) {
                 mask = context;

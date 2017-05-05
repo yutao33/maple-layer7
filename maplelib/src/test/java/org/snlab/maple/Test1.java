@@ -9,8 +9,7 @@
 package org.snlab.maple;
 
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -34,12 +33,13 @@ public class Test1 {
 
         System.out.println(ValueMaskPair.getSubSet(a,b));
 
-        Multimap<String,String> mm=HashMultimap.create();
-        mm.put("1","1");
-        mm.put(null,"2");
-        mm.put("1","2");
-        mm.put("1","1");
-        System.out.println(mm);
+        for(int i=0;i<0xff;i++) {
+            for(int j=0;j<0xff;j++) {
+                ByteArray byteArray = new ByteArray(new byte[]{(byte)i, (byte)j});
+                short value = byteArray.toShort();
+                Assert.assertEquals(i*0x100+j,value&0xffff);
+            }
+        }
     }
 
 }

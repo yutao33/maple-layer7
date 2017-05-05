@@ -20,9 +20,18 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFaile
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.ControllerActionCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.ControllerActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.controller.action._case.ControllerAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.controller.action._case.ControllerActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
@@ -38,6 +47,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
@@ -69,15 +80,19 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snlab.maple.IMapleAdaptor;
+import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.rule.MapleRule;
 import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.rule.match.ByteArray;
 import org.snlab.maple.rule.match.MapleMatch;
 import org.snlab.maple.rule.match.ValueMaskPair;
 import org.snlab.maple.rule.route.Forward;
+import org.snlab.maple.rule.route.ForwardAction;
+import org.snlab.maple.rule.route.Route;
 
 import javax.annotation.Nullable;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -118,30 +133,67 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
 
     @Override
     public void updateRules(List<MapleRule> rules) {
-        ReadWriteTransaction rwt = dataBroker.newReadWriteTransaction();
+        ReadWriteTransaction rwt1 = dataBroker.newReadWriteTransaction();
+        deleteAllRules(rwt1);
+        rwtSubmit(rwt1);
 
-        deleteAllRules(rwt);
+        ReadWriteTransaction rwt = dataBroker.newReadWriteTransaction();
+        //deleteAllRules(rwt);
+
+        List<MapleTopology.Node> allNodes=new ArrayList<>();
 
         for (MapleRule rule : rules) {
-            installRule(rwt,rule);
+            Match odlPktFieldMatch = buildODLPktFieldMatch(rule.getMatches());
+            Map<MapleTopology.Node, Map<MapleTopology.Port, Forward>> rulesMap = rule.getRoute().getRulesMap();
+            for (Map.Entry<MapleTopology.Node, Map<MapleTopology.Port, Forward>> nodeMapEntry : rulesMap.entrySet()) {
+                MapleTopology.Node node = nodeMapEntry.getKey();
+                if(node!=null){
+                    allNodes.add(node);
+                    Map<MapleTopology.Port, Forward> portForwardMap = nodeMapEntry.getValue();
+                    for (Map.Entry<MapleTopology.Port, Forward> portForwardEntry : portForwardMap.entrySet()) {
+                        MapleTopology.Port port = portForwardEntry.getKey();
+                        Forward forward = portForwardEntry.getValue();
+                        installRuleforNode(rwt,node,port,odlPktFieldMatch,rule.getPriority(),forward);
+                    }
+                }
+            }
+        }
+
+        for (MapleRule rule : rules) {
+            Route route = rule.getRoute();
+            Map<MapleTopology.Port, Forward> portForwardMap = route.getRulesMap().get(null);
+            if(portForwardMap!=null) {
+                Forward allNodesForward = portForwardMap.get(null);
+                if (allNodesForward != null) {
+                    Match odlPktFieldMatch = buildODLPktFieldMatch(rule.getMatches());
+                    for (MapleTopology.Node node : allNodes) {
+                        installRuleforNode(rwt, node, null, odlPktFieldMatch, rule.getPriority(), allNodesForward);
+                    }
+                }
+            }
         }
 
         rwtSubmit(rwt);
     }
 
     private void rwtSubmit(ReadWriteTransaction rwt){
-        CheckedFuture<Void, TransactionCommitFailedException> future = rwt.submit();
-        Futures.addCallback(future, new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(@Nullable Void result) {
-                LOG.info("success");
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                LOG.info("failed "+t.getMessage());
-            }
-        });
+//        CheckedFuture<Void, TransactionCommitFailedException> future = rwt.submit();
+//        Futures.addCallback(future, new FutureCallback<Void>() {
+//            @Override
+//            public void onSuccess(@Nullable Void result) {
+//                LOG.info("success");
+//            }
+//
+//            @Override
+//            public void onFailure(Throwable t) {
+//                LOG.info("failed "+t.getMessage());
+//            }
+//        });
+        try {
+            rwt.submit().checkedGet();
+        } catch (TransactionCommitFailedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void deleteAllRules(ReadWriteTransaction rwt){
@@ -149,54 +201,55 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
         rwt.delete(LogicalDatastoreType.CONFIGURATION,nodesIId);
     }
 
-    private void installRule1(WriteTransaction wt,MapleRule rule){
-        Map<MapleMatchField, MapleMatch> matches = rule.getMatches();
+    private void installRuleforNode(WriteTransaction wt,
+                                    MapleTopology.Node node,
+                                    MapleTopology.Port port,
+                                    Match odlPktFieldMatch,
+                                    int priority,
+                                    Forward forward) {
+        Match odlMatch=odlPktFieldMatch;
+        if(port!=null) {
+            MatchBuilder matchBuilder = new MatchBuilder(odlPktFieldMatch);
+            matchBuilder.setInPort(new NodeConnectorId(port.getId()));
+            odlMatch=matchBuilder.build();
+        }
+        Instructions instructions = buildODLInstructions(forward);
 
+        installODLRule(wt,node.getId(),priority,odlMatch,instructions);
     }
 
-    private void installRule(WriteTransaction wt,MapleRule rule){
+    private void installODLRule(WriteTransaction wt,
+                             String nodeId,
+                             int priority,
+                             Match odlMatch,
+                             Instructions instructions){
         FlowId flowId = new FlowId("maple" + flowIdInc.getAndIncrement());
-
         InstanceIdentifier<Node> iid = InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class, new NodeKey(new NodeId("openflow:1")))
+                .child(Node.class, new NodeKey(new NodeId(nodeId)))
                 .build();
         InstanceIdentifier<Flow> flowPath = iid.builder().augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey((short) 0))
                 .child(Flow.class, new FlowKey(flowId))
                 .build();
 
-        Match match = buildODLPktFieldMatch(rule);
-
-        int priority = rule.getPriority();
-
-        OutputAction outputAction = new OutputActionBuilder().setOutputNodeConnector(new NodeConnectorId("openflow:1:1")).build();
-        OutputActionCase outputActionCase = new OutputActionCaseBuilder().setOutputAction(outputAction).build();
-        Action action = new ActionBuilder().setOrder(0).setKey(new ActionKey(0)).setAction(outputActionCase).build();
-        ApplyActions applyActions = new ApplyActionsBuilder().setAction(ImmutableList.of(action)).build();
-        ApplyActionsCase applyActionsCase = new ApplyActionsCaseBuilder().setApplyActions(applyActions).build();
-        Instruction instruction = new InstructionBuilder().setOrder(0).setInstruction(applyActionsCase).setKey(new InstructionKey(0)).build();
-
-        FlowBuilder flowBuilder = new FlowBuilder().setId(flowId).setTableId((short)0)
-                .setMatch(match)
-                .setInstructions(new InstructionsBuilder()
-                        .setInstruction(ImmutableList.of(instruction))
-                        .build())
+        FlowBuilder flowBuilder = new FlowBuilder()
+                .setId(flowId)
+                .setTableId((short)0)
+                .setMatch(odlMatch)
+                .setInstructions(instructions)
                 .setPriority(priority)
                 .setBufferId(OFConstants.OFP_NO_BUFFER)
                 .setHardTimeout(null)
                 .setIdleTimeout(null)
                 .setCookie(new FlowCookie(BigInteger.valueOf(flowCookieInc.getAndIncrement())))
                 .setFlags(new FlowModFlags(false, false, false, false, false));
-
         Flow flow = flowBuilder.build();
 
         wt.put(LogicalDatastoreType.CONFIGURATION,flowPath,flow,true);
     }
 
-    private Match buildODLPktFieldMatch(MapleRule rule){
+    private Match buildODLPktFieldMatch(Map<MapleMatchField, MapleMatch> matches){
         MatchBuilder matchBuilder = new MatchBuilder();
-
-        Map<MapleMatchField, MapleMatch> matches = rule.getMatches();
 
         EthernetMatchBuilder ethernetMatchBuilder = null;
         Ipv4MatchBuilder ipv4MatchBuilder = null;
@@ -298,6 +351,72 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
             maskstr=String.valueOf(mask.toPrefixMaskNum(32));
         }
         return new Ipv4Prefix(ipstr+"/"+maskstr);
+    }
+
+    private Instructions buildODLInstructions(Forward forward){
+        ApplyActionsCase applyActionsCase = buildODLApplyActionsCase(forward);
+        Instruction instruction = new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(applyActionsCase)
+                .setKey(new InstructionKey(0))
+                .build();
+        return new InstructionsBuilder().setInstruction(ImmutableList.of(instruction)).build();
+    }
+
+    private ApplyActionsCase buildODLApplyActionsCase(Forward forward){
+        List<Action> odlActionList =new ArrayList<>();
+        int instOrder=0;
+
+        for (ForwardAction.Action action : forward.getActions()) {
+            if(action instanceof ForwardAction.OutPut){
+                MapleTopology.Port outPort = ((ForwardAction.OutPut) action).getPort();
+                OutputAction outputAction = new OutputActionBuilder()
+                        .setOutputNodeConnector(new NodeConnectorId(outPort.getId()))
+                        .build();
+                OutputActionCase outputActionCase = new OutputActionCaseBuilder()
+                        .setOutputAction(outputAction)
+                        .build();
+                Action odlaction = new ActionBuilder()
+                        .setOrder(instOrder)
+                        .setKey(new ActionKey(instOrder))
+                        .setAction(outputActionCase)
+                        .build();
+                odlActionList.add(odlaction);
+            } else if(action instanceof ForwardAction.Punt){
+
+                OutputAction punt = new OutputActionBuilder()
+                        .setMaxLength(0xffff)
+                        .setOutputNodeConnector(new Uri(OutputPortValues.CONTROLLER.toString()))
+                        .build();
+                OutputActionCase puntOutputActionCase = new OutputActionCaseBuilder()
+                        .setOutputAction(punt)
+                        .build();
+                Action odlaction = new ActionBuilder()
+                        .setOrder(instOrder)
+                        .setKey(new ActionKey(instOrder))
+                        .setAction(puntOutputActionCase)
+                        .build();
+                odlActionList.add(odlaction);
+            } else if(action instanceof ForwardAction.Drop){
+                DropAction dropAction = new DropActionBuilder()
+                        .build();
+                DropActionCase dropActionCase = new DropActionCaseBuilder()
+                        .setDropAction(dropAction)
+                        .build();
+                Action odlaction = new ActionBuilder()
+                        .setOrder(instOrder)
+                        .setKey(new ActionKey(instOrder))
+                        .setAction(dropActionCase)
+                        .build();
+                odlActionList.add(odlaction);
+            } else {
+                throw new UnsupportedOperationException();
+            }
+            instOrder++;
+        }
+
+        ApplyActions applyActions = new ApplyActionsBuilder().setAction(odlActionList).build();
+        return new ApplyActionsCaseBuilder().setApplyActions(applyActions).build();
     }
 
 }
