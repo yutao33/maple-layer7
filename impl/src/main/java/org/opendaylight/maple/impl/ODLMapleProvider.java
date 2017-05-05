@@ -31,7 +31,8 @@ public class ODLMapleProvider {
     private RpcProviderRegistry registry;
     private NotificationService notificationService;
 
-    ListenerRegistration<PacketHandler> packetHandlerListenerRegistration;
+    private ListenerRegistration<PacketHandler> packetHandlerListenerRegistration;
+    private ListenerRegistration<TopologyListener> topologyListenerListenerRegistration;
 
 //    public ODLMapleProvider(DataBroker dataBroker,
 //                            RpcProviderRegistry registry,
@@ -79,8 +80,8 @@ public class ODLMapleProvider {
         //dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,iid,new TopologyListener(), AsyncDataBroker.DataChangeScope.BASE);
 
         DataTreeIdentifier<NetworkTopology> ntti = new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, iid);
-        dataBroker.registerDataTreeChangeListener(ntti,new TopologyListener(mapleHandler));
 
+        topologyListenerListenerRegistration = dataBroker.registerDataTreeChangeListener(ntti, new TopologyListener(mapleHandler));
 
         LOG.info("ODLMapleProvider Session Initiated");
     }
@@ -90,6 +91,7 @@ public class ODLMapleProvider {
      */
     public void close() {
         packetHandlerListenerRegistration.close();
+        topologyListenerListenerRegistration.close();
         LOG.info("ODLMapleProvider Closed");
     }
 }
