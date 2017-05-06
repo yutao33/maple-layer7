@@ -22,6 +22,15 @@ import java.util.Map;
 import java.util.Set;
 
 public class MapleRule {
+
+    public enum Status{  //TODO UPDATE
+        NONE,
+        DELETE,
+        INSTALL,
+        DELETED,
+        INSTALLED
+    }
+
     private Map<MapleMatchField, MapleMatch> matches;
     private Route route;
 

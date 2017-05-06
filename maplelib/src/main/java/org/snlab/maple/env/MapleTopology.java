@@ -10,6 +10,7 @@ package org.snlab.maple.env;
 
 import com.google.common.base.Preconditions;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -331,9 +332,10 @@ public class MapleTopology {
             this.id = id;
         }
 
+        @Nonnull
         public Node getOwner() {
             if (this.owner == null) {
-                this.owner = new Node(id.substring(0, id.lastIndexOf(':')), Arrays.asList(id));
+                this.owner = new Node(id.substring(0, id.lastIndexOf(':')), Collections.singletonList(id));
             }
             return owner;
         }

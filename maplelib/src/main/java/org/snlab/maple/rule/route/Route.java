@@ -13,6 +13,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.snlab.maple.env.MapleTopology;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +22,7 @@ public class Route {
 
     private Map<MapleTopology.Node,Map<MapleTopology.Port,Forward>> rulesMap=new HashMap<>();
 
-    private Multimap<MapleTopology.Node,MapleTopology.Port> DropRules = HashMultimap.create();
+    private Multimap<MapleTopology.Node,MapleTopology.Port> dropRules = HashMultimap.create();
 
     public void addRule(@Nullable MapleTopology.Node node,@Nullable MapleTopology.Port port,Forward forward){
         for (ForwardAction.Action action : forward.getActions()) {
@@ -42,8 +43,12 @@ public class Route {
         }
     }
 
-    public void addDropIfneed(@Nullable MapleTopology.Port ingress){
+    public void updateDropIfneed(@Nonnull MapleTopology.Port ingress){
+        MapleTopology.Node node = ingress.getOwner();
+        Map<MapleTopology.Port, Forward> portForwardMap = rulesMap.get(node);
+        if(portForwardMap!=null){
 
+        }
     }
 
     public Map<MapleTopology.Node, Map<MapleTopology.Port, Forward>> getRulesMap() {
@@ -51,14 +56,38 @@ public class Route {
     }
 
     public Multimap<MapleTopology.Node, MapleTopology.Port> getDropRules() {
-        return DropRules;
+        return dropRules;
     }
 
     @Override
     public String toString() {
-        return "Route{\n" +
-                "rulesMap=" + rulesMap +
-                ", DropRules=" + DropRules +
-                "\n}";
+        StringBuilder sb=new StringBuilder();
+        sb.append("Route[");
+        for (Map.Entry<MapleTopology.Node, Map<MapleTopology.Port, Forward>> entry : rulesMap.entrySet()) {
+            MapleTopology.Node node = entry.getKey();
+            for (Map.Entry<MapleTopology.Port, Forward> entry1 : entry.getValue().entrySet()) {
+                MapleTopology.Port port = entry1.getKey();
+                sb.append("(");
+                sb.append(node==null?"*":node.getId());
+                sb.append(";");
+                sb.append(port==null?"*":port.getId());
+                sb.append(";");
+                sb.append(entry1.getValue());
+                sb.append("),");
+            }
+        }
+        for (Map.Entry<MapleTopology.Node, MapleTopology.Port> entry : dropRules.entries()) {
+            MapleTopology.Node node = entry.getKey();
+            MapleTopology.Port port = entry.getValue();
+            sb.append("(");
+            sb.append(node==null?"*":node.getId());
+            sb.append(";");
+            sb.append(port==null?"*":port.getId());
+            sb.append(";");
+            sb.append("Drop");
+            sb.append("),");
+        }
+        sb.append("]");
+        return sb.toString();
     }
 }

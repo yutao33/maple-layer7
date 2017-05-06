@@ -10,13 +10,15 @@
 package org.snlab.maple;
 
 
+import org.snlab.maple.env.MapleTopology;
+import org.snlab.maple.packet.MaplePacket;
 import org.snlab.maple.rule.MapleRule;
 import org.snlab.maple.tracetree.TraceTree;
 
 import java.util.List;
 
 public interface IMapleAdaptor {
-    void sendPacket();
+    void sendPacket(MapleTopology.Port port, MaplePacket pkt);
 
     void updateRules(List<MapleRule> rules);
 
