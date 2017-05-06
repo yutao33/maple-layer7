@@ -10,7 +10,7 @@ package org.snlab.maple.rule.route;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
-import org.snlab.maple.env.MapleTopology.Port;
+import org.snlab.maple.env.MapleTopology.PortId;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,7 +20,7 @@ import java.util.List;
 
 public class Forward {  //TODO actions sequence and only for one node
 
-    private final Port ingress;
+    private final PortId inport;
     private final List<ForwardAction.Action> actions;
     private int bandwidthlimit;
     //private int timeout;
@@ -35,41 +35,41 @@ public class Forward {  //TODO actions sequence and only for one node
 
 
 
-    public Forward(Port ingress, List<ForwardAction.Action> actions, int bandwidthlimit, int timeout) {
-        this.ingress = ingress;
+    public Forward(PortId inport, List<ForwardAction.Action> actions, int bandwidthlimit, int timeout) {
+        this.inport = inport;
         this.actions = new ArrayList<>(actions);
         this.bandwidthlimit = bandwidthlimit;
         //this.timeout = timeout;
     }
 
-    public Forward(Port ingress, ForwardAction.Action action, int bandwidthlimit, int timeout) {
-        this(ingress, Collections.singletonList(action), bandwidthlimit, timeout);
+    public Forward(PortId inport, ForwardAction.Action action, int bandwidthlimit, int timeout) {
+        this(inport, Collections.singletonList(action), bandwidthlimit, timeout);
     }
 
-    public Forward(Port ingress, ForwardAction.Action action) {
-        this(ingress, Collections.singletonList(action), 0, 0);
+    public Forward(PortId inport, ForwardAction.Action action) {
+        this(inport, Collections.singletonList(action), 0, 0);
     }
 
-    public Forward(@Nullable String ingress, @Nonnull String output) {
-        if (ingress != null) {
-            this.ingress = new Port(ingress);
+    public Forward(@Nullable String inport, @Nonnull String output) {
+        if (inport != null) {
+            this.inport = new PortId(inport);
         } else {
-            this.ingress = null;
+            this.inport = null;
         }
         this.actions = new ArrayList<>();
-        this.actions.add(ForwardAction.output(new Port(output)));
+        this.actions.add(ForwardAction.output(new PortId(output)));
         this.bandwidthlimit = 0;
     }
 
     public void concat(@Nonnull Forward n){
-        Preconditions.checkArgument(Objects.equal(n.ingress,this.ingress));
+        Preconditions.checkArgument(Objects.equal(n.inport,this.inport));
         this.actions.addAll(n.actions);
         this.bandwidthlimit=n.bandwidthlimit;
     }
 
     @Nullable
-    public Port getIngress() {
-        return ingress;
+    public PortId getInport() {
+        return inport;
     }
 
     public List<ForwardAction.Action> getActions() {
@@ -88,13 +88,13 @@ public class Forward {  //TODO actions sequence and only for one node
         Forward forward = (Forward) o;
 
         if (bandwidthlimit != forward.bandwidthlimit) return false;
-        if (ingress != null ? !ingress.equals(forward.ingress) : forward.ingress != null) return false;
+        if (inport != null ? !inport.equals(forward.inport) : forward.inport != null) return false;
         return actions.equals(forward.actions);
     }
 
     @Override
     public int hashCode() {
-        int result = ingress != null ? ingress.hashCode() : 0;
+        int result = inport != null ? inport.hashCode() : 0;
         result = 31 * result + actions.hashCode();
         result = 31 * result + bandwidthlimit;
         return result;
@@ -103,7 +103,7 @@ public class Forward {  //TODO actions sequence and only for one node
     @Override
     public String toString() {
         return "Forward{" +
-                "ingress=" + ingress +
+                "inport=" + inport +
                 ", actions=" + actions +
                 '}';
     }
@@ -114,7 +114,7 @@ public class Forward {  //TODO actions sequence and only for one node
      * @param path
      * @return
      */
-    public static String[] extractIngress(String... path) { //TODO
+    public static String[] extractInPort(String... path) { //TODO
         Preconditions.checkArgument(path.length%2==0);
         List<String> l = new ArrayList<>(path.length/2);
         for(int i=0;i<path.length/2;i++){

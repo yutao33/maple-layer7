@@ -13,7 +13,7 @@ import org.snlab.maple.rule.MapleRule;
 import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.rule.match.ByteArray;
 import org.snlab.maple.rule.match.MapleMatch;
-import org.snlab.maple.rule.match.MapleMatchIngress;
+import org.snlab.maple.rule.match.MapleMatchInPort;
 import org.snlab.maple.rule.match.ValueMaskPair;
 import org.snlab.maple.rule.route.Forward;
 
@@ -49,9 +49,9 @@ public class TraceTreeTNode extends TraceTreeNode {
     }
 
     @Nullable
-    Map.Entry<MapleMatch, TNodeEntry> findEntry(ByteArray key){ //NOTE only when field==INGRESS, key==null
+    Map.Entry<MapleMatch, TNodeEntry> findEntry(ByteArray key){ //NOTE only when field==INPORT, key==null
         //TODO not efficient
-        if(field.equals(MapleMatchField.INGRESS)){
+        if(field.equals(MapleMatchField.INPORT)){
             return branchtrueMap.entrySet().iterator().next();
         }
         for (Map.Entry<MapleMatch, TNodeEntry> entry : branchtrueMap.entrySet()) {
@@ -148,8 +148,8 @@ public class TraceTreeTNode extends TraceTreeNode {
     public static TraceTreeTNode buildNodeIfNeedOrNull(@Nonnull Trace.TestItem item, @Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
         MapleMatchField field = item.getField();
 
-        if(field.equals(MapleMatchField.INGRESS)){   //NOTE special ingress
-            return buildIngress(item,(MapleMatchIngress)matchMapBefore.get(MapleMatchField.INGRESS));
+        if(field.equals(MapleMatchField.INPORT)){   //NOTE special inport
+            return buildInPort(item,(MapleMatchInPort)matchMapBefore.get(MapleMatchField.INPORT));
         }
 
         TestCondition condition = genTNodeCondition(item);
@@ -187,24 +187,24 @@ public class TraceTreeTNode extends TraceTreeNode {
         return null;
     }
 
-    private static TraceTreeTNode buildIngress(Trace.TestItem item, MapleMatchIngress oldMatch) {
+    private static TraceTreeTNode buildInPort(Trace.TestItem item, MapleMatchInPort oldMatch) {
         TestCondition condition = genTNodeCondition(item);
 
-        MapleMatchIngress subMatch=null;
-        Set<MapleTopology.Port> parmPorts =null;
-        Set<MapleTopology.Node> parmNodes =null;
+        MapleMatchInPort subMatch=null;
+        Set<MapleTopology.PortId> parmPorts =null;
+        Set<MapleTopology.NodeId> parmNodes =null;
         ByteArray mask = item.getMask();
         if(mask==null){
             parmPorts = new HashSet<>();
             if(item instanceof Trace.TraceIs){
                 Trace.TraceIs item1 = (Trace.TraceIs) item;
                 String str = new String(item1.getValue().getBytes());
-                parmPorts.add(new MapleTopology.Port(str));
+                parmPorts.add(new MapleTopology.PortId(str));
             } else if(item instanceof Trace.TraceIn){
                 Trace.TraceIn item1 = (Trace.TraceIn) item;
                 for (ByteArray value : item1.getValues()) {
                     String str = new String(value.getBytes());
-                    parmPorts.add(new MapleTopology.Port(str));
+                    parmPorts.add(new MapleTopology.PortId(str));
                 }
             } else {
                 throw new RuntimeException("type error");
@@ -214,12 +214,12 @@ public class TraceTreeTNode extends TraceTreeNode {
             if(item instanceof Trace.TraceIs){
                 Trace.TraceIs item1 = (Trace.TraceIs) item;
                 String str = new String(item1.getValue().getBytes());
-                parmNodes.add(new MapleTopology.Node(str,null));
+                parmNodes.add(new MapleTopology.NodeId(str));
             } else if(item instanceof Trace.TraceIn){
                 Trace.TraceIn item1 = (Trace.TraceIn) item;
                 for (ByteArray value : item1.getValues()) {
                     String str = new String(value.getBytes());
-                    parmNodes.add(new MapleTopology.Node(str,null));
+                    parmNodes.add(new MapleTopology.NodeId(str));
                 }
             } else {
                 throw new RuntimeException("type error");
@@ -227,17 +227,17 @@ public class TraceTreeTNode extends TraceTreeNode {
         }
 
         if(oldMatch!=null){
-            subMatch = oldMatch.getSubMatchIngress(parmPorts,parmNodes);
+            subMatch = oldMatch.getSubMatchInPort(parmPorts,parmNodes);
             if(subMatch!=null&&oldMatch.equals(subMatch)){
                 subMatch=null;
             }
         } else {
-            subMatch = new MapleMatchIngress(parmPorts,parmNodes);
+            subMatch = new MapleMatchInPort(parmPorts,parmNodes);
         }
         if (subMatch!=null) {
             Map<MapleMatch,TNodeEntry> matchmap=new HashMap<>();
             matchmap.put(subMatch,new TNodeEntry());
-            TraceTreeTNode tNode = new TraceTreeTNode(MapleMatchField.INGRESS, condition);
+            TraceTreeTNode tNode = new TraceTreeTNode(MapleMatchField.INPORT, condition);
             tNode.branchtrueMap=matchmap;
             return tNode;
         }

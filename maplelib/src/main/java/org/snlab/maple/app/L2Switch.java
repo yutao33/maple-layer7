@@ -11,14 +11,14 @@ package org.snlab.maple.app;
 import org.snlab.maple.api.MapleAppBase;
 import org.snlab.maple.api.IMapleEnv;
 import org.snlab.maple.api.IMaplePacket;
-import org.snlab.maple.env.MapleTopology.Port;
+import org.snlab.maple.env.MapleTopology.PortId;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class L2Switch extends MapleAppBase {
 
-    Map<Long, Port> hostTable = new HashMap<>();
+    Map<Long, PortId> hostTable = new HashMap<>();
 
     @Override
     public boolean onPacket(IMaplePacket pkt, IMapleEnv env) {

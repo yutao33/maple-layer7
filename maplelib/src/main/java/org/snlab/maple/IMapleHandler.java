@@ -15,7 +15,7 @@ import java.util.List;
 
 public interface IMapleHandler {
 
-    void onPacket(String ingress, byte[] payload, MaplePacketInReason reason);
+    void onPacket(String inportId, byte[] payload, MaplePacketInReason reason);
 
 
     void onTopologyChanged(List<MapleTopology.Element> putList,

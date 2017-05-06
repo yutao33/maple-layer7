@@ -23,7 +23,7 @@ public interface IMaplePacket {
 
     MaplePacket.PktFieldMaskable ipDst();
 
-    MaplePacket.Ingress ingress();
+    MaplePacket.PktInPort inport();
 
     void setRoute(String... path);
 

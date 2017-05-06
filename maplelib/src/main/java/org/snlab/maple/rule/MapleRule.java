@@ -11,7 +11,7 @@ package org.snlab.maple.rule;
 import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.rule.match.MapleMatch;
-import org.snlab.maple.rule.match.MapleMatchIngress;
+import org.snlab.maple.rule.match.MapleMatchInPort;
 import org.snlab.maple.rule.route.Forward;
 import org.snlab.maple.rule.route.ForwardAction;
 import org.snlab.maple.rule.route.Route;
@@ -48,17 +48,17 @@ public class MapleRule {
 
     private void buildRoute(List<Forward> forwards) {
         this.route=new Route();
-        for (Forward f : forwards) {
-            if(!isdrop(f)) {
-                MapleTopology.Port ingress = f.getIngress();
-                if (ingress != null) {
-                    addifneed(ingress,f);
+        for (Forward forward : forwards) {
+            if(!isdrop(forward)) {
+                MapleTopology.PortId inport = forward.getInport();
+                if (inport != null) {
+                    addifneed(inport,forward);
                 } else {
-                    MapleTopology.Node fn = findnode(f);
+                    MapleTopology.NodeId fn = findnode(forward);
                     if(fn==null){ //maybe punt
-                        addaccordingtomatch(f);
+                        addaccordingtomatch(forward);
                     } else {
-                        addifneed(fn,f);
+                        addifneed(fn,forward);
                     }
                 }
             }
@@ -66,53 +66,53 @@ public class MapleRule {
     }
 
     private void addaccordingtomatch(Forward f){
-        MapleMatchIngress ingressMatch = (MapleMatchIngress)matches.get(MapleMatchField.INGRESS);
-        if(ingressMatch==null) {
+        MapleMatchInPort inportMatch = (MapleMatchInPort)matches.get(MapleMatchField.INPORT);
+        if(inportMatch==null) {
             this.route.addRule(null,null,f);
         } else {
-            for (MapleTopology.Port port : ingressMatch.getPorts()) {
-                this.route.addRule(port.getOwner(),port,f);
+            for (MapleTopology.PortId port : inportMatch.getPorts()) {
+                this.route.addRule(port.getNodeId(),port,f);
             }
-            for (MapleTopology.Node node : ingressMatch.getNodes()) {
+            for (MapleTopology.NodeId node : inportMatch.getNodes()) {
                 this.route.addRule(node,null,f);
             }
         }
     }
 
-    private void addifneed(MapleTopology.Node node,Forward f){
-        MapleMatchIngress ingressMatch = (MapleMatchIngress)matches.get(MapleMatchField.INGRESS);
-        if(ingressMatch==null){
+    private void addifneed(MapleTopology.NodeId node, Forward f){
+        MapleMatchInPort inportMatch = (MapleMatchInPort)matches.get(MapleMatchField.INPORT);
+        if(inportMatch==null){
             this.route.addRule(node,null,f);
         } else {
-            if(ingressMatch.getNodes().contains(node)){
+            if(inportMatch.getNodes().contains(node)){
                 this.route.addRule(node,null,f);
             }
-            Set<MapleTopology.Port> ports = ingressMatch.getPorts();
-            for (MapleTopology.Port port : ports) {
-                if(port.getOwner().equals(node)){
+            Set<MapleTopology.PortId> ports = inportMatch.getPorts();
+            for (MapleTopology.PortId port : ports) {
+                if(port.getNodeId().equals(node)){
                     this.route.addRule(node,port,f);
                 }
             }
         }
     }
 
-    private void addifneed(MapleTopology.Port ingress,Forward f){
-        MapleMatchIngress ingressMatch = (MapleMatchIngress)matches.get(MapleMatchField.INGRESS);
-        if(ingressMatch==null){
-            this.route.addRule(ingress.getOwner(),ingress,f);//TODO check
+    private void addifneed(MapleTopology.PortId inport, Forward f){
+        MapleMatchInPort inportMatch = (MapleMatchInPort)matches.get(MapleMatchField.INPORT);
+        if(inportMatch==null){
+            this.route.addRule(inport.getNodeId(),inport,f);//TODO check
         } else {
-            if(ingressMatch.getPorts().contains(ingress)||
-                    ingressMatch.getNodes().contains(ingress.getOwner())){
-                this.route.addRule(ingress.getOwner(),ingress,f);
+            if(inportMatch.getPorts().contains(inport)||
+                    inportMatch.getNodes().contains(inport.getNodeId())){
+                this.route.addRule(inport.getNodeId(),inport,f);
             }
         }
     }
 
-    private MapleTopology.Node findnode(Forward f){
+    private MapleTopology.NodeId findnode(Forward f){
         for (ForwardAction.Action act : f.getActions()) {
             if(act instanceof ForwardAction.OutPut){
                 ForwardAction.OutPut act1 = (ForwardAction.OutPut) act;
-                return act1.getPort().getOwner();
+                return act1.getPort().getNodeId();
             }
         }
         return null;

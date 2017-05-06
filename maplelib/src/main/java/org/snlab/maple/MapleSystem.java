@@ -10,7 +10,7 @@ package org.snlab.maple;
 
 
 import org.snlab.maple.api.MapleAppBase;
-import org.snlab.maple.app.IngressTest;
+import org.snlab.maple.app.InPortTest;
 import org.snlab.maple.env.MapleEnv;
 import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.packet.MaplePacket;
@@ -41,7 +41,7 @@ public class MapleSystem {
         this.mapleAppList = new ArrayList<>();
 
         //test
-        this.mapleAppList.add(new IngressTest());
+        this.mapleAppList.add(new InPortTest());
 
     }
 
@@ -120,8 +120,8 @@ public class MapleSystem {
     private class MapleSystemHandlerImpl implements IMapleHandler {
 
         @Override
-        public void onPacket(String ingress, byte[] payload, MaplePacketInReason reason) {
-            MaplePacket pkt = new MaplePacket(payload, new MapleTopology.Port(ingress));
+        public void onPacket(String inportId, byte[] payload, MaplePacketInReason reason) {
+            MaplePacket pkt = new MaplePacket(payload, new MapleTopology.PortId(inportId));
             MapleSystem.this.onPacket(pkt);
         }
 

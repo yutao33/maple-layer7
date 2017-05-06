@@ -15,8 +15,8 @@ import java.util.Map;
 
 public class VLANApp {
 
-    Map<MapleTopology.Port, Short> Port2VlanidTable;
-    Map<MapleTopology.Port, byte[]> Port2MacaddrTable;
+    Map<MapleTopology.PortId, Short> Port2VlanidTable;
+    Map<MapleTopology.PortId, byte[]> Port2MacaddrTable;
 
 
     String[] boundaryport() {
@@ -25,7 +25,7 @@ public class VLANApp {
 
 
     boolean onPacket(MaplePacket pkt) {
-        if (pkt.ingress().in(boundaryport())) {
+        if (pkt.inport().in(boundaryport())) {
 
 
         }

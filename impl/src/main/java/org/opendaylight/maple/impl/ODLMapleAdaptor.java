@@ -22,14 +22,10 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.ControllerActionCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.ControllerActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.controller.action._case.ControllerAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.controller.action._case.ControllerActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputAction;
@@ -60,7 +56,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -117,7 +112,7 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
     }
 
     @Override
-    public void sendPacket(MapleTopology.Port port, MaplePacket pkt) {
+    public void sendPacket(MapleTopology.PortId port, MaplePacket pkt) {
 
         InstanceIdentifier<FlowCapableNodeConnectorStatisticsData> iid = InstanceIdentifier
                 .builder(Nodes.class)
@@ -142,18 +137,18 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
         ReadWriteTransaction rwt = dataBroker.newReadWriteTransaction();
         //deleteAllRules(rwt);
 
-        List<MapleTopology.Node> allNodes=new ArrayList<>();
+        List<MapleTopology.NodeId> allNodes=new ArrayList<>();
 
         for (MapleRule rule : rules) {
             Match odlPktFieldMatch = buildODLPktFieldMatch(rule.getMatches());
-            Map<MapleTopology.Node, Map<MapleTopology.Port, Forward>> rulesMap = rule.getRoute().getRulesMap();
-            for (Map.Entry<MapleTopology.Node, Map<MapleTopology.Port, Forward>> nodeMapEntry : rulesMap.entrySet()) {
-                MapleTopology.Node node = nodeMapEntry.getKey();
+            Map<MapleTopology.NodeId, Map<MapleTopology.PortId, Forward>> rulesMap = rule.getRoute().getRulesMap();
+            for (Map.Entry<MapleTopology.NodeId, Map<MapleTopology.PortId, Forward>> nodeMapEntry : rulesMap.entrySet()) {
+                MapleTopology.NodeId node = nodeMapEntry.getKey();
                 if(node!=null){
                     allNodes.add(node);
-                    Map<MapleTopology.Port, Forward> portForwardMap = nodeMapEntry.getValue();
-                    for (Map.Entry<MapleTopology.Port, Forward> portForwardEntry : portForwardMap.entrySet()) {
-                        MapleTopology.Port port = portForwardEntry.getKey();
+                    Map<MapleTopology.PortId, Forward> portForwardMap = nodeMapEntry.getValue();
+                    for (Map.Entry<MapleTopology.PortId, Forward> portForwardEntry : portForwardMap.entrySet()) {
+                        MapleTopology.PortId port = portForwardEntry.getKey();
                         Forward forward = portForwardEntry.getValue();
                         installRuleforNode(rwt,node,port,odlPktFieldMatch,rule.getPriority(),forward);
                     }
@@ -163,12 +158,12 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
 
         for (MapleRule rule : rules) {
             Route route = rule.getRoute();
-            Map<MapleTopology.Port, Forward> portForwardMap = route.getRulesMap().get(null);
+            Map<MapleTopology.PortId, Forward> portForwardMap = route.getRulesMap().get(null);
             if(portForwardMap!=null) {
                 Forward allNodesForward = portForwardMap.get(null);
                 if (allNodesForward != null) {
                     Match odlPktFieldMatch = buildODLPktFieldMatch(rule.getMatches());
-                    for (MapleTopology.Node node : allNodes) {
+                    for (MapleTopology.NodeId node : allNodes) {
                         installRuleforNode(rwt, node, null, odlPktFieldMatch, rule.getPriority(), allNodesForward);
                     }
                 }
@@ -204,8 +199,8 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
     }
 
     private void installRuleforNode(WriteTransaction wt,
-                                    MapleTopology.Node node,
-                                    MapleTopology.Port port,
+                                    MapleTopology.NodeId node,
+                                    MapleTopology.PortId port,
                                     Match odlPktFieldMatch,
                                     int priority,
                                     Forward forward) {
@@ -227,7 +222,7 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
                              Instructions instructions){
         FlowId flowId = new FlowId("maple" + flowIdInc.getAndIncrement());
         InstanceIdentifier<Node> iid = InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class, new NodeKey(new NodeId(nodeId)))
+                .child(Node.class, new NodeKey(new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId(nodeId)))
                 .build();
         InstanceIdentifier<Flow> flowPath = iid.builder().augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey((short) 0))
@@ -261,7 +256,7 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
 
         for (Map.Entry<MapleMatchField, MapleMatch> entry : matches.entrySet()) {
             MapleMatchField field = entry.getKey();
-            if(field.equals(MapleMatchField.INGRESS)){
+            if(field.equals(MapleMatchField.INPORT)){
                 continue;
             }
             ValueMaskPair valuemask=entry.getValue().getMatch();
@@ -375,7 +370,7 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
 
         for (ForwardAction.Action action : forward.getActions()) {
             if(action instanceof ForwardAction.OutPut){
-                MapleTopology.Port outPort = ((ForwardAction.OutPut) action).getPort();
+                MapleTopology.PortId outPort = ((ForwardAction.OutPut) action).getPort();
                 OutputAction outputAction = new OutputActionBuilder()
                         .setOutputNodeConnector(new NodeConnectorId(outPort.getId()))
                         .build();

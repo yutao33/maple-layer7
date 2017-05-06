@@ -195,10 +195,8 @@ public class TraceTree {
     }
 
     private void handleIfNeedDrop(TraceTreeLNode l, MaplePacket pkt) {
-        String ingressid = pkt._getIngressId();
-        MapleTopology.Port ingress=new MapleTopology.Port(ingressid);
         Route route = l.getRule().getRoute();
-        route.updateDropIfneed(ingress);
+        route.updateDropIfneed(pkt._getInPortId());
     }
 
 

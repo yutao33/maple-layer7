@@ -9,7 +9,7 @@
 package org.snlab.maple.rule.route;
 
 import com.google.common.base.Preconditions;
-import org.snlab.maple.env.MapleTopology.Port;
+import org.snlab.maple.env.MapleTopology.PortId;
 import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.rule.match.ByteArray;
 
@@ -27,7 +27,7 @@ public final class ForwardAction {
 
     //-------------------static Action function-----------------------
 
-    public static OutPut output(@Nonnull Port port) {
+    public static OutPut output(@Nonnull PortId port) {
         return new OutPut(port);
     }
 
@@ -64,9 +64,9 @@ public final class ForwardAction {
     }
 
     public static class OutPut extends Action {
-        private Port port;
+        private PortId port;
 
-        public OutPut(@Nonnull Port port) {
+        public OutPut(@Nonnull PortId port) {
             this.port = port;
         }
 
@@ -80,7 +80,7 @@ public final class ForwardAction {
             return port.equals(outPut.port);
         }
 
-        public Port getPort() {
+        public PortId getPort() {
             return port;
         }
 

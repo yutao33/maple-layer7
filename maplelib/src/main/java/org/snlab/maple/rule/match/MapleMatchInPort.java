@@ -18,52 +18,52 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class MapleMatchIngress extends MapleMatch{
-    private final Set<MapleTopology.Port> ports;
-    private final Set<MapleTopology.Node> nodes;
+public class MapleMatchInPort extends MapleMatch{
+    private final Set<MapleTopology.PortId> ports;
+    private final Set<MapleTopology.NodeId> nodes;
 
-    public MapleMatchIngress(Set<MapleTopology.Port> ports, Set<MapleTopology.Node> nodes) {
-        super(MapleMatchField.INGRESS, null);  //NOTE match=null
-        this.nodes = nodes==null?Collections.<MapleTopology.Node>emptySet():new HashSet<>(nodes);
-        this.ports = ports==null?Collections.<MapleTopology.Port>emptySet():new HashSet<>(ports);
+    public MapleMatchInPort(Set<MapleTopology.PortId> ports, Set<MapleTopology.NodeId> nodes) {
+        super(MapleMatchField.INPORT, null);  //NOTE match=null
+        this.nodes = nodes==null?Collections.<MapleTopology.NodeId>emptySet():new HashSet<>(nodes);
+        this.ports = ports==null?Collections.<MapleTopology.PortId>emptySet():new HashSet<>(ports);
         Preconditions.checkState(this.nodes.size()+this.ports.size()>0);
     }
 
     @Nonnull
-    public Set<MapleTopology.Port> getPorts() {
+    public Set<MapleTopology.PortId> getPorts() {
         return Collections.unmodifiableSet(ports);
     }
 
     @Nonnull
-    public Set<MapleTopology.Node> getNodes() {
+    public Set<MapleTopology.NodeId> getNodes() {
         return Collections.unmodifiableSet(nodes);
     }
 
     @Nullable
-    public MapleMatchIngress getSubMatchIngress(Set<MapleTopology.Port> ports, Set<MapleTopology.Node> nodes){
-        Set<MapleTopology.Port> subMatchPorts=new HashSet<>();
-        Set<MapleTopology.Node> subMatchNodes=new HashSet<>();
+    public MapleMatchInPort getSubMatchInPort(Set<MapleTopology.PortId> ports, Set<MapleTopology.NodeId> nodes){
+        Set<MapleTopology.PortId> subMatchPorts=new HashSet<>();
+        Set<MapleTopology.NodeId> subMatchNodes=new HashSet<>();
         if(ports!=null){
-            for (MapleTopology.Port port : ports) {
-                if(this.ports.contains(port)||this.nodes.contains(port.getOwner())){
+            for (MapleTopology.PortId port : ports) {
+                if(this.ports.contains(port)||this.nodes.contains(port.getNodeId())){
                     subMatchPorts.add(port);
                 }
             }
         }
         if(nodes!=null){
-            for (MapleTopology.Node node : nodes) {
+            for (MapleTopology.NodeId node : nodes) {
                 if(this.nodes.contains(node)){
                     subMatchNodes.add(node);
                 }
             }
-            for (MapleTopology.Port port : this.ports) {
-                if(nodes.contains(port.getOwner())){
+            for (MapleTopology.PortId port : this.ports) {
+                if(nodes.contains(port.getNodeId())){
                     subMatchPorts.add(port);
                 }
             }
         }
         if(subMatchNodes.size()+subMatchPorts.size()>0){
-            return new MapleMatchIngress(subMatchPorts,subMatchNodes);
+            return new MapleMatchInPort(subMatchPorts,subMatchNodes);
         }
         return null;
     }
@@ -74,7 +74,7 @@ public class MapleMatchIngress extends MapleMatch{
         if (o == null || getClass() != o.getClass()) return false;
         //if (!super.equals(o)) return false;
 
-        MapleMatchIngress that = (MapleMatchIngress) o;
+        MapleMatchInPort that = (MapleMatchInPort) o;
 
         if (!ports.equals(that.ports)) return false;
         return nodes.equals(that.nodes);
@@ -90,7 +90,7 @@ public class MapleMatchIngress extends MapleMatch{
 
     @Override
     public String toString() {
-        return "MapleMatchIngress{" +
+        return "MapleMatchInPort{" +
                 "ports=" + ports +
                 ", nodes=" + nodes +
                 '}';

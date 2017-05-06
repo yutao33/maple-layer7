@@ -33,7 +33,7 @@ public class MaplePacket implements IMaplePacket {
 
     private final static Logger LOG = Logger.getLogger(MaplePacket.class.toString());
 
-    private MapleTopology.Port ingress;
+    private MapleTopology.PortId inPortId;
 
     private Ethernet frame;
 
@@ -43,8 +43,8 @@ public class MaplePacket implements IMaplePacket {
 
     private List<Forward> route = null;  //when it is null, default to drop
 
-    public MaplePacket(byte[] data, MapleTopology.Port ingress) {
-        this.ingress = ingress;
+    public MaplePacket(byte[] data, MapleTopology.PortId inPortId) {
+        this.inPortId = inPortId;
         this.frame = new Ethernet();
         frame.deserialize(data, 0, data.length);
         fieldMap = frame.buildMatchFieldMap();
@@ -61,7 +61,7 @@ public class MaplePacket implements IMaplePacket {
     @Override
     public String toString() {
         return "MaplePacket{" +
-                "ingress=" + ingress +
+                "inPortId=" + inPortId +
                 ", frame=" + frame +
                 '}';
     }
@@ -72,8 +72,8 @@ public class MaplePacket implements IMaplePacket {
         return frame;
     }
 
-    public String _getIngressId() {
-        return ingress.getId();
+    public MapleTopology.PortId _getInPortId() {
+        return inPortId;
     }
 
     //-------------------------------trace functions-----------------------------
@@ -108,8 +108,8 @@ public class MaplePacket implements IMaplePacket {
     }
 
     @Override
-    public MaplePacket.Ingress ingress() {
-        return new Ingress();
+    public PktInPort inport() {
+        return new PktInPort();
     }
 
 
@@ -179,58 +179,58 @@ public class MaplePacket implements IMaplePacket {
 
     //-------------------------------inner class-----------------------------
 
-    public class Ingress {
-        private Ingress() {
+    public class PktInPort {
+        private PktInPort() {
 
         }
 
-        public boolean is(String ingress) {
-            Preconditions.checkArgument(MapleTopology.isValidPortId(ingress));
-            boolean ret = MaplePacket.this.ingress.getId().equals(ingress);
-            TraceItem ti = new Trace.TraceIs(MapleMatchField.INGRESS, null, ingress.getBytes(), null, ret);
+        public boolean is(String inport) {
+            Preconditions.checkArgument(MapleTopology.isValidPortId(inport));
+            boolean ret = MaplePacket.this.inPortId.getId().equals(inport);
+            TraceItem ti = new Trace.TraceIs(MapleMatchField.INPORT, null, inport.getBytes(), null, ret);
             addTraceItem(ti);
             return ret;
         }
 
-        public boolean in(String... ingresses) {
-            for (String s : ingresses) {
+        public boolean in(String... inports) {
+            for (String s : inports) {
                 Preconditions.checkArgument(MapleTopology.isValidPortId(s));
             }
             boolean ret = false;
             List<byte[]> values = new ArrayList<>();
-            for (String s : ingresses) {
+            for (String s : inports) {
                 values.add(s.getBytes());
-                if (MaplePacket.this.ingress.getId().equals(s)) {
+                if (MaplePacket.this.inPortId.getId().equals(s)) {
                     ret = true;
                 }
             }
-            TraceItem ti = new Trace.TraceIn(MapleMatchField.INGRESS, null, values,null, ret);
+            TraceItem ti = new Trace.TraceIn(MapleMatchField.INPORT, null, values,null, ret);
             addTraceItem(ti);
             return ret;
         }
 
-        public IngressNode owner(){
-            return new IngressNode();
+        public PktInPortNode owner(){
+            return new PktInPortNode();
         }
 
         public String getValue() {
-            TraceItem ti = new Trace.TraceGet(MapleMatchField.INGRESS, null, MaplePacket.this.ingress.getId().getBytes());
+            TraceItem ti = new Trace.TraceGet(MapleMatchField.INPORT, null, MaplePacket.this.inPortId.getId().getBytes());
             addTraceItem(ti);
-            return MaplePacket.this.ingress.getId();
+            return MaplePacket.this.inPortId.getId();
         }
     }
 
-    public class IngressNode {
+    public class PktInPortNode {
 
-        private IngressNode(){
+        private PktInPortNode(){
 
         }
 
         public boolean is(String node) {
             Preconditions.checkArgument(MapleTopology.isValidNodeId(node));
-            MapleTopology.Node owner = MaplePacket.this.ingress.getOwner();
+            MapleTopology.NodeId owner = MaplePacket.this.inPortId.getNodeId();
             boolean ret = owner.getId().equals(node);
-            TraceItem ti = new Trace.TraceIs(MapleMatchField.INGRESS, "mask".getBytes(), node.getBytes(), null, ret);
+            TraceItem ti = new Trace.TraceIs(MapleMatchField.INPORT, "mask".getBytes(), node.getBytes(), null, ret);
             addTraceItem(ti);
             return ret;
         }
@@ -241,21 +241,21 @@ public class MaplePacket implements IMaplePacket {
             }
             boolean ret = false;
             List<byte[]> values = new ArrayList<>();
-            MapleTopology.Node owner = MaplePacket.this.ingress.getOwner();
+            MapleTopology.NodeId owner = MaplePacket.this.inPortId.getNodeId();
             for (String s : nodes) {
                 values.add(s.getBytes());
                 if (owner.getId().equals(s)) {
                     ret = true;
                 }
             }
-            TraceItem ti = new Trace.TraceIn(MapleMatchField.INGRESS, "mask".getBytes(), values,null, ret);
+            TraceItem ti = new Trace.TraceIn(MapleMatchField.INPORT, "mask".getBytes(), values,null, ret);
             addTraceItem(ti);
             return ret;
         }
 
         public String getValue(){
-            MapleTopology.Node owner = MaplePacket.this.ingress.getOwner();
-            TraceItem ti = new Trace.TraceGet(MapleMatchField.INGRESS, "mask".getBytes(), owner.getId().getBytes());
+            MapleTopology.NodeId owner = MaplePacket.this.inPortId.getNodeId();
+            TraceItem ti = new Trace.TraceGet(MapleMatchField.INPORT, "mask".getBytes(), owner.getId().getBytes());
             addTraceItem(ti);
             return owner.getId();
         }

@@ -18,7 +18,7 @@ import org.snlab.maple.tracetree.TraceTree;
 import java.util.List;
 
 public interface IMapleAdaptor {
-    void sendPacket(MapleTopology.Port port, MaplePacket pkt);
+    void sendPacket(MapleTopology.PortId port, MaplePacket pkt);
 
     void updateRules(List<MapleRule> rules);
 

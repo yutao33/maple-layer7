@@ -12,7 +12,7 @@ import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.rule.match.ByteArray;
 import org.snlab.maple.rule.match.MapleMatch;
-import org.snlab.maple.rule.match.MapleMatchIngress;
+import org.snlab.maple.rule.match.MapleMatchInPort;
 import org.snlab.maple.rule.match.ValueMaskPair;
 
 import javax.annotation.Nonnull;
@@ -108,8 +108,8 @@ public class TraceTreeVNode extends TraceTreeNode {
     @Nullable
     public static TraceTreeVNode buildNodeIfNeedOrNull(@Nonnull Trace.TraceGet item, @Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
         MapleMatchField field = item.getField();
-        if(field.equals(MapleMatchField.INGRESS)){   //NOTE special ingress
-            return buildIngress(item,(MapleMatchIngress)matchMapBefore.get(MapleMatchField.INGRESS));
+        if(field.equals(MapleMatchField.INPORT)){   //NOTE special inport
+            return buildInPort(item,(MapleMatchInPort)matchMapBefore.get(MapleMatchField.INPORT));
         }
 
         MapleMatch oldMatch = matchMapBefore.get(field);
@@ -136,28 +136,28 @@ public class TraceTreeVNode extends TraceTreeNode {
         return null;
     }
 
-    private static TraceTreeVNode buildIngress(Trace.TraceGet item, MapleMatchIngress oldMatch) {
+    private static TraceTreeVNode buildInPort(Trace.TraceGet item, MapleMatchInPort oldMatch) {
         String str=new String(item.getValue().getBytes());
         ByteArray mask = item.getMask();
 
-        MapleMatchIngress subMatch=null;
-        Set<MapleTopology.Port> parmPorts =null;
-        Set<MapleTopology.Node> parmNodes =null;
+        MapleMatchInPort subMatch=null;
+        Set<MapleTopology.PortId> parmPorts =null;
+        Set<MapleTopology.NodeId> parmNodes =null;
         if(mask==null){
-            parmPorts = Collections.singleton(new MapleTopology.Port(str));
+            parmPorts = Collections.singleton(new MapleTopology.PortId(str));
         } else {
-            parmNodes = Collections.singleton(new MapleTopology.Node(str,null));
+            parmNodes = Collections.singleton(new MapleTopology.NodeId(str));
         }
         if(oldMatch!=null){
-            subMatch = oldMatch.getSubMatchIngress(parmPorts,parmNodes);
+            subMatch = oldMatch.getSubMatchInPort(parmPorts,parmNodes);
             if(subMatch!=null&&oldMatch.equals(subMatch)){
                 subMatch=null;
             }
         } else {
-            subMatch = new MapleMatchIngress(parmPorts,parmNodes);
+            subMatch = new MapleMatchInPort(parmPorts,parmNodes);
         }
         if(subMatch!=null){
-            TraceTreeVNode vNode=new TraceTreeVNode(MapleMatchField.INGRESS,item.getMask());
+            TraceTreeVNode vNode=new TraceTreeVNode(MapleMatchField.INPORT,item.getMask());
             vNode.matchentries.put(item.getValue(),new VNodeEntry(null,subMatch));
             return vNode;
         }

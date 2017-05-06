@@ -48,7 +48,7 @@ public class PacketHandler implements PacketProcessingListener {
         String ingresskeyid = ingresskey.getId().getValue();
 
 
-        LOG.info("ingress="+ingresskeyid);
+        LOG.info("inport="+ingresskeyid);
         mapleHandler.onPacket(ingresskeyid,packetReceived.getPayload(), reason);
 
     }

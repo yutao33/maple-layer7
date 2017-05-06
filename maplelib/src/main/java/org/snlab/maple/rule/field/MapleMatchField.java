@@ -10,7 +10,7 @@ package org.snlab.maple.rule.field;
 
 public enum MapleMatchField {
 
-    INGRESS(0,false),  //this is special
+    INPORT(0,false),  //this is special
 
     ETH_SRC(48, true),
     ETH_DST(48, true),

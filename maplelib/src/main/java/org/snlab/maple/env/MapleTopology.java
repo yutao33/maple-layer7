@@ -11,6 +11,7 @@ package org.snlab.maple.env;
 import com.google.common.base.Preconditions;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,11 +21,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 
 public class MapleTopology {
-    public static final Logger LOG = Logger.getLogger("MapleTopology");
 
     private Map<Node, Node> nodes;
     private Map<Link, Link> links;
@@ -193,12 +192,12 @@ public class MapleTopology {
     //return isadded
     private boolean addPortifnotexisted(Port port) {
         boolean isadded = false;
-        Node owner = port.getOwner();
-        Node mynode = nodes.get(owner);
+        Node nodeId = port.getOwner();
+        Node mynode = nodes.get(nodeId);
         if (mynode != null) {
             isadded = mynode.ports.add(port);
         } else {
-            nodes.put(owner, owner);
+            nodes.put(nodeId, nodeId);
             isadded = true;
         }
         return isadded;
@@ -267,8 +266,93 @@ public class MapleTopology {
         return id.matches("^openflow:\\d+:\\w+$");
     }
 
+    public static String truncateNodeId(String portid){
+        return portid.substring(0, portid.lastIndexOf(':'));
+    }
 
     //-----------------------static inner class-----------------------
+
+    @Immutable
+    public static class NodeId {
+        private final String id; //openflow:1 openflow:233334443
+
+        public NodeId(String id) {
+            Preconditions.checkArgument(isValidNodeId(id));
+            this.id = id;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            NodeId nodeId = (NodeId) o;
+
+            return id.equals(nodeId.id);
+        }
+
+        @Override
+        public int hashCode() {
+            return id.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return "NodeId{" +
+                    "id='" + id + '\'' +
+                    '}';
+        }
+    }
+
+    @Immutable
+    public static class PortId {
+        private NodeId nodeId;// openflow:1
+        private final String id;//  openflow:1:1 openflow:1:2 openflow:1:internal
+
+        public PortId(String id) {
+            Preconditions.checkArgument(isValidPortId(id));
+            this.id = id;
+        }
+
+        @Nonnull
+        public NodeId getNodeId() {
+            if (this.nodeId == null) {
+                this.nodeId = new NodeId(truncateNodeId(id));
+            }
+            return nodeId;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            PortId portId = (PortId) o;
+
+            return id.equals(portId.id);
+        }
+
+        @Override
+        public int hashCode() {
+            return id.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return "PortId{" +
+                    "id='" + id + '\'' +
+                    '}';
+        }
+    }
+
 
     public static abstract class Element {
 
@@ -332,10 +416,9 @@ public class MapleTopology {
             this.id = id;
         }
 
-        @Nonnull
         public Node getOwner() {
             if (this.owner == null) {
-                this.owner = new Node(id.substring(0, id.lastIndexOf(':')), Collections.singletonList(id));
+                this.owner = new Node(id.substring(0, id.lastIndexOf(':')), Arrays.asList(id));
             }
             return owner;
         }
