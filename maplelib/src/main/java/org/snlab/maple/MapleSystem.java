@@ -53,7 +53,7 @@ public class MapleSystem {
     }
 
     private void onPacket(MaplePacket pkt) {
-        if (pkt.getFrame().getEtherType().equals(EthType.LLDP)) {
+        if (pkt._getFrame().getEtherType().equals(EthType.LLDP)) {
             LOG.info("get LLDP");
             return;
         }

@@ -25,12 +25,14 @@ public class Forward {  //TODO actions sequence and only for one node
     private int bandwidthlimit;
     //private int timeout;
 
-    public static final List<ForwardAction.Action> DEFAULT_PuntActions =
-            Collections.<ForwardAction.Action>singletonList(new ForwardAction.Punt());
-    public static final List<Forward> DEFAULT_PuntForwards =
-            Collections.singletonList(new Forward(null, DEFAULT_PuntActions, 0, 0));
+    
     public static final Forward DROP =
             new Forward(null, ForwardAction.drop());
+    public static final Forward PUNT =
+            new Forward(null, ForwardAction.punt());
+    public static final List<Forward> DEFAULT_PuntForwards =
+            Collections.singletonList(PUNT);
+
 
 
     public Forward(Port ingress, List<ForwardAction.Action> actions, int bandwidthlimit, int timeout) {

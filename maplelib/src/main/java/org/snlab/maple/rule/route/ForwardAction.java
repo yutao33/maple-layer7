@@ -23,6 +23,7 @@ public final class ForwardAction {
 
     private final static Drop finalDrop=new Drop();
     private final static PopVlan finalPopVlan=new PopVlan();
+    private final static Punt finalPunt=new Punt();
 
     //-------------------static Action function-----------------------
 
@@ -32,6 +33,10 @@ public final class ForwardAction {
 
     public static Drop drop() {
         return finalDrop;
+    }
+
+    public static Punt punt(){
+        return finalPunt;
     }
 
     public static SetField setField(MapleMatchField field,ByteArray value){

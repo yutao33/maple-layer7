@@ -68,12 +68,12 @@ public class MaplePacket implements IMaplePacket {
 
     //-------------------------------get Raw packet functions-----------------------------
 
-    public Ethernet getFrame() {
+    public Ethernet _getFrame() {
         return frame;
     }
 
-    public MapleTopology.Port getIngress() {
-        return ingress;
+    public String _getIngressId() {
+        return ingress.getId();
     }
 
     //-------------------------------trace functions-----------------------------
@@ -209,21 +209,14 @@ public class MaplePacket implements IMaplePacket {
             return ret;
         }
 
-//        public boolean belongto(String node) {
-//            boolean ret = MaplePacket.this.ingress.getOwner().getId().equals(node);
-//            TraceItem ti = new Trace.TraceRange(MapleMatchField.INGRESS, null, node.getBytes(), null,null, ret);
-//            addTraceItem(ti);
-//            return ret;
-//        }
-
         public IngressNode owner(){
             return new IngressNode();
         }
 
-        public MapleTopology.Port getValue() {
+        public String getValue() {
             TraceItem ti = new Trace.TraceGet(MapleMatchField.INGRESS, null, MaplePacket.this.ingress.getId().getBytes());
             addTraceItem(ti);
-            return MaplePacket.this.ingress;
+            return MaplePacket.this.ingress.getId();
         }
     }
 
@@ -260,11 +253,11 @@ public class MaplePacket implements IMaplePacket {
             return ret;
         }
 
-        public MapleTopology.Node getValue(){
+        public String getValue(){
             MapleTopology.Node owner = MaplePacket.this.ingress.getOwner();
             TraceItem ti = new Trace.TraceGet(MapleMatchField.INGRESS, "mask".getBytes(), owner.getId().getBytes());
             addTraceItem(ti);
-            return MaplePacket.this.ingress.getOwner();
+            return owner.getId();
         }
     }
 
