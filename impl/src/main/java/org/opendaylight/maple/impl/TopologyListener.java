@@ -151,9 +151,11 @@ public class TopologyListener implements DataTreeChangeListener<NetworkTopology>
         MapleTopology.NodeId nodeId = new MapleTopology.NodeId(node.getNodeId().getValue());
         List<MapleTopology.PortId> ports = new ArrayList<>();
         List<TerminationPoint> terminationPoint = node.getTerminationPoint();
-        for (TerminationPoint point : terminationPoint) {
-            MapleTopology.PortId portId = new MapleTopology.PortId(point.getTpId().getValue());
-            ports.add(portId);
+        if(terminationPoint!=null) {
+            for (TerminationPoint point : terminationPoint) {
+                MapleTopology.PortId portId = new MapleTopology.PortId(point.getTpId().getValue());
+                ports.add(portId);
+            }
         }
         putList.add(new MapleTopology.Node(nodeId, ports));
     }
