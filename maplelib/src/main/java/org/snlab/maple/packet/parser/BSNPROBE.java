@@ -28,7 +28,6 @@ import org.snlab.maple.packet.util.HexString;
 
 /**
  * @author Shudong Zhou (shudong.zhou@bigswitch.com)
- *
  */
 public class BSNPROBE extends BasePacket {
     protected long controllerId;

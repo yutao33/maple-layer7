@@ -26,7 +26,6 @@ import org.snlab.maple.packet.types.IPv4Address;
 import org.snlab.maple.packet.types.MacAddress;
 
 /**
- *
  * @author David Erickson (daviderickson@cs.stanford.edu)
  */
 public class ARP extends BasePacket {

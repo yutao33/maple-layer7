@@ -28,7 +28,6 @@ import org.snlab.maple.packet.types.IpProtocol;
 import org.snlab.maple.packet.types.TransportPort;
 
 /**
- *
  * @author David Erickson (daviderickson@cs.stanford.edu)
  */
 public class UDP extends BasePacket {
@@ -128,8 +127,8 @@ public class UDP extends BasePacket {
     /**
      * Serializes the packet. Will compute and set the following fields if they
      * are set to specific values at the time serialize is called:
-     *      -checksum : 0
-     *      -length : 0
+     * -checksum : 0
+     * -length : 0
      */
     public byte[] serialize() {
         byte[] payloadData = null;

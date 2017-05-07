@@ -22,7 +22,6 @@ package org.snlab.maple.packet.parser;
 import java.util.Arrays;
 
 /**
- *
  * @author David Erickson (daviderickson@cs.stanford.edu)
  */
 public class DHCPOption {

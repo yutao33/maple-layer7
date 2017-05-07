@@ -128,8 +128,8 @@ public class MaplePacket implements IMaplePacket {
 
     @Override
     public void setRoute(String... path) {
-        Preconditions.checkArgument(path.length%2==0);
-        if(path.length==0){
+        Preconditions.checkArgument(path.length % 2 == 0);
+        if (path.length == 0) {
             return;
         }
         if (route != null) {
@@ -140,8 +140,8 @@ public class MaplePacket implements IMaplePacket {
 
     @Override
     public void addRoute(String... path) {
-        Preconditions.checkArgument(path.length%2==0);
-        if(path.length==0){
+        Preconditions.checkArgument(path.length % 2 == 0);
+        if (path.length == 0) {
             return;
         }
         checkRoute();
@@ -154,7 +154,7 @@ public class MaplePacket implements IMaplePacket {
 
     @Override
     public void setRoute(Forward... path) {
-        if(path.length==0){
+        if (path.length == 0) {
             return;
         }
         if (route != null) {
@@ -165,7 +165,7 @@ public class MaplePacket implements IMaplePacket {
 
     @Override
     public void addRoute(Forward... path) {
-        if(path.length==0){
+        if (path.length == 0) {
             return;
         }
         checkRoute();
@@ -204,12 +204,12 @@ public class MaplePacket implements IMaplePacket {
                     ret = true;
                 }
             }
-            TraceItem ti = new Trace.TraceIn(MapleMatchField.INPORT, null, values,null, ret);
+            TraceItem ti = new Trace.TraceIn(MapleMatchField.INPORT, null, values, null, ret);
             addTraceItem(ti);
             return ret;
         }
 
-        public PktInPortNode owner(){
+        public PktInPortNode owner() {
             return new PktInPortNode();
         }
 
@@ -222,7 +222,7 @@ public class MaplePacket implements IMaplePacket {
 
     public class PktInPortNode {
 
-        private PktInPortNode(){
+        private PktInPortNode() {
 
         }
 
@@ -248,12 +248,12 @@ public class MaplePacket implements IMaplePacket {
                     ret = true;
                 }
             }
-            TraceItem ti = new Trace.TraceIn(MapleMatchField.INPORT, "mask".getBytes(), values,null, ret);
+            TraceItem ti = new Trace.TraceIn(MapleMatchField.INPORT, "mask".getBytes(), values, null, ret);
             addTraceItem(ti);
             return ret;
         }
 
-        public String getValue(){
+        public String getValue() {
             MapleTopology.NodeId owner = MaplePacket.this.inPortId.getNodeId();
             TraceItem ti = new Trace.TraceGet(MapleMatchField.INPORT, "mask".getBytes(), owner.toString().getBytes());
             addTraceItem(ti);
@@ -288,17 +288,17 @@ public class MaplePacket implements IMaplePacket {
         public boolean is(byte[] context) {
             Preconditions.checkArgument(field.getByteLength() == context.length);
             byte[] value = fieldMap.get(field);
-            boolean ret=false;
+            boolean ret = false;
             if (value != null) {
                 ret = test(value, context);
             }
-            TraceItem ti = new Trace.TraceIs(field, mask, context, value,ret);
+            TraceItem ti = new Trace.TraceIs(field, mask, context, value, ret);
             addTraceItem(ti);
             return ret;
         }
 
         public boolean in(byte[]... values) {
-            if(values.length==0){
+            if (values.length == 0) {
                 return false;
             }
             byte[] value = fieldMap.get(field);
@@ -306,7 +306,7 @@ public class MaplePacket implements IMaplePacket {
             List<byte[]> list = new ArrayList<>(values.length);
             for (byte[] i : values) {
                 list.add(i);
-                if (value!=null&&test(value, i)) {
+                if (value != null && test(value, i)) {
                     ret = true;
                 }
             }
@@ -315,30 +315,30 @@ public class MaplePacket implements IMaplePacket {
             return ret;
         }
 
-        public boolean range(@Nullable byte[] value1,@Nullable byte[] value2) {
+        public boolean range(@Nullable byte[] value1, @Nullable byte[] value2) {
             int len = field.getByteLength();
-            if(value1!=null) {
+            if (value1 != null) {
                 Preconditions.checkArgument(len == value1.length);
             }
-            if(value2!=null) {
+            if (value2 != null) {
                 Preconditions.checkArgument(len == value2.length);
             }
 
             byte[] value = fieldMap.get(field);
             boolean ret = false;  //TODO
 
-            TraceItem ti = new Trace.TraceRange(field, mask, value1, value2,value, ret);
+            TraceItem ti = new Trace.TraceRange(field, mask, value1, value2, value, ret);
 
             throw new UnsupportedOperationException();
         }
 
         public byte[] get() {
             byte[] value = fieldMap.get(field);
-            Preconditions.checkArgument(value!=null);
-            byte[] value1=new byte[value.length];
+            Preconditions.checkArgument(value != null);
+            byte[] value1 = new byte[value.length];
             if (mask != null) {
                 for (int i = 0; i < value1.length; i++) {
-                    value1[i] =(byte)(value[i]&mask[i]);
+                    value1[i] = (byte) (value[i] & mask[i]);
                 }
             }
             TraceItem ti = new Trace.TraceGet(field, mask, value);

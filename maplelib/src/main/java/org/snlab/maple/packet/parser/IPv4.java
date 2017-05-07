@@ -36,7 +36,6 @@ import org.snlab.maple.packet.types.U8;
 
 /**
  * @author David Erickson (daviderickson@cs.stanford.edu)
- *
  */
 public class IPv4 extends BasePacket {
     public static Map<IpProtocol, Class<? extends IPacket>> protocolClassMap;
@@ -323,9 +322,9 @@ public class IPv4 extends BasePacket {
     /**
      * Serializes the packet. Will compute and set the following fields if they
      * are set to specific values at the time serialize is called:
-     *      -checksum : 0
-     *      -headerLength : 0
-     *      -totalLength : 0
+     * -checksum : 0
+     * -headerLength : 0
+     * -totalLength : 0
      */
     @Override
     public byte[] serialize() {
@@ -457,6 +456,7 @@ public class IPv4 extends BasePacket {
     /**
      * Accepts an IPv4 address of the form xxx.xxx.xxx.xxx, ie 192.168.0.1 and
      * returns the corresponding 32 bit integer.
+     *
      * @param ipAddress
      * @return
      */
@@ -483,6 +483,7 @@ public class IPv4 extends BasePacket {
     /**
      * Accepts an IPv4 address in a byte array and returns the corresponding
      * 32-bit integer value.
+     *
      * @param ipAddress
      * @return
      */
@@ -538,6 +539,7 @@ public class IPv4 extends BasePacket {
     /**
      * Accepts an IPv4 address of the form xxx.xxx.xxx.xxx, ie 192.168.0.1 and
      * returns the corresponding byte array.
+     *
      * @param ipAddress The IP address in the form xx.xxx.xxx.xxx.
      * @return The IP address separated into bytes
      */
@@ -557,6 +559,7 @@ public class IPv4 extends BasePacket {
     /**
      * Accepts an IPv4 address in the form of an integer and
      * returns the corresponding byte array.
+     *
      * @param ipAddress The IP address as an integer.
      * @return The IP address separated into bytes.
      */

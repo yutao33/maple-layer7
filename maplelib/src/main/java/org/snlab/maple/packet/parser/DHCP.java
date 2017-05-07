@@ -29,7 +29,6 @@ import org.snlab.maple.packet.types.IPv4Address;
 import org.snlab.maple.packet.types.MacAddress;
 
 /**
- *
  * @author David Erickson (daviderickson@cs.stanford.edu)
  */
 public class DHCP extends BasePacket {
@@ -57,7 +56,6 @@ public class DHCP extends BasePacket {
      * ------------------------------------------
      * |            options (312)               |
      * ------------------------------------------
-     *
      */
     // Header + magic without options
     public static int MIN_HEADER_LENGTH = 240;
@@ -288,6 +286,7 @@ public class DHCP extends BasePacket {
 
     /**
      * Gets a specific DHCP option parameter
+     *
      * @param optionCode The option code to get
      * @return The value of the option if it exists, null otherwise
      */

@@ -20,31 +20,26 @@ package org.snlab.maple.packet.parser;
 //package net.floodlightcontroller.packet;
 
 /**
- *
  * @author David Erickson (daviderickson@cs.stanford.edu)
  */
 public interface IPacket {
     /**
-     *
      * @return
      */
     public IPacket getPayload();
 
     /**
-     *
      * @param packet
      * @return
      */
     public IPacket setPayload(IPacket packet);
 
     /**
-     *
      * @return
      */
     public IPacket getParent();
 
     /**
-     *
      * @param packet
      * @return
      */
@@ -56,14 +51,16 @@ public interface IPacket {
     public void resetChecksum();
 
     /**
-     * Sets all payloads parent packet if applicable, then serializes this 
+     * Sets all payloads parent packet if applicable, then serializes this
      * packet and all payloads
+     *
      * @return a byte[] containing this packet and payloads
      */
     public byte[] serialize();
 
     /**
      * Deserializes this packet layer and all possible payloads
+     *
      * @param data
      * @param offset offset to start deserializing from
      * @param length length of the data to deserialize
@@ -72,7 +69,8 @@ public interface IPacket {
     public IPacket deserialize(byte[] data, int offset, int length)
             throws PacketParsingException;
 
-    /** Clone this packet and its payload packet but not its parent. 
+    /**
+     * Clone this packet and its payload packet but not its parent.
      *
      * @return
      */

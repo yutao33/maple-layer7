@@ -25,14 +25,13 @@ public class Forward {  //TODO actions sequence and only for one node
     private int bandwidthlimit;
     //private int timeout;
 
-    
+
     public static final Forward DROP =
             new Forward(null, ForwardAction.drop());
     public static final Forward PUNT =
             new Forward(null, ForwardAction.punt());
     public static final List<Forward> DEFAULT_PuntForwards =
             Collections.singletonList(PUNT);
-
 
 
     public Forward(PortId inport, List<ForwardAction.Action> actions, int bandwidthlimit, int timeout) {
@@ -61,10 +60,10 @@ public class Forward {  //TODO actions sequence and only for one node
         this.bandwidthlimit = 0;
     }
 
-    public void concat(@Nonnull Forward n){
-        Preconditions.checkArgument(Objects.equal(n.inport,this.inport));
+    public void concat(@Nonnull Forward n) {
+        Preconditions.checkArgument(Objects.equal(n.inport, this.inport));
         this.actions.addAll(n.actions);
-        this.bandwidthlimit=n.bandwidthlimit;
+        this.bandwidthlimit = n.bandwidthlimit;
     }
 
     @Nullable
@@ -111,15 +110,16 @@ public class Forward {  //TODO actions sequence and only for one node
 
     /**
      * static method
+     *
      * @param path
      * @return
      */
     public static String[] extractInPort(String... path) { //TODO
-        Preconditions.checkArgument(path.length%2==0);
-        List<String> l = new ArrayList<>(path.length/2);
-        for(int i=0;i<path.length/2;i++){
-            if(path[i*2]!=null){
-                l.add(path[i*2]);
+        Preconditions.checkArgument(path.length % 2 == 0);
+        List<String> l = new ArrayList<>(path.length / 2);
+        for (int i = 0; i < path.length / 2; i++) {
+            if (path[i * 2] != null) {
+                l.add(path[i * 2]);
             }
         }
         String[] ret = new String[l.size()];

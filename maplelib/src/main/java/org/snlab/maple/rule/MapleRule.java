@@ -23,7 +23,7 @@ import java.util.Set;
 
 public class MapleRule {
 
-    public enum Status{  //TODO UPDATE
+    public enum Status {  //TODO UPDATE
         NONE,
         DELETE,
         INSTALL,
@@ -47,70 +47,70 @@ public class MapleRule {
     }
 
     private void buildRoute(List<Forward> forwards) {
-        this.route=new Route();
+        this.route = new Route();
         for (Forward forward : forwards) {
-            if(!isdrop(forward)) {
+            if (!isdrop(forward)) {
                 MapleTopology.PortId inport = forward.getInport();
                 if (inport != null) {
-                    addifneed(inport,forward);
+                    addifneed(inport, forward);
                 } else {
                     MapleTopology.NodeId fn = findnode(forward);
-                    if(fn==null){ //maybe punt
+                    if (fn == null) { //maybe punt
                         addaccordingtomatch(forward);
                     } else {
-                        addifneed(fn,forward);
+                        addifneed(fn, forward);
                     }
                 }
             }
         }
     }
 
-    private void addaccordingtomatch(Forward f){
-        MapleMatchInPort inportMatch = (MapleMatchInPort)matches.get(MapleMatchField.INPORT);
-        if(inportMatch==null) {
-            this.route.addRule(null,null,f);
+    private void addaccordingtomatch(Forward f) {
+        MapleMatchInPort inportMatch = (MapleMatchInPort) matches.get(MapleMatchField.INPORT);
+        if (inportMatch == null) {
+            this.route.addRule(null, null, f);
         } else {
             for (MapleTopology.PortId port : inportMatch.getPorts()) {
-                this.route.addRule(port.getNodeId(),port,f);
+                this.route.addRule(port.getNodeId(), port, f);
             }
             for (MapleTopology.NodeId node : inportMatch.getNodes()) {
-                this.route.addRule(node,null,f);
+                this.route.addRule(node, null, f);
             }
         }
     }
 
-    private void addifneed(MapleTopology.NodeId node, Forward f){
-        MapleMatchInPort inportMatch = (MapleMatchInPort)matches.get(MapleMatchField.INPORT);
-        if(inportMatch==null){
-            this.route.addRule(node,null,f);
+    private void addifneed(MapleTopology.NodeId node, Forward f) {
+        MapleMatchInPort inportMatch = (MapleMatchInPort) matches.get(MapleMatchField.INPORT);
+        if (inportMatch == null) {
+            this.route.addRule(node, null, f);
         } else {
-            if(inportMatch.getNodes().contains(node)){
-                this.route.addRule(node,null,f);
+            if (inportMatch.getNodes().contains(node)) {
+                this.route.addRule(node, null, f);
             }
             Set<MapleTopology.PortId> ports = inportMatch.getPorts();
             for (MapleTopology.PortId port : ports) {
-                if(port.getNodeId().equals(node)){
-                    this.route.addRule(node,port,f);
+                if (port.getNodeId().equals(node)) {
+                    this.route.addRule(node, port, f);
                 }
             }
         }
     }
 
-    private void addifneed(MapleTopology.PortId inport, Forward f){
-        MapleMatchInPort inportMatch = (MapleMatchInPort)matches.get(MapleMatchField.INPORT);
-        if(inportMatch==null){
-            this.route.addRule(inport.getNodeId(),inport,f);//TODO check
+    private void addifneed(MapleTopology.PortId inport, Forward f) {
+        MapleMatchInPort inportMatch = (MapleMatchInPort) matches.get(MapleMatchField.INPORT);
+        if (inportMatch == null) {
+            this.route.addRule(inport.getNodeId(), inport, f);//TODO check
         } else {
-            if(inportMatch.getPorts().contains(inport)||
-                    inportMatch.getNodes().contains(inport.getNodeId())){
-                this.route.addRule(inport.getNodeId(),inport,f);
+            if (inportMatch.getPorts().contains(inport) ||
+                    inportMatch.getNodes().contains(inport.getNodeId())) {
+                this.route.addRule(inport.getNodeId(), inport, f);
             }
         }
     }
 
-    private MapleTopology.NodeId findnode(Forward f){
+    private MapleTopology.NodeId findnode(Forward f) {
         for (ForwardAction.Action act : f.getActions()) {
-            if(act instanceof ForwardAction.OutPut){
+            if (act instanceof ForwardAction.OutPut) {
                 ForwardAction.OutPut act1 = (ForwardAction.OutPut) act;
                 return act1.getPortId().getNodeId();
             }
@@ -118,9 +118,9 @@ public class MapleRule {
         return null;
     }
 
-    private boolean isdrop(Forward f){
+    private boolean isdrop(Forward f) {
         List<ForwardAction.Action> actions = f.getActions();
-        if(actions.size()==1&&actions.get(0) instanceof ForwardAction.Drop){
+        if (actions.size() == 1 && actions.get(0) instanceof ForwardAction.Drop) {
             return true;
         } else {
             return false;

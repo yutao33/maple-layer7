@@ -23,8 +23,6 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 /**
- *
- *
  * @author David Erickson (daviderickson@cs.stanford.edu)
  */
 public class LLDPTLV {

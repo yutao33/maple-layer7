@@ -47,7 +47,7 @@ public final class Trace {
         }
 
         @Nullable
-        public ByteArray getPktValue(){
+        public ByteArray getPktValue() {
             return pktvalue;
         }
     }
@@ -55,7 +55,7 @@ public final class Trace {
     public static class TraceGet extends TraceItem {
         private ByteArray value;
 
-        public TraceGet(MapleMatchField field,@Nullable byte[] mask, @Nonnull byte[] value) {
+        public TraceGet(MapleMatchField field, @Nullable byte[] mask, @Nonnull byte[] value) {
             super.field = field;
             if (mask != null) {
                 super.mask = new ByteArray(mask);
@@ -71,14 +71,14 @@ public final class Trace {
     public static class TraceIs extends TestItem {
         private ByteArray value;
 
-        public TraceIs(MapleMatchField field,@Nullable byte[] mask, @Nonnull byte[] value,@Nullable byte[]pktvalue, boolean ret) {
+        public TraceIs(MapleMatchField field, @Nullable byte[] mask, @Nonnull byte[] value, @Nullable byte[] pktvalue, boolean ret) {
             this.field = field;
             if (mask != null) {
                 this.mask = new ByteArray(mask);
             }
             this.value = new ByteArray(value);
-            if(pktvalue!=null){
-                this.pktvalue=new ByteArray(pktvalue);
+            if (pktvalue != null) {
+                this.pktvalue = new ByteArray(pktvalue);
             }
             this.result = ret;
         }
@@ -92,7 +92,7 @@ public final class Trace {
         private Set<ByteArray> values;
         private ByteArray pktvalue;
 
-        public TraceIn(MapleMatchField field,@Nullable byte[] mask, @Nonnull List<byte[]> values,@Nullable byte[] pktvalue, boolean ret) {
+        public TraceIn(MapleMatchField field, @Nullable byte[] mask, @Nonnull List<byte[]> values, @Nullable byte[] pktvalue, boolean ret) {
             this.field = field;
             if (mask != null) {
                 this.mask = new ByteArray(mask);
@@ -101,8 +101,8 @@ public final class Trace {
             for (byte[] value : values) {
                 this.values.add(new ByteArray(value));
             }
-            if(pktvalue!=null){
-                this.pktvalue=new ByteArray(pktvalue);
+            if (pktvalue != null) {
+                this.pktvalue = new ByteArray(pktvalue);
             }
             this.result = ret;
         }
@@ -120,7 +120,7 @@ public final class Trace {
         private ByteArray value1;
         private ByteArray value2;
 
-        public TraceRange(MapleMatchField field, byte[] mask, byte[] value1, byte[] value2,@Nullable byte[]pktvalue, boolean ret) {
+        public TraceRange(MapleMatchField field, byte[] mask, byte[] value1, byte[] value2, @Nullable byte[] pktvalue, boolean ret) {
             super.field = field;
             if (mask != null) {
                 super.mask = new ByteArray(mask);
@@ -131,8 +131,8 @@ public final class Trace {
             if (value2 != null) {
                 this.value2 = new ByteArray(value2);
             }
-            if(pktvalue!=null){
-                this.pktvalue=new ByteArray(pktvalue);
+            if (pktvalue != null) {
+                this.pktvalue = new ByteArray(pktvalue);
             }
             this.result = ret;
         }

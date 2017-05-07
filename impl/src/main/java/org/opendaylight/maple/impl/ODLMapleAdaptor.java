@@ -106,7 +106,7 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
 
     private AtomicLong flowCookieInc = new AtomicLong(0x3a00000000000000L);
 
-    public ODLMapleAdaptor(DataBroker dataBroker, SalFlowService salFlowService){
+    public ODLMapleAdaptor(DataBroker dataBroker, SalFlowService salFlowService) {
         this.dataBroker = dataBroker;
         this.salFlowService = salFlowService;
     }
@@ -137,20 +137,20 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
         ReadWriteTransaction rwt = dataBroker.newReadWriteTransaction();
         //deleteAllRules(rwt);
 
-        List<MapleTopology.NodeId> allNodes=new ArrayList<>();
+        List<MapleTopology.NodeId> allNodes = new ArrayList<>();
 
         for (MapleRule rule : rules) {
             Match odlPktFieldMatch = buildODLPktFieldMatch(rule.getMatches());
             Map<MapleTopology.NodeId, Map<MapleTopology.PortId, Forward>> rulesMap = rule.getRoute().getRulesMap();
             for (Map.Entry<MapleTopology.NodeId, Map<MapleTopology.PortId, Forward>> nodeMapEntry : rulesMap.entrySet()) {
                 MapleTopology.NodeId node = nodeMapEntry.getKey();
-                if(node!=null){
+                if (node != null) {
                     allNodes.add(node);
                     Map<MapleTopology.PortId, Forward> portForwardMap = nodeMapEntry.getValue();
                     for (Map.Entry<MapleTopology.PortId, Forward> portForwardEntry : portForwardMap.entrySet()) {
                         MapleTopology.PortId port = portForwardEntry.getKey();
                         Forward forward = portForwardEntry.getValue();
-                        installRuleforNode(rwt,node,port,odlPktFieldMatch,rule.getPriority(),forward);
+                        installRuleforNode(rwt, node, port, odlPktFieldMatch, rule.getPriority(), forward);
                     }
                 }
             }
@@ -159,7 +159,7 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
         for (MapleRule rule : rules) {
             Route route = rule.getRoute();
             Map<MapleTopology.PortId, Forward> portForwardMap = route.getRulesMap().get(null);
-            if(portForwardMap!=null) {
+            if (portForwardMap != null) {
                 Forward allNodesForward = portForwardMap.get(null);
                 if (allNodesForward != null) {
                     Match odlPktFieldMatch = buildODLPktFieldMatch(rule.getMatches());
@@ -173,7 +173,7 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
         rwtSubmit(rwt);
     }
 
-    private void rwtSubmit(ReadWriteTransaction rwt){
+    private void rwtSubmit(ReadWriteTransaction rwt) {
         CheckedFuture<Void, TransactionCommitFailedException> future = rwt.submit();
         Futures.addCallback(future, new FutureCallback<Void>() {
             @Override
@@ -183,7 +183,7 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
 
             @Override
             public void onFailure(Throwable t) {
-                LOG.info("failed "+t.getMessage());
+                LOG.info("failed " + t.getMessage());
             }
         });
 //        try {
@@ -193,9 +193,9 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
 //        }
     }
 
-    private void deleteAllRules(ReadWriteTransaction rwt){
+    private void deleteAllRules(ReadWriteTransaction rwt) {
         InstanceIdentifier<Nodes> nodesIId = InstanceIdentifier.builder(Nodes.class).build();
-        rwt.delete(LogicalDatastoreType.CONFIGURATION,nodesIId);
+        rwt.delete(LogicalDatastoreType.CONFIGURATION, nodesIId);
     }
 
     private void installRuleforNode(WriteTransaction wt,
@@ -204,22 +204,22 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
                                     Match odlPktFieldMatch,
                                     int priority,
                                     Forward forward) {
-        Match odlMatch=odlPktFieldMatch;
-        if(port!=null) {
+        Match odlMatch = odlPktFieldMatch;
+        if (port != null) {
             MatchBuilder matchBuilder = new MatchBuilder(odlPktFieldMatch);
             matchBuilder.setInPort(new NodeConnectorId(port.toString()));
-            odlMatch=matchBuilder.build();
+            odlMatch = matchBuilder.build();
         }
         Instructions instructions = buildODLInstructions(forward);
 
-        installODLRule(wt,node.toString(),priority,odlMatch,instructions);
+        installODLRule(wt, node.toString(), priority, odlMatch, instructions);
     }
 
     private void installODLRule(WriteTransaction wt,
-                             String nodeId,
-                             int priority,
-                             Match odlMatch,
-                             Instructions instructions){
+                                String nodeId,
+                                int priority,
+                                Match odlMatch,
+                                Instructions instructions) {
         FlowId flowId = new FlowId("maple" + flowIdInc.getAndIncrement());
         InstanceIdentifier<Node> iid = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, new NodeKey(new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId(nodeId)))
@@ -231,7 +231,7 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
 
         FlowBuilder flowBuilder = new FlowBuilder()
                 .setId(flowId)
-                .setTableId((short)0)
+                .setTableId((short) 0)
                 .setMatch(odlMatch)
                 .setInstructions(instructions)
                 .setPriority(priority)
@@ -242,10 +242,10 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
                 .setFlags(new FlowModFlags(false, false, false, false, false));
         Flow flow = flowBuilder.build();
 
-        wt.put(LogicalDatastoreType.CONFIGURATION,flowPath,flow,true);
+        wt.put(LogicalDatastoreType.CONFIGURATION, flowPath, flow, true);
     }
 
-    private Match buildODLPktFieldMatch(Map<MapleMatchField, MapleMatch> matches){
+    private Match buildODLPktFieldMatch(Map<MapleMatchField, MapleMatch> matches) {
         MatchBuilder matchBuilder = new MatchBuilder();
 
         EthernetMatchBuilder ethernetMatchBuilder = null;
@@ -256,69 +256,69 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
 
         for (Map.Entry<MapleMatchField, MapleMatch> entry : matches.entrySet()) {
             MapleMatchField field = entry.getKey();
-            if(field.equals(MapleMatchField.INPORT)){
+            if (field.equals(MapleMatchField.INPORT)) {
                 continue;
             }
-            ValueMaskPair valuemask=entry.getValue().getMatch();
+            ValueMaskPair valuemask = entry.getValue().getMatch();
             ByteArray value = valuemask.getValue();
             ByteArray mask = valuemask.getMask();
-            switch(field){
+            switch (field) {
                 case ETH_DST:
                     EthernetDestinationBuilder ethernetDestinationBuilder = new EthernetDestinationBuilder();
                     ethernetDestinationBuilder.setAddress(new MacAddress(value.toMacAddressString()));
-                    if(mask!=null){
+                    if (mask != null) {
                         ethernetDestinationBuilder.setMask(new MacAddress(mask.toMacAddressString()));
                     }
-                    if(ethernetMatchBuilder==null){
-                        ethernetMatchBuilder=new EthernetMatchBuilder();
+                    if (ethernetMatchBuilder == null) {
+                        ethernetMatchBuilder = new EthernetMatchBuilder();
                     }
                     ethernetMatchBuilder.setEthernetDestination(ethernetDestinationBuilder.build());
                     break;
                 case ETH_SRC:
                     EthernetSourceBuilder ethernetSourceBuilder = new EthernetSourceBuilder();
                     ethernetSourceBuilder.setAddress(new MacAddress(value.toMacAddressString()));
-                    if(mask!=null){
+                    if (mask != null) {
                         ethernetSourceBuilder.setMask(new MacAddress(mask.toMacAddressString()));
                     }
-                    if(ethernetMatchBuilder==null){
-                        ethernetMatchBuilder=new EthernetMatchBuilder();
+                    if (ethernetMatchBuilder == null) {
+                        ethernetMatchBuilder = new EthernetMatchBuilder();
                     }
                     ethernetMatchBuilder.setEthernetSource(ethernetSourceBuilder.build());
                     break;
                 case ETH_TYPE:
-                    int type=value.toShort()&0xffff;
-                    EthernetType ethernetType = new EthernetTypeBuilder().setType(new EtherType((long)type)).build();
-                    if(ethernetMatchBuilder==null){
-                        ethernetMatchBuilder=new EthernetMatchBuilder();
+                    int type = value.toShort() & 0xffff;
+                    EthernetType ethernetType = new EthernetTypeBuilder().setType(new EtherType((long) type)).build();
+                    if (ethernetMatchBuilder == null) {
+                        ethernetMatchBuilder = new EthernetMatchBuilder();
                     }
                     ethernetMatchBuilder.setEthernetType(ethernetType);
-                    if(type==0x0800||type==0x86dd){
-                        if(ipMatchBuilder==null){
-                            ipMatchBuilder=new IpMatchBuilder();
+                    if (type == 0x0800 || type == 0x86dd) {
+                        if (ipMatchBuilder == null) {
+                            ipMatchBuilder = new IpMatchBuilder();
                         }
-                        ipMatchBuilder.setIpProto(type==0x0800?IpVersion.Ipv4:IpVersion.Ipv6);
+                        ipMatchBuilder.setIpProto(type == 0x0800 ? IpVersion.Ipv4 : IpVersion.Ipv6);
                     }
                     break;
                 case IPv4_SRC:
-                    if(ipv4MatchBuilder==null){
-                        ipv4MatchBuilder=new Ipv4MatchBuilder();
+                    if (ipv4MatchBuilder == null) {
+                        ipv4MatchBuilder = new Ipv4MatchBuilder();
                     }
                     ipv4MatchBuilder.setIpv4Source(buildIpv4Prefix(valuemask));
                     break;
                 case IPv4_DST:
-                    if(ipv4MatchBuilder==null){
-                        ipv4MatchBuilder=new Ipv4MatchBuilder();
+                    if (ipv4MatchBuilder == null) {
+                        ipv4MatchBuilder = new Ipv4MatchBuilder();
                     }
                     ipv4MatchBuilder.setIpv4Destination(buildIpv4Prefix(valuemask));
                     break;
                 case IP_PROTO:
-                    if(ipMatchBuilder==null){
-                        ipMatchBuilder=new IpMatchBuilder();
+                    if (ipMatchBuilder == null) {
+                        ipMatchBuilder = new IpMatchBuilder();
                     }
                     ipMatchBuilder.setIpProtocol(value.toShort());
                 case IPv6_SRC:
-                    if(ipv6MatchBuilder==null){
-                        ipv6MatchBuilder=new Ipv6MatchBuilder();
+                    if (ipv6MatchBuilder == null) {
+                        ipv6MatchBuilder = new Ipv6MatchBuilder();
                     }
                     //ipv6MatchBuilder.setIpv6Source(new IPv6Prefix())
                     break;
@@ -327,34 +327,34 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
             }
         }
 
-        if(ethernetMatchBuilder!=null) {
+        if (ethernetMatchBuilder != null) {
             matchBuilder.setEthernetMatch(ethernetMatchBuilder.build());
         }
-        if(ipMatchBuilder!=null){
+        if (ipMatchBuilder != null) {
             matchBuilder.setIpMatch(ipMatchBuilder.build());
         }
-        if(ipv4MatchBuilder!=null) {
+        if (ipv4MatchBuilder != null) {
             matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
-        } else if(ipv6MatchBuilder!=null){
+        } else if (ipv6MatchBuilder != null) {
             matchBuilder.setLayer3Match(ipv6MatchBuilder.build());
-        } else if(arpMatchBuilder!=null){
+        } else if (arpMatchBuilder != null) {
             matchBuilder.setLayer3Match(arpMatchBuilder.build());
         }
 
         return matchBuilder.build();
     }
 
-    private Ipv4Prefix buildIpv4Prefix(ValueMaskPair parm){
-        String ipstr=parm.getValue().toIpv4AddressString();
+    private Ipv4Prefix buildIpv4Prefix(ValueMaskPair parm) {
+        String ipstr = parm.getValue().toIpv4AddressString();
         ByteArray mask = parm.getMask();
-        String maskstr="32";
-        if(mask!=null){
-            maskstr=String.valueOf(mask.toPrefixMaskNum(32));
+        String maskstr = "32";
+        if (mask != null) {
+            maskstr = String.valueOf(mask.toPrefixMaskNum(32));
         }
-        return new Ipv4Prefix(ipstr+"/"+maskstr);
+        return new Ipv4Prefix(ipstr + "/" + maskstr);
     }
 
-    private Instructions buildODLInstructions(Forward forward){
+    private Instructions buildODLInstructions(Forward forward) {
         ApplyActionsCase applyActionsCase = buildODLApplyActionsCase(forward);
         Instruction instruction = new InstructionBuilder()
                 .setOrder(0)
@@ -364,12 +364,12 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
         return new InstructionsBuilder().setInstruction(ImmutableList.of(instruction)).build();
     }
 
-    private ApplyActionsCase buildODLApplyActionsCase(Forward forward){
-        List<Action> odlActionList =new ArrayList<>();
-        int instOrder=0;
+    private ApplyActionsCase buildODLApplyActionsCase(Forward forward) {
+        List<Action> odlActionList = new ArrayList<>();
+        int instOrder = 0;
 
         for (ForwardAction.Action action : forward.getActions()) {
-            if(action instanceof ForwardAction.OutPut){
+            if (action instanceof ForwardAction.OutPut) {
                 MapleTopology.PortId outPort = ((ForwardAction.OutPut) action).getPortId();
                 OutputAction outputAction = new OutputActionBuilder()
                         .setOutputNodeConnector(new NodeConnectorId(outPort.toString()))
@@ -383,7 +383,7 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
                         .setAction(outputActionCase)
                         .build();
                 odlActionList.add(odlaction);
-            } else if(action instanceof ForwardAction.Punt){
+            } else if (action instanceof ForwardAction.Punt) {
 
                 OutputAction punt = new OutputActionBuilder()
                         .setMaxLength(0xffff)
@@ -398,7 +398,7 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
                         .setAction(puntOutputActionCase)
                         .build();
                 odlActionList.add(odlaction);
-            } else if(action instanceof ForwardAction.Drop){
+            } else if (action instanceof ForwardAction.Drop) {
                 DropAction dropAction = new DropActionBuilder()
                         .build();
                 DropActionCase dropActionCase = new DropActionCaseBuilder()

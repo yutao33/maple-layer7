@@ -19,7 +19,7 @@ public class ValueMaskPair {
     private final ByteArray value;
 
     public ValueMaskPair(@Nonnull ByteArray value, @Nullable ByteArray mask) {
-        if(mask!=null&&!value.bitAnd(mask.not()).isFullZero()){
+        if (mask != null && !value.bitAnd(mask.not()).isFullZero()) {
             throw new RuntimeException("bad ValueMaskPair");
         }
         this.mask = mask;
@@ -73,7 +73,7 @@ public class ValueMaskPair {
         if (maskb == null) {
             maskb = getfullone(b.value.length());
         }
-        if(a.value.bitAnd(maskb).equals(b.value.bitAnd(maska))){
+        if (a.value.bitAnd(maskb).equals(b.value.bitAnd(maska))) {
             ByteArray m = maska.bitOr(maskb);
             ByteArray v = a.value.bitOr(b.value);
             if (allone(m)) {
@@ -102,9 +102,9 @@ public class ValueMaskPair {
 //        }
     }
 
-    public boolean testMatch(@Nonnull ByteArray value){
-        if(mask!=null){
-            value=value.bitAnd(mask);
+    public boolean testMatch(@Nonnull ByteArray value) {
+        if (mask != null) {
+            value = value.bitAnd(mask);
         }
         return value.equals(this.value);
     }

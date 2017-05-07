@@ -24,6 +24,7 @@ import java.nio.ByteBuffer;
 /**
  * This class is a Rapid Spanning Tree Protocol
  * Bridge Protocol Data Unit
+ *
  * @author alexreimers
  */
 public class BPDU extends BasePacket {

@@ -28,7 +28,7 @@ import org.snlab.maple.packet.types.IpProtocol;
 
 /**
  * @author Jacob Chappell (jacob.chappell@uky.edu)
- * edited Ryan Izard, ryan.izard@bigswitch.com, rizard@g.clemson.edu
+ *         edited Ryan Izard, ryan.izard@bigswitch.com, rizard@g.clemson.edu
  */
 public class IPv6 extends BasePacket {
     public static Map<IpProtocol, Class<? extends IPacket>> nextHeaderClassMap;
@@ -139,7 +139,7 @@ public class IPv6 extends BasePacket {
             this.payload.setParent(this);
             payloadData = this.payload.serialize();
             /*
-			 * If we forgot to include the IpProtocol before serializing, 
+             * If we forgot to include the IpProtocol before serializing,
 			 * try to ascertain what it is from the payload. If it's not
 			 * a payload type we know about, we'll throw an exception.
 			 */

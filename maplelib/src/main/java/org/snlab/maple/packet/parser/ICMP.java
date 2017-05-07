@@ -27,6 +27,7 @@ import org.snlab.maple.packet.types.IpProtocol;
 
 /**
  * Implements ICMP packet format
+ *
  * @author shudong.zhou@bigswitch.com
  */
 public class ICMP extends BasePacket {
@@ -100,8 +101,8 @@ public class ICMP extends BasePacket {
     /**
      * Serializes the packet. Will compute and set the following fields if they
      * are set to specific values at the time serialize is called:
-     *      -checksum : 0
-     *      -length : 0
+     * -checksum : 0
+     * -length : 0
      */
     @Override
     public byte[] serialize() {

@@ -32,7 +32,6 @@ import org.snlab.maple.packet.types.U16;
 import org.snlab.maple.packet.types.VlanVid;
 
 /**
- *
  * @author David Erickson (daviderickson@cs.stanford.edu)
  */
 public class Ethernet extends BasePacket {
@@ -196,6 +195,7 @@ public class Ethernet extends BasePacket {
 
     /**
      * Pad this packet to 60 bytes minimum, filling with zeros?
+     *
      * @return the pad
      */
     public boolean isPad() {
@@ -204,6 +204,7 @@ public class Ethernet extends BasePacket {
 
     /**
      * Pad this packet to 60 bytes minimum, filling with zeros?
+     *
      * @param pad the pad to set
      */
     public Ethernet setPad(boolean pad) {
@@ -335,6 +336,7 @@ public class Ethernet extends BasePacket {
 
     /**
      * Checks to see if a string is a valid MAC address.
+     *
      * @param macAddress
      * @return True if macAddress is a valid MAC, False otherwise
      */
@@ -354,6 +356,7 @@ public class Ethernet extends BasePacket {
     /**
      * Accepts a MAC address of the form 00:aa:11:bb:22:cc, case does not
      * matter, and returns a corresponding byte[].
+     *
      * @param macAddress The MAC address to convert into a bye array
      * @return The macAddress as a byte array
      */
@@ -365,6 +368,7 @@ public class Ethernet extends BasePacket {
     /**
      * Accepts a MAC address and returns the corresponding long, where the
      * MAC bytes are set on the lower order bytes of the long.
+     *
      * @param macAddress
      * @return a long containing the mac address bytes
      */
@@ -374,6 +378,7 @@ public class Ethernet extends BasePacket {
 
     /**
      * Convert a long MAC address to a byte array
+     *
      * @param macAddress
      * @return the bytes of the mac address
      */

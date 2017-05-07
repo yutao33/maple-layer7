@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- *
  * @author David Erickson (daviderickson@cs.stanford.edu)
  */
 public abstract class BasePacket implements IPacket {

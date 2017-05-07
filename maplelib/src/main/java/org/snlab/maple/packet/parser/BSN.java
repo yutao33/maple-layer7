@@ -29,7 +29,6 @@ import org.snlab.maple.packet.types.EthType;
 
 /**
  * @author Shudong Zhou (shudong.zhou@bigswitch.com)
- *
  */
 public class BSN extends BasePacket {
     public static final int BSN_MAGIC = 0x20000604;

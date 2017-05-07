@@ -41,6 +41,7 @@ public class LLDPOrganizationalTLV extends LLDPTLV {
 
     /**
      * Set the value of OUI.
+     *
      * @param oui The value of OUI to be set.
      * @return This LLDP Organizationally Specific TLV.
      */
@@ -55,6 +56,7 @@ public class LLDPOrganizationalTLV extends LLDPTLV {
 
     /**
      * Returns the value of the OUI.
+     *
      * @return The value of the OUI .
      */
     public byte[] getOUI() {
@@ -63,6 +65,7 @@ public class LLDPOrganizationalTLV extends LLDPTLV {
 
     /**
      * Set the value of sub type.
+     *
      * @param subType The value of sub type to be set.
      * @return This LLDP Organizationally Specific TLV.
      */
@@ -73,6 +76,7 @@ public class LLDPOrganizationalTLV extends LLDPTLV {
 
     /**
      * Returns the value of the sub type.
+     *
      * @return The value of the sub type.
      */
     public byte getSubType() {
@@ -81,6 +85,7 @@ public class LLDPOrganizationalTLV extends LLDPTLV {
 
     /**
      * Set the value of information string.
+     *
      * @param infoString the byte array of the value of information string.
      * @return This LLDP Organizationally Specific TLV.
      */
@@ -95,6 +100,7 @@ public class LLDPOrganizationalTLV extends LLDPTLV {
     /**
      * Set the value of information string.
      * The String value is automatically converted into byte array with UTF-8 encoding.
+     *
      * @param infoString the String value of information string.
      * @return This LLDP Organizationally Specific TLV.
      */
@@ -105,6 +111,7 @@ public class LLDPOrganizationalTLV extends LLDPTLV {
 
     /**
      * Returns the value of information string.
+     *
      * @return the value of information string.
      */
     public byte[] getInfoString() {

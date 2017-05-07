@@ -20,33 +20,33 @@ import java.util.Map;
 
 public class Route {
 
-    private Map<MapleTopology.NodeId,Map<MapleTopology.PortId,Forward>> rulesMap=new HashMap<>();
+    private Map<MapleTopology.NodeId, Map<MapleTopology.PortId, Forward>> rulesMap = new HashMap<>();
 
-    private Multimap<MapleTopology.NodeId,MapleTopology.PortId> dropRules = HashMultimap.create();
+    private Multimap<MapleTopology.NodeId, MapleTopology.PortId> dropRules = HashMultimap.create();
 
-    public void addRule(@Nullable MapleTopology.NodeId node, @Nullable MapleTopology.PortId port, Forward forward){
+    public void addRule(@Nullable MapleTopology.NodeId node, @Nullable MapleTopology.PortId port, Forward forward) {
         for (ForwardAction.Action action : forward.getActions()) {
             Preconditions.checkArgument(!(action instanceof ForwardAction.Drop)); //TODO no need to check
         }
         Map<MapleTopology.PortId, Forward> portForwardMap = rulesMap.get(node);
-        if(portForwardMap!=null){
+        if (portForwardMap != null) {
             Forward oldForward = portForwardMap.get(port);
-            if(oldForward!=null){
+            if (oldForward != null) {
                 oldForward.concat(forward);
             } else {
-                portForwardMap.put(port,forward);
+                portForwardMap.put(port, forward);
             }
         } else {
             portForwardMap = new HashMap<>();
-            portForwardMap.put(port,forward);
-            rulesMap.put(node,portForwardMap);
+            portForwardMap.put(port, forward);
+            rulesMap.put(node, portForwardMap);
         }
     }
 
-    public void updateDropIfneed(@Nonnull MapleTopology.PortId inportId){
+    public void updateDropIfneed(@Nonnull MapleTopology.PortId inportId) {
         MapleTopology.NodeId node = inportId.getNodeId();
         Map<MapleTopology.PortId, Forward> portForwardMap = rulesMap.get(node);
-        if(portForwardMap!=null){
+        if (portForwardMap != null) {
             //TODO
         }
     }
@@ -61,16 +61,16 @@ public class Route {
 
     @Override
     public String toString() {
-        StringBuilder sb=new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         sb.append("Route[");
         for (Map.Entry<MapleTopology.NodeId, Map<MapleTopology.PortId, Forward>> entry : rulesMap.entrySet()) {
             MapleTopology.NodeId node = entry.getKey();
             for (Map.Entry<MapleTopology.PortId, Forward> entry1 : entry.getValue().entrySet()) {
                 MapleTopology.PortId port = entry1.getKey();
                 sb.append("(");
-                sb.append(node==null?"*":node);
+                sb.append(node == null ? "*" : node);
                 sb.append(";");
-                sb.append(port==null?"*":port);
+                sb.append(port == null ? "*" : port);
                 sb.append(";");
                 sb.append(entry1.getValue());
                 sb.append("),");
@@ -80,9 +80,9 @@ public class Route {
             MapleTopology.NodeId node = entry.getKey();
             MapleTopology.PortId port = entry.getValue();
             sb.append("(");
-            sb.append(node==null?"*":node);
+            sb.append(node == null ? "*" : node);
             sb.append(";");
-            sb.append(port==null?"*":port);
+            sb.append(port == null ? "*" : port);
             sb.append(";");
             sb.append("Drop");
             sb.append("),");

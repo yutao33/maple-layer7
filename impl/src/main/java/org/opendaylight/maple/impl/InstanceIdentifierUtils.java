@@ -24,10 +24,6 @@ public final class InstanceIdentifierUtils {
     }
 
 
-
-
-
-
     /**
      * @param nodeConnectorRef
      * @return

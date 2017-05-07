@@ -75,19 +75,19 @@ public class TraceTree {
 
                 TraceTreeNode oldtestbranch;// = t.getBranch(testresult);
 
-                TraceTreeTNode.TNodeEntry trueentry=null;
-                if(testresult){
+                TraceTreeTNode.TNodeEntry trueentry = null;
+                if (testresult) {
                     Map.Entry<MapleMatch, TraceTreeTNode.TNodeEntry> mapEntry = t.findEntry(ti.getPktValue());
-                    Preconditions.checkState(mapEntry!=null);
-                    trueentry=mapEntry.getValue();
-                    oldtestbranch=trueentry.child;
-                    matchMap.put(matchfield,mapEntry.getKey());
+                    Preconditions.checkState(mapEntry != null);
+                    trueentry = mapEntry.getValue();
+                    oldtestbranch = trueentry.child;
+                    matchMap.put(matchfield, mapEntry.getKey());
                 } else {
-                    oldtestbranch=t.getBranchFalse();
+                    oldtestbranch = t.getBranchFalse();
                     Set<ValueMaskPair> unmatchset = unmatchMap.get(matchfield);
-                    if(unmatchset==null){
-                        unmatchset=new HashSet<>();
-                        unmatchMap.put(matchfield,unmatchset);
+                    if (unmatchset == null) {
+                        unmatchset = new HashSet<>();
+                        unmatchMap.put(matchfield, unmatchset);
                     }
                     for (MapleMatch mmatch : t.getBranchtrueMap().keySet()) {
                         unmatchset.add(mmatch.getMatch());
@@ -116,8 +116,8 @@ public class TraceTree {
 
 
                 if (nodep != oldtestbranch) {
-                    if(testresult){
-                        trueentry.child=nodep;
+                    if (testresult) {
+                        trueentry.child = nodep;
                     } else {
                         t.setBranchFalse(nodep);
                     }
@@ -178,12 +178,12 @@ public class TraceTree {
         }
     }
 
-    private TraceTreeNode testifLNodeexpected_ornew(@Nullable TraceTreeNode node, List<Forward> route,MaplePacket pkt) {
+    private TraceTreeNode testifLNodeexpected_ornew(@Nullable TraceTreeNode node, List<Forward> route, MaplePacket pkt) {
         if (node instanceof TraceTreeLNode) {
             TraceTreeLNode l = (TraceTreeLNode) node;
             if (l.getRoute().equals(route)) {
                 //NOTE generate drop rule if route is drop
-                handleIfNeedDrop(l,pkt);
+                handleIfNeedDrop(l, pkt);
                 return node;
             }
         }
@@ -216,7 +216,7 @@ public class TraceTree {
             recurseMarkDeleted(t.getBranchFalse());
             Map<MapleMatch, TraceTreeTNode.TNodeEntry> bm = t.getBranchtrueMap();
             for (TraceTreeTNode.TNodeEntry te : bm.values()) {
-                if(te.barrierRule!=null){
+                if (te.barrierRule != null) {
                     te.barrierRule.setIsDeleted(true);
                     recurseMarkDeleted(te.child);
                 }
@@ -268,16 +268,16 @@ public class TraceTree {
 //                globalpriority++;
 //            }
 //            recurseUpdatePriority(t.getBranch(true));
-            TraceTreeNode branchfalse=t.getBranchFalse();
-            if(branchfalse!=null){
+            TraceTreeNode branchfalse = t.getBranchFalse();
+            if (branchfalse != null) {
                 recurseUpdatePriority(branchfalse);
                 globalpriority++;
             }
-            int barrierpri=globalpriority;
+            int barrierpri = globalpriority;
             Map<MapleMatch, TraceTreeTNode.TNodeEntry> bm = t.getBranchtrueMap();
             for (TraceTreeTNode.TNodeEntry te : bm.values()) {
-                globalpriority=barrierpri;
-                if(te.barrierRule!=null) {
+                globalpriority = barrierpri;
+                if (te.barrierRule != null) {
                     te.barrierRule.setPriority(barrierpri);
                     rules.add(te.barrierRule);
                     globalpriority++;

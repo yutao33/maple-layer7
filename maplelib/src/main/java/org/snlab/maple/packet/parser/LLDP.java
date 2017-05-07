@@ -30,7 +30,6 @@ import org.snlab.maple.packet.types.EthType;
 
 /**
  * @author David Erickson (daviderickson@cs.stanford.edu)
- *
  */
 public class LLDP extends BasePacket {
     protected LLDPTLV chassisId;

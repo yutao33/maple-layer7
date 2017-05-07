@@ -21,9 +21,9 @@ public final class ForwardAction {
         throw new RuntimeException("shouldn't construct this instance");
     }
 
-    private final static Drop finalDrop=new Drop();
-    private final static PopVlan finalPopVlan=new PopVlan();
-    private final static Punt finalPunt=new Punt();
+    private final static Drop finalDrop = new Drop();
+    private final static PopVlan finalPopVlan = new PopVlan();
+    private final static Punt finalPunt = new Punt();
 
     //-------------------static Action function-----------------------
 
@@ -35,21 +35,21 @@ public final class ForwardAction {
         return finalDrop;
     }
 
-    public static Punt punt(){
+    public static Punt punt() {
         return finalPunt;
     }
 
-    public static SetField setField(MapleMatchField field,ByteArray value){
-        Preconditions.checkArgument(field.getBitLength()==value.length());
-        return new SetField(field,value);
+    public static SetField setField(MapleMatchField field, ByteArray value) {
+        Preconditions.checkArgument(field.getBitLength() == value.length());
+        return new SetField(field, value);
     }
 
-    public static PushVlan pushVlan(short vlanid){
-        Preconditions.checkArgument(vlanid>=0&&vlanid<=4095);
+    public static PushVlan pushVlan(short vlanid) {
+        Preconditions.checkArgument(vlanid >= 0 && vlanid <= 4095);
         return new PushVlan(vlanid);
     }
 
-    public static PopVlan popVlan(){
+    public static PopVlan popVlan() {
         return finalPopVlan;
     }
 
@@ -119,8 +119,8 @@ public final class ForwardAction {
     public static class PushVlan extends Action {
         private short vlanId;
 
-        public PushVlan(short vlanId){
-            this.vlanId=vlanId;
+        public PushVlan(short vlanId) {
+            this.vlanId = vlanId;
         }
     }
 

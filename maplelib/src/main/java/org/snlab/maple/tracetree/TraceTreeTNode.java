@@ -31,7 +31,7 @@ public class TraceTreeTNode extends TraceTreeNode {
     private final MapleMatchField field;
     private final TestCondition condition;
 
-    private Map<MapleMatch,TNodeEntry> branchtrueMap;
+    private Map<MapleMatch, TNodeEntry> branchtrueMap;
     private TraceTreeNode branchfalse;
 
     public TraceTreeTNode(MapleMatchField field, TestCondition condition) {
@@ -44,18 +44,18 @@ public class TraceTreeTNode extends TraceTreeNode {
         return branchfalse;
     }
 
-    void setBranchFalse(TraceTreeNode branch){
-        branchfalse=branch;
+    void setBranchFalse(TraceTreeNode branch) {
+        branchfalse = branch;
     }
 
     @Nullable
-    Map.Entry<MapleMatch, TNodeEntry> findEntry(ByteArray key){ //NOTE only when field==INPORT, key==null
+    Map.Entry<MapleMatch, TNodeEntry> findEntry(ByteArray key) { //NOTE only when field==INPORT, key==null
         //TODO not efficient
-        if(field.equals(MapleMatchField.INPORT)){
+        if (field.equals(MapleMatchField.INPORT)) {
             return branchtrueMap.entrySet().iterator().next();
         }
         for (Map.Entry<MapleMatch, TNodeEntry> entry : branchtrueMap.entrySet()) {
-            if(entry.getKey().getMatch().testMatch(key)){
+            if (entry.getKey().getMatch().testMatch(key)) {
                 return entry;
             }
         }
@@ -85,8 +85,8 @@ public class TraceTreeTNode extends TraceTreeNode {
         //this.barrierRule = new MapleRule(match, Forward.DEFAULT_PuntForwards);
         for (Map.Entry<MapleMatch, TNodeEntry> mentry : branchtrueMap.entrySet()) {
             Map<MapleMatchField, MapleMatch> match = new EnumMap<>(matchMapBefore);
-            match.put(this.field,mentry.getKey());
-            mentry.getValue().barrierRule=new MapleRule(match,Forward.DEFAULT_PuntForwards);
+            match.put(this.field, mentry.getKey());
+            mentry.getValue().barrierRule = new MapleRule(match, Forward.DEFAULT_PuntForwards);
         }
     }
 
@@ -148,40 +148,40 @@ public class TraceTreeTNode extends TraceTreeNode {
     public static TraceTreeTNode buildNodeIfNeedOrNull(@Nonnull Trace.TestItem item, @Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
         MapleMatchField field = item.getField();
 
-        if(field.equals(MapleMatchField.INPORT)){   //NOTE special inport
-            return buildInPort(item,(MapleMatchInPort)matchMapBefore.get(MapleMatchField.INPORT));
+        if (field.equals(MapleMatchField.INPORT)) {   //NOTE special inport
+            return buildInPort(item, (MapleMatchInPort) matchMapBefore.get(MapleMatchField.INPORT));
         }
 
         TestCondition condition = genTNodeCondition(item);
         Set<ValueMaskPair> valueMaskPairs = condition.toMatchSet(field);
 
         MapleMatch oldMatch = matchMapBefore.get(field);
-        ValueMaskPair oldpair=null;
-        if(oldMatch!=null){
-            oldpair=oldMatch.getMatch();
+        ValueMaskPair oldpair = null;
+        if (oldMatch != null) {
+            oldpair = oldMatch.getMatch();
         }
 
-        Map<MapleMatch,TNodeEntry> matchmap=new HashMap<>();
+        Map<MapleMatch, TNodeEntry> matchmap = new HashMap<>();
 
         if (oldpair != null) {
             for (ValueMaskPair valueMaskPair : valueMaskPairs) {
                 ValueMaskPair pair = ValueMaskPair.getSubSet(valueMaskPair, oldpair);
-                if(pair!=null&&pair.equals(oldpair)){
+                if (pair != null && pair.equals(oldpair)) {
                     return null;
                 }
-                if(pair!=null) {
+                if (pair != null) {
                     matchmap.put(new MapleMatch(field, pair), new TNodeEntry());
                 }
             }
         } else {
             for (ValueMaskPair valueMaskPair : valueMaskPairs) {
-                matchmap.put(new MapleMatch(field,valueMaskPair),new TNodeEntry());
+                matchmap.put(new MapleMatch(field, valueMaskPair), new TNodeEntry());
             }
         }
 
         if (!matchmap.isEmpty()) {
             TraceTreeTNode tNode = new TraceTreeTNode(field, condition);
-            tNode.branchtrueMap=matchmap;
+            tNode.branchtrueMap = matchmap;
             return tNode;
         }
         return null;
@@ -190,17 +190,17 @@ public class TraceTreeTNode extends TraceTreeNode {
     private static TraceTreeTNode buildInPort(Trace.TestItem item, MapleMatchInPort oldMatch) {
         TestCondition condition = genTNodeCondition(item);
 
-        MapleMatchInPort subMatch=null;
-        Set<MapleTopology.PortId> parmPorts =null;
-        Set<MapleTopology.NodeId> parmNodes =null;
+        MapleMatchInPort subMatch = null;
+        Set<MapleTopology.PortId> parmPorts = null;
+        Set<MapleTopology.NodeId> parmNodes = null;
         ByteArray mask = item.getMask();
-        if(mask==null){
+        if (mask == null) {
             parmPorts = new HashSet<>();
-            if(item instanceof Trace.TraceIs){
+            if (item instanceof Trace.TraceIs) {
                 Trace.TraceIs item1 = (Trace.TraceIs) item;
                 String str = new String(item1.getValue().getBytes());
                 parmPorts.add(new MapleTopology.PortId(str));
-            } else if(item instanceof Trace.TraceIn){
+            } else if (item instanceof Trace.TraceIn) {
                 Trace.TraceIn item1 = (Trace.TraceIn) item;
                 for (ByteArray value : item1.getValues()) {
                     String str = new String(value.getBytes());
@@ -211,11 +211,11 @@ public class TraceTreeTNode extends TraceTreeNode {
             }
         } else {
             parmNodes = new HashSet<>();
-            if(item instanceof Trace.TraceIs){
+            if (item instanceof Trace.TraceIs) {
                 Trace.TraceIs item1 = (Trace.TraceIs) item;
                 String str = new String(item1.getValue().getBytes());
                 parmNodes.add(new MapleTopology.NodeId(str));
-            } else if(item instanceof Trace.TraceIn){
+            } else if (item instanceof Trace.TraceIn) {
                 Trace.TraceIn item1 = (Trace.TraceIn) item;
                 for (ByteArray value : item1.getValues()) {
                     String str = new String(value.getBytes());
@@ -226,19 +226,19 @@ public class TraceTreeTNode extends TraceTreeNode {
             }
         }
 
-        if(oldMatch!=null){
-            subMatch = oldMatch.getSubMatchInPort(parmPorts,parmNodes);
-            if(subMatch!=null&&oldMatch.equals(subMatch)){
-                subMatch=null;
+        if (oldMatch != null) {
+            subMatch = oldMatch.getSubMatchInPort(parmPorts, parmNodes);
+            if (subMatch != null && oldMatch.equals(subMatch)) {
+                subMatch = null;
             }
         } else {
-            subMatch = new MapleMatchInPort(parmPorts,parmNodes);
+            subMatch = new MapleMatchInPort(parmPorts, parmNodes);
         }
-        if (subMatch!=null) {
-            Map<MapleMatch,TNodeEntry> matchmap=new HashMap<>();
-            matchmap.put(subMatch,new TNodeEntry());
+        if (subMatch != null) {
+            Map<MapleMatch, TNodeEntry> matchmap = new HashMap<>();
+            matchmap.put(subMatch, new TNodeEntry());
             TraceTreeTNode tNode = new TraceTreeTNode(MapleMatchField.INPORT, condition);
-            tNode.branchtrueMap=matchmap;
+            tNode.branchtrueMap = matchmap;
             return tNode;
         }
         return null;
@@ -247,7 +247,7 @@ public class TraceTreeTNode extends TraceTreeNode {
 
     //-------------------------------inner class-----------------------------
 
-    public static class TNodeEntry{
+    public static class TNodeEntry {
         MapleRule barrierRule;
         TraceTreeNode child;
     }
@@ -329,6 +329,7 @@ public class TraceTreeTNode extends TraceTreeNode {
     public static class ValueRange extends TestCondition {
         private ByteArray value1;
         private ByteArray value2;
+
         private ValueRange(ByteArray value1, ByteArray value2, ByteArray mask) {
             this.value1 = value1;//0x 1 01101001
             this.value2 = value2;//0x 0 10010101

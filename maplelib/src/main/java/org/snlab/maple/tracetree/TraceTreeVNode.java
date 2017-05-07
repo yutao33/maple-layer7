@@ -108,22 +108,22 @@ public class TraceTreeVNode extends TraceTreeNode {
     @Nullable
     public static TraceTreeVNode buildNodeIfNeedOrNull(@Nonnull Trace.TraceGet item, @Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
         MapleMatchField field = item.getField();
-        if(field.equals(MapleMatchField.INPORT)){   //NOTE special inport
-            return buildInPort(item,(MapleMatchInPort)matchMapBefore.get(MapleMatchField.INPORT));
+        if (field.equals(MapleMatchField.INPORT)) {   //NOTE special inport
+            return buildInPort(item, (MapleMatchInPort) matchMapBefore.get(MapleMatchField.INPORT));
         }
 
         MapleMatch oldMatch = matchMapBefore.get(field);
-        ValueMaskPair oldpair=null;
-        if(oldMatch!=null){
-            oldpair=oldMatch.getMatch();
+        ValueMaskPair oldpair = null;
+        if (oldMatch != null) {
+            oldpair = oldMatch.getMatch();
         }
 
         MapleMatch subMatch = null;
         ValueMaskPair newpair = new ValueMaskPair(item.getValue(), item.getMask());
         if (oldpair != null) {
             ValueMaskPair subpair = ValueMaskPair.getSubSet(oldpair, newpair);
-            if(subpair!=null&&!subpair.equals(oldpair)){
-                subMatch=new MapleMatch(field,subpair);
+            if (subpair != null && !subpair.equals(oldpair)) {
+                subMatch = new MapleMatch(field, subpair);
             }
         } else {
             subMatch = new MapleMatch(field, newpair);
@@ -137,28 +137,28 @@ public class TraceTreeVNode extends TraceTreeNode {
     }
 
     private static TraceTreeVNode buildInPort(Trace.TraceGet item, MapleMatchInPort oldMatch) {
-        String str=new String(item.getValue().getBytes());
+        String str = new String(item.getValue().getBytes());
         ByteArray mask = item.getMask();
 
-        MapleMatchInPort subMatch=null;
-        Set<MapleTopology.PortId> parmPorts =null;
-        Set<MapleTopology.NodeId> parmNodes =null;
-        if(mask==null){
+        MapleMatchInPort subMatch = null;
+        Set<MapleTopology.PortId> parmPorts = null;
+        Set<MapleTopology.NodeId> parmNodes = null;
+        if (mask == null) {
             parmPorts = Collections.singleton(new MapleTopology.PortId(str));
         } else {
             parmNodes = Collections.singleton(new MapleTopology.NodeId(str));
         }
-        if(oldMatch!=null){
-            subMatch = oldMatch.getSubMatchInPort(parmPorts,parmNodes);
-            if(subMatch!=null&&oldMatch.equals(subMatch)){
-                subMatch=null;
+        if (oldMatch != null) {
+            subMatch = oldMatch.getSubMatchInPort(parmPorts, parmNodes);
+            if (subMatch != null && oldMatch.equals(subMatch)) {
+                subMatch = null;
             }
         } else {
-            subMatch = new MapleMatchInPort(parmPorts,parmNodes);
+            subMatch = new MapleMatchInPort(parmPorts, parmNodes);
         }
-        if(subMatch!=null){
-            TraceTreeVNode vNode=new TraceTreeVNode(MapleMatchField.INPORT,item.getMask());
-            vNode.matchentries.put(item.getValue(),new VNodeEntry(null,subMatch));
+        if (subMatch != null) {
+            TraceTreeVNode vNode = new TraceTreeVNode(MapleMatchField.INPORT, item.getMask());
+            vNode.matchentries.put(item.getValue(), new VNodeEntry(null, subMatch));
             return vNode;
         }
         return null;

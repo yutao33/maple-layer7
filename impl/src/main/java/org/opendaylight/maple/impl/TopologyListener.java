@@ -52,14 +52,14 @@ public class TopologyListener implements DataTreeChangeListener<NetworkTopology>
             DataObjectModification<NetworkTopology> rootNode = change.getRootNode();
             DataObjectModification.ModificationType type = rootNode.getModificationType();
 
-            if(type.equals(DataObjectModification.ModificationType.SUBTREE_MODIFIED)){
+            if (type.equals(DataObjectModification.ModificationType.SUBTREE_MODIFIED)) {
                 TopologyKey topologyKey = new TopologyKey(new TopologyId("flow:1"));
                 DataObjectModification<Topology> topo = rootNode.getModifiedChildListItem(Topology.class, topologyKey);
 
-                if(topo!=null){
+                if (topo != null) {
 
                     DataObjectModification.ModificationType type1 = topo.getModificationType();
-                    switch(type1){
+                    switch (type1) {
                         case WRITE:
                             putTopology(topo.getDataAfter());
                             break;
@@ -77,17 +77,17 @@ public class TopologyListener implements DataTreeChangeListener<NetworkTopology>
             }
         }
 
-        mapleHandler.onTopologyChanged(putList,deleteList);
+        mapleHandler.onTopologyChanged(putList, deleteList);
     }
 
-    private void modifyTopology(DataObjectModification<Topology> topo){
+    private void modifyTopology(DataObjectModification<Topology> topo) {
 
         Collection<DataObjectModification<? extends DataObject>> topochildren = topo.getModifiedChildren();
         for (DataObjectModification<? extends DataObject> mc : topochildren) {
             Class<? extends DataObject> mctype = mc.getIdentifier().getType();
-            if(mctype.equals(Node.class)){
-                DataObjectModification<Node> nodemod= (DataObjectModification<Node>) mc;
-                switch(nodemod.getModificationType()){
+            if (mctype.equals(Node.class)) {
+                DataObjectModification<Node> nodemod = (DataObjectModification<Node>) mc;
+                switch (nodemod.getModificationType()) {
                     case WRITE:
                         putNode(nodemod.getDataAfter());
                         break;
@@ -98,9 +98,9 @@ public class TopologyListener implements DataTreeChangeListener<NetworkTopology>
                         deleteNode(nodemod.getDataBefore());
                         break;
                 }
-            } else if(mctype.equals(Link.class)){
-                DataObjectModification<Link> linkmod= (DataObjectModification<Link>) mc;
-                switch(linkmod.getModificationType()){
+            } else if (mctype.equals(Link.class)) {
+                DataObjectModification<Link> linkmod = (DataObjectModification<Link>) mc;
+                switch (linkmod.getModificationType()) {
                     case WRITE:
                     case SUBTREE_MODIFIED:
                         putLink(linkmod.getDataAfter());
@@ -110,7 +110,7 @@ public class TopologyListener implements DataTreeChangeListener<NetworkTopology>
                         break;
                 }
             } else {
-                LOG.warn("unknown ModificationType: "+mctype);
+                LOG.warn("unknown ModificationType: " + mctype);
             }
         }
     }
@@ -120,8 +120,8 @@ public class TopologyListener implements DataTreeChangeListener<NetworkTopology>
         for (DataObjectModification<? extends DataObject> mcc : mc) {
             Class<? extends DataObject> mctype = mcc.getIdentifier().getType();
             if (mctype.equals(TerminationPoint.class)) {
-                DataObjectModification<TerminationPoint> tpmod= (DataObjectModification<TerminationPoint>) mcc;
-                switch(tpmod.getModificationType()){
+                DataObjectModification<TerminationPoint> tpmod = (DataObjectModification<TerminationPoint>) mcc;
+                switch (tpmod.getModificationType()) {
                     case WRITE:
                     case SUBTREE_MODIFIED:
                         putPort(tpmod.getDataAfter());
@@ -131,12 +131,12 @@ public class TopologyListener implements DataTreeChangeListener<NetworkTopology>
                         break;
                 }
             } else {
-                LOG.warn("unknown ModificationType1:"+ mctype);
+                LOG.warn("unknown ModificationType1:" + mctype);
             }
         }
     }
 
-    private void putTopology(Topology topo){
+    private void putTopology(Topology topo) {
         List<Node> nodes = topo.getNode();
         for (Node n : nodes) {
             putNode(n);
@@ -147,9 +147,9 @@ public class TopologyListener implements DataTreeChangeListener<NetworkTopology>
         }
     }
 
-    private void putNode(Node node){
+    private void putNode(Node node) {
         MapleTopology.NodeId nodeId = new MapleTopology.NodeId(node.getNodeId().getValue());
-        List<MapleTopology.PortId> ports=new ArrayList<>();
+        List<MapleTopology.PortId> ports = new ArrayList<>();
         List<TerminationPoint> terminationPoint = node.getTerminationPoint();
         for (TerminationPoint point : terminationPoint) {
             MapleTopology.PortId portId = new MapleTopology.PortId(point.getTpId().getValue());
@@ -158,15 +158,15 @@ public class TopologyListener implements DataTreeChangeListener<NetworkTopology>
         putList.add(new MapleTopology.Node(nodeId, ports));
     }
 
-    private void putLink(Link link){
+    private void putLink(Link link) {
         String src = link.getSource().getSourceTp().getValue();
         String dst = link.getDestination().getDestTp().getValue();
         MapleTopology.Port srcport = new MapleTopology.Port(new MapleTopology.PortId(src), null);
         MapleTopology.Port dstport = new MapleTopology.Port(new MapleTopology.PortId(dst), null);
-        putList.add(new MapleTopology.Link(srcport,dstport));
+        putList.add(new MapleTopology.Link(srcport, dstport));
     }
 
-    private void deleteTopology(Topology topo){
+    private void deleteTopology(Topology topo) {
         List<Node> nodes = topo.getNode();
         for (Node n : nodes) {
             deleteNode(n);
@@ -177,30 +177,30 @@ public class TopologyListener implements DataTreeChangeListener<NetworkTopology>
         }
     }
 
-    private void deleteNode(Node node){
+    private void deleteNode(Node node) {
         String value = node.getNodeId().getValue();
         MapleTopology.NodeId nodeid = new MapleTopology.NodeId(value);
-        deleteList.add(new MapleTopology.Node(nodeid,null));
+        deleteList.add(new MapleTopology.Node(nodeid, null));
     }
 
-    private void deleteLink(Link link){
+    private void deleteLink(Link link) {
         String src = link.getSource().getSourceTp().getValue();
         String dst = link.getDestination().getDestTp().getValue();
         MapleTopology.Port srcport = new MapleTopology.Port(new MapleTopology.PortId(src), null);
         MapleTopology.Port dstport = new MapleTopology.Port(new MapleTopology.PortId(dst), null);
-        deleteList.add(new MapleTopology.Link(srcport,dstport));
+        deleteList.add(new MapleTopology.Link(srcport, dstport));
     }
 
-    private void putPort(TerminationPoint tp){
+    private void putPort(TerminationPoint tp) {
         String value = tp.getTpId().getValue();
         MapleTopology.PortId portId = new MapleTopology.PortId(value);
-        putList.add(new MapleTopology.Port(portId,null));
+        putList.add(new MapleTopology.Port(portId, null));
     }
 
-    private void deletePort(TerminationPoint tp){
+    private void deletePort(TerminationPoint tp) {
         String value = tp.getTpId().getValue();
         MapleTopology.PortId portId = new MapleTopology.PortId(value);
-        deleteList.add(new MapleTopology.Port(portId,null));
+        deleteList.add(new MapleTopology.Port(portId, null));
     }
 
 }

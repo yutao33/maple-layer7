@@ -18,15 +18,15 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class MapleMatchInPort extends MapleMatch{
+public class MapleMatchInPort extends MapleMatch {
     private final Set<MapleTopology.PortId> ports;
     private final Set<MapleTopology.NodeId> nodes;
 
     public MapleMatchInPort(Set<MapleTopology.PortId> ports, Set<MapleTopology.NodeId> nodes) {
         super(MapleMatchField.INPORT, null);  //NOTE match=null
-        this.nodes = nodes==null?Collections.<MapleTopology.NodeId>emptySet():new HashSet<>(nodes);
-        this.ports = ports==null?Collections.<MapleTopology.PortId>emptySet():new HashSet<>(ports);
-        Preconditions.checkState(this.nodes.size()+this.ports.size()>0);
+        this.nodes = nodes == null ? Collections.<MapleTopology.NodeId>emptySet() : new HashSet<>(nodes);
+        this.ports = ports == null ? Collections.<MapleTopology.PortId>emptySet() : new HashSet<>(ports);
+        Preconditions.checkState(this.nodes.size() + this.ports.size() > 0);
     }
 
     @Nonnull
@@ -40,30 +40,30 @@ public class MapleMatchInPort extends MapleMatch{
     }
 
     @Nullable
-    public MapleMatchInPort getSubMatchInPort(Set<MapleTopology.PortId> ports, Set<MapleTopology.NodeId> nodes){
-        Set<MapleTopology.PortId> subMatchPorts=new HashSet<>();
-        Set<MapleTopology.NodeId> subMatchNodes=new HashSet<>();
-        if(ports!=null){
+    public MapleMatchInPort getSubMatchInPort(Set<MapleTopology.PortId> ports, Set<MapleTopology.NodeId> nodes) {
+        Set<MapleTopology.PortId> subMatchPorts = new HashSet<>();
+        Set<MapleTopology.NodeId> subMatchNodes = new HashSet<>();
+        if (ports != null) {
             for (MapleTopology.PortId port : ports) {
-                if(this.ports.contains(port)||this.nodes.contains(port.getNodeId())){
+                if (this.ports.contains(port) || this.nodes.contains(port.getNodeId())) {
                     subMatchPorts.add(port);
                 }
             }
         }
-        if(nodes!=null){
+        if (nodes != null) {
             for (MapleTopology.NodeId node : nodes) {
-                if(this.nodes.contains(node)){
+                if (this.nodes.contains(node)) {
                     subMatchNodes.add(node);
                 }
             }
             for (MapleTopology.PortId port : this.ports) {
-                if(nodes.contains(port.getNodeId())){
+                if (nodes.contains(port.getNodeId())) {
                     subMatchPorts.add(port);
                 }
             }
         }
-        if(subMatchNodes.size()+subMatchPorts.size()>0){
-            return new MapleMatchInPort(subMatchPorts,subMatchNodes);
+        if (subMatchNodes.size() + subMatchPorts.size() > 0) {
+            return new MapleMatchInPort(subMatchPorts, subMatchNodes);
         }
         return null;
     }

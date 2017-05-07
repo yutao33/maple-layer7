@@ -162,9 +162,11 @@ public class U64 implements Writeable, OFValueType<U64>, HashValue<U64> {
         return U64.of(this.raw - other.raw);
     }
 
-    /** return the "numBits" highest-order bits of the hash.
-     *  @param numBits number of higest-order bits to return [0-32].
-     *  @return a numberic value of the 0-32 highest-order bits.
+    /**
+     * return the "numBits" highest-order bits of the hash.
+     *
+     * @param numBits number of higest-order bits to return [0-32].
+     * @return a numberic value of the 0-32 highest-order bits.
      */
     @Override
     public int prefixBits(int numBits) {

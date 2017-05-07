@@ -21,15 +21,15 @@ public class MapleEnv implements IMapleEnv {
 
     public void updateTopology(List<MapleTopology.Element> putList,
                                List<MapleTopology.Element> deleteList) {
-//        boolean ret = topology.update(putList, deleteList);
-//        String info = "updateTopology:\nputList="
-//                + putList.toString()
-//                + "\ndeleteList=" + deleteList.toString()
-//                + "\nreturn=" + ret;
-//        if (ret) {
-//            info += "\nTopology=\n" + topology.toString();
-//        }
-//        LOG.info(info + "\n");
+        boolean ret = topology.update(putList, deleteList);
+        String info = "updateTopology:\nputList="
+                + putList.toString()
+                + "\ndeleteList=" + deleteList.toString()
+                + "\nreturn=" + ret;
+        if (ret) {
+            info += "\nTopology=\n" + topology.toString();
+        }
+        LOG.info(info + "\n");
     }
 
 

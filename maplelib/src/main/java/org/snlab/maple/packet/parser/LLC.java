@@ -24,8 +24,8 @@ import java.nio.ByteBuffer;
 /**
  * This class represents an Link Local Control
  * header that is used in Ethernet 802.3.
- * @author alexreimers
  *
+ * @author alexreimers
  */
 public class LLC extends BasePacket {
     private byte dsap = 0;
