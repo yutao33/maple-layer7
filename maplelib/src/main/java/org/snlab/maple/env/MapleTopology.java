@@ -13,7 +13,6 @@ import com.google.common.base.Preconditions;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,11 +26,23 @@ import java.util.Set;
 public class MapleTopology {
 
     private Map<NodeId, Node> nodes;
-    private Set<Link> links;
+    private Map<Link, Link> links;
 
     public MapleTopology() {
         nodes = new HashMap<>();
-        links=new HashSet<>();
+        links = new HashMap<>();
+    }
+
+    public static boolean isValidNodeId(String id) {
+        return id.matches("^openflow:\\d+$");
+    }
+
+    public static boolean isValidPortId(String id) {
+        return id.matches("^openflow:\\d+:\\w+$");
+    }
+
+    public static String truncateNodeId(String portid) {
+        return portid.substring(0, portid.lastIndexOf(':'));
     }
 
     public Collection<Node> getNodes() {
@@ -39,43 +50,44 @@ public class MapleTopology {
     }
 
     public Collection<Link> getLinks() {
-        return Collections.unmodifiableCollection(links);
+        return Collections.unmodifiableCollection(links.values());
     }
 
     /**
-     * for MapleEnv to update topology
+     * for MapleEnv to update topology.
      *
-     * @param putList
-     * @param deleteList
-     * @return ischanged
+     * @param putList add elements.
+     * @param deleteList delete elements.
+     * @return return true if topology is changed.
      */
-    boolean update(List<MapleTopology.Element> putList,
-                   List<MapleTopology.Element> deleteList) {
+    boolean update(List<MapleTopology.Element> putList, List<MapleTopology.Element> deleteList) {
         boolean ischanged = false;
-        List<Node> nodeList = new ArrayList<>();
-        List<Port> portList = new ArrayList<>();
-        List<Link> linkList = new ArrayList<>();
-        if (deleteList != null) {
-            for (Element ele : deleteList) {
-                if (ele instanceof Node) {
-                    nodeList.add((Node) ele);
-                } else if (ele instanceof Port) {
-                    portList.add((Port) ele);
-                } else if (ele instanceof Link) {
-                    linkList.add((Link) ele);
-                } else {
-                    throw new UnsupportedOperationException();
-                }
-            }
-            for (Link link : linkList) {
+        if(updateDeleteList(deleteList)){
+            ischanged = true;
+        }
+        if(updatePutList(putList)){
+            ischanged = true;
+        }
+        return ischanged;
+    }
+
+    private boolean updateDeleteList(List<MapleTopology.Element> deleteList){
+        boolean ischanged = false;
+        for(Element ele : deleteList){
+            if(ele instanceof Link) {
+                Link link = (Link) ele;
                 Link mylink = links.get(link);
                 if (mylink != null) {
                     removeLink(mylink);
                     ischanged = true;
                 }
             }
-            for (Port port : portList) {
-                Node mynode = nodes.get();
+        }
+        for(Element ele : deleteList){
+            if(ele instanceof Port){
+                Port port = (Port) ele;
+                NodeId nodeid = port.getId().getNodeId();
+                Node mynode = nodes.get(nodeid);
                 Iterator<Port> iter = mynode.ports.iterator();
                 while (iter.hasNext()) {
                     Port next = iter.next();
@@ -87,31 +99,27 @@ public class MapleTopology {
                     }
                 }
             }
-            for (Node node : nodeList) {
-                Node mynode = nodes.get(node);
+        }
+        for(Element ele : deleteList){
+            if(ele instanceof Node){
+                Node node = (Node) ele;
+                Node mynode = nodes.get(node.getId());
                 if (mynode != null) {
                     removeNode(mynode);
                     ischanged = true;
                 }
             }
-            nodeList.clear();
-            portList.clear();
-            linkList.clear();
         }
-        if (putList != null) {
-            for (Element ele : putList) {
-                if (ele instanceof Node) {
-                    nodeList.add((Node) ele);
-                } else if (ele instanceof Port) {
-                    portList.add((Port) ele);
-                } else if (ele instanceof Link) {
-                    linkList.add((Link) ele);
-                } else {
-                    throw new UnsupportedOperationException();
-                }
-            }
-            for (Node node : nodeList) {
-                Node mynode = nodes.get(node);
+        return ischanged;
+    }
+
+    private boolean updatePutList(List<MapleTopology.Element> putList){
+        boolean ischanged=false;
+
+        for(Element ele : putList){
+            if(ele instanceof Node){
+                Node node = (Node) ele;
+                Node mynode = nodes.get(node.getId());
                 if (mynode != null) {
                     if (!mynode.ports.equals(node.ports)) {
                         removeNode(mynode);
@@ -123,82 +131,94 @@ public class MapleTopology {
                     ischanged = true;
                 }
             }
-            for (Port port : portList) {
+        }
+        for(Element ele : putList){
+            if(ele instanceof Port){
+                Port port = (Port) ele;
                 if (addPortifnotexisted(port)) {
                     ischanged = true;
                 }
             }
-            for (Link link : linkList) {
-
-                if (links.contains(link)) {
-                    Port start = link.getStart();
-                    Node startowner = start.getOwner();
-                    Node mystartowner = nodes.get(startowner);
-                    if (mystartowner == null) {
-                        nodes.put(startowner.getId(), startowner);
-                        mystartowner = startowner;
-                    }
-                    Iterator<Port> iter = mystartowner.ports.iterator();
-                    Port mystart = null;
-                    while (iter.hasNext()) {
-                        Port next = iter.next();
-                        if (next.equals(start)) {
-                            mystart = next;
-                        }
-                    }
-                    if (mystart == null) {
-                        mystartowner.ports.add(start);
-                        mystart = start;
-                    } else {
-                        if (mystart.link != null) {
-                            removeLink(mystart.link);
-                        }
-                    }
-
-                    Port end = link.getEnd();
-                    Node endowner = end.getOwner();
-                    Node myendowner = nodes.get(endowner);
-                    if (myendowner == null) {
-                        nodes.put(endowner.getId(), endowner);
-                        myendowner = endowner;
-                    }
-                    iter = myendowner.ports.iterator();
-                    Port myend = null;
-                    while (iter.hasNext()) {
-                        Port next = iter.next();
-                        if (next.equals(end)) {
-                            myend = next;
-                        }
-                    }
-                    if (myend == null) {
-                        myendowner.ports.add(end);
-                        myend = end;
-                    } else {
-                        if (myend.link != null) {
-                            if (!myend.link.end.equals(mystart)) {
-                                removeLink(myend.link);
-                            }
-                        }
-                    }
-                    Link mylink = new Link(mystart, myend);
-                    mystart.link = mylink;
-                    links.add(mylink);
+        }
+        for(Element ele : putList){
+            if(ele instanceof Link) {
+                Link link = (Link) ele;
+                if (links.get(link)==null) {
+                    putLink(link);
                     ischanged = true;
                 }
             }
         }
+
         return ischanged;
+    }
+
+    private void putLink(Link link) {
+        Port startport = link.getStart();
+        NodeId startnodeid = startport.getId().getNodeId();
+        Node mystartowner = nodes.get(startnodeid);
+        if (mystartowner == null) {
+            mystartowner = new Node(startnodeid,Collections.singletonList(startport.getId()));
+            nodes.put(startnodeid, mystartowner);
+        }
+        Iterator<Port> iter = mystartowner.ports.iterator();
+        Port mystartport = null;
+        while (iter.hasNext()) {
+            Port next = iter.next();
+            if (next.equals(startport)) {
+                mystartport = next;
+            }
+        }
+        if (mystartport == null) {
+            startport.owner=mystartowner;
+            mystartowner.ports.add(startport);
+            mystartport = startport;
+        } else {
+            if (mystartport.link != null) {
+                removeLink(mystartport.link);
+            }
+        }
+
+        Port endport = link.getEnd();
+        NodeId endownerid = endport.getId().getNodeId();
+        Node myendowner = nodes.get(endownerid);
+        if (myendowner == null) {
+            myendowner = new Node(endownerid,Collections.singletonList(endport.getId()));
+            nodes.put(endownerid, myendowner);
+        }
+        iter = myendowner.ports.iterator();
+        Port myendport = null;
+        while (iter.hasNext()) {
+            Port next = iter.next();
+            if (next.equals(endport)) {
+                myendport = next;
+            }
+        }
+        if (myendport == null) {
+            endport.owner=myendowner;
+            myendowner.ports.add(endport);
+            myendport = endport;
+        } else {
+            if (myendport.link != null) {
+                if (!myendport.link.end.equals(mystartport)) {
+                    removeLink(myendport.link);
+                }
+            }
+        }
+        Link mylink = new Link(mystartport, myendport);
+        mystartport.link = mylink;
+        links.put(mylink,mylink);
     }
 
     //return isadded
     private boolean addPortifnotexisted(Port port) {
         boolean isadded = false;
-        Node node = port.getOwner();
-        Node mynode = nodes.get(node.getId());
+        NodeId nodeid = port.getId().getNodeId();
+        Node mynode = nodes.get(nodeid);
         if (mynode != null) {
             isadded = mynode.ports.add(port);
         } else {
-            nodes.put(node.getId(), node);
+            nodes.put(nodeid, new Node(nodeid,Collections.singletonList(port.getId())));
             isadded = true;
         }
         return isadded;
@@ -228,7 +248,6 @@ public class MapleTopology {
         }
     }
 
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("MapleTopology:\nNodes:\n");
@@ -248,7 +267,7 @@ public class MapleTopology {
             sb.append("\n");
         }
         sb.append("Links:\n");
-        for (Link link : links) {
+        for (Link link : links.values()) {
             sb.append(link.getStart().getId());
             sb.append(" -> ");
             sb.append(link.getEnd().getId());
@@ -257,33 +276,15 @@ public class MapleTopology {
         return sb.toString();
     }
 
-    //-----------------------static method-----------------------
-
-    public static boolean isValidNodeId(String id){
-        return id.matches("^openflow:\\d+$");
-    }
-
-    public static boolean isValidPortId(String id){
-        return id.matches("^openflow:\\d+:\\w+$");
-    }
-
-    public static String truncateNodeId(String portid){
-        return portid.substring(0, portid.lastIndexOf(':'));
-    }
-
     //-----------------------static inner class-----------------------
 
     @Immutable
     public static class NodeId {
         private final String id; //openflow:1 openflow:233334443
 
-        public NodeId(String id) {
+        public NodeId(@Nonnull String id) {
             Preconditions.checkArgument(isValidNodeId(id));
             this.id = id;
-        }
-
-        public String getId() {
-            return id;
         }
 
         @Override
@@ -309,10 +310,10 @@ public class MapleTopology {
 
     @Immutable
     public static class PortId {
-        private NodeId nodeId;// openflow:1
-        private final String id;//  openflow:1:1 openflow:1:2 openflow:1:internal
+        private final String id;//  openflow:1:1 openflow:1:2 openflow:1:local
+        private NodeId nodeId;
 
-        public PortId(String id) {
+        public PortId(@Nonnull String id) {
             Preconditions.checkArgument(isValidPortId(id));
             this.id = id;
         }
@@ -323,10 +324,6 @@ public class MapleTopology {
                 this.nodeId = new NodeId(truncateNodeId(id));
             }
             return nodeId;
-        }
-
-        public String getId() {
-            return id;
         }
 
         @Override
@@ -359,14 +356,13 @@ public class MapleTopology {
         private final NodeId id;
         private Set<Port> ports;
 
-        public Node(String id, List<String> ports) {
-            Preconditions.checkArgument(isValidNodeId(id));
-            this.id = new NodeId(id);
+        public Node(@Nonnull NodeId nodeid, List<PortId> ports) {
+            this.id = nodeid;
             this.ports = new HashSet<>();
             if (ports != null) {
-                for (String port : ports) {
-                    Preconditions.checkArgument(isValidPortId(port));
-                    this.ports.add(new Port(port));
+                for (PortId portid : ports) {
+                    Preconditions.checkArgument(portid.getNodeId().equals(id));
+                    this.ports.add(new Port(portid, this));
                 }
             }
         }
@@ -393,22 +389,26 @@ public class MapleTopology {
         public int hashCode() {
             return id.hashCode();
         }
+
+        @Override
+        public String toString() {
+            return "Node{" +
+                    "id=" + id +
+                    '}';
+        }
     }
 
     public static class Port extends Element {
-        private Node owner;
         private final PortId id;
+        private Node owner;
         private Link link;
 
-        public Port(String id) {
-            Preconditions.checkArgument(isValidPortId(id));
-            this.id = new PortId(id);
+        public Port(@Nonnull PortId id, Node owner) {
+            this.owner = owner;
+            this.id = id;
         }
 
         public Node getOwner() {
-            if (this.owner == null) {
-                this.owner = new Node(id.getNodeId().getId(), Arrays.asList(id.getId()));
-            }
             return owner;
         }
 
@@ -427,33 +427,27 @@ public class MapleTopology {
 
             Port port = (Port) o;
 
-            return id != null ? id.equals(port.id) : port.id == null;
+            return id.equals(port.id);
         }
 
         @Override
         public int hashCode() {
-            return id != null ? id.hashCode() : 0;
+            return id.hashCode();
         }
 
         @Override
         public String toString() {
             return "Port{" +
-                    "id='" + id + '\'' +
+                    "id=" + id +
                     '}';
         }
-
     }
 
     public static class Link extends Element {
         private final Port start;
         private final Port end;
 
-        public Link(String start, String end) {
-            this.start = new Port(start);
-            this.end = new Port(end);
-        }
-
-        public Link(Port start, Port end) {
+        public Link(@Nonnull Port start, @Nonnull Port end) {
             this.start = start;
             this.end = end;
         }

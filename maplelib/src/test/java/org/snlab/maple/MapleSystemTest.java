@@ -12,9 +12,10 @@ package org.snlab.maple;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class Test2 {
+public class MapleSystemTest {
     @Test
     public void test(){
         Assert.assertNotNull(new MapleSystem(null).getHandler());
     }
+
 }

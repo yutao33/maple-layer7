@@ -148,19 +148,22 @@ public class TopologyListener implements DataTreeChangeListener<NetworkTopology>
     }
 
     private void putNode(Node node){
-        String nodeid = node.getNodeId().getValue();
-        List<String> ports=new ArrayList<>();
+        MapleTopology.NodeId nodeId = new MapleTopology.NodeId(node.getNodeId().getValue());
+        List<MapleTopology.PortId> ports=new ArrayList<>();
         List<TerminationPoint> terminationPoint = node.getTerminationPoint();
         for (TerminationPoint point : terminationPoint) {
-            ports.add(point.getTpId().getValue());
+            MapleTopology.PortId portId = new MapleTopology.PortId(point.getTpId().getValue());
+            ports.add(portId);
         }
-        putList.add(new MapleTopology.Node(nodeid, ports));
+        putList.add(new MapleTopology.Node(nodeId, ports));
     }
 
     private void putLink(Link link){
         String src = link.getSource().getSourceTp().getValue();
         String dst = link.getDestination().getDestTp().getValue();
-        putList.add(new MapleTopology.Link(src,dst));
+        MapleTopology.Port srcport = new MapleTopology.Port(new MapleTopology.PortId(src), null);
+        MapleTopology.Port dstport = new MapleTopology.Port(new MapleTopology.PortId(dst), null);
+        putList.add(new MapleTopology.Link(srcport,dstport));
     }
 
     private void deleteTopology(Topology topo){
@@ -175,24 +178,29 @@ public class TopologyListener implements DataTreeChangeListener<NetworkTopology>
     }
 
     private void deleteNode(Node node){
-        String nodeid = node.getNodeId().getValue();
+        String value = node.getNodeId().getValue();
+        MapleTopology.NodeId nodeid = new MapleTopology.NodeId(value);
         deleteList.add(new MapleTopology.Node(nodeid,null));
     }
 
     private void deleteLink(Link link){
         String src = link.getSource().getSourceTp().getValue();
         String dst = link.getDestination().getDestTp().getValue();
-        deleteList.add(new MapleTopology.Link(src,dst));
+        MapleTopology.Port srcport = new MapleTopology.Port(new MapleTopology.PortId(src), null);
+        MapleTopology.Port dstport = new MapleTopology.Port(new MapleTopology.PortId(dst), null);
+        deleteList.add(new MapleTopology.Link(srcport,dstport));
     }
 
     private void putPort(TerminationPoint tp){
-        String port = tp.getTpId().getValue();
-        putList.add(new MapleTopology.Port(port));
+        String value = tp.getTpId().getValue();
+        MapleTopology.PortId portId = new MapleTopology.PortId(value);
+        putList.add(new MapleTopology.Port(portId,null));
     }
 
     private void deletePort(TerminationPoint tp){
-        String port = tp.getTpId().getValue();
-        deleteList.add(new MapleTopology.Port(port));
+        String value = tp.getTpId().getValue();
+        MapleTopology.PortId portId = new MapleTopology.PortId(value);
+        deleteList.add(new MapleTopology.Port(portId,null));
     }
 
 }

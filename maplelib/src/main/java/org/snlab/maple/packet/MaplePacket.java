@@ -186,7 +186,7 @@ public class MaplePacket implements IMaplePacket {
 
         public boolean is(String inport) {
             Preconditions.checkArgument(MapleTopology.isValidPortId(inport));
-            boolean ret = MaplePacket.this.inPortId.getId().equals(inport);
+            boolean ret = MaplePacket.this.inPortId.toString().equals(inport);
             TraceItem ti = new Trace.TraceIs(MapleMatchField.INPORT, null, inport.getBytes(), null, ret);
             addTraceItem(ti);
             return ret;
@@ -200,7 +200,7 @@ public class MaplePacket implements IMaplePacket {
             List<byte[]> values = new ArrayList<>();
             for (String s : inports) {
                 values.add(s.getBytes());
-                if (MaplePacket.this.inPortId.getId().equals(s)) {
+                if (MaplePacket.this.inPortId.toString().equals(s)) {
                     ret = true;
                 }
             }
@@ -214,9 +214,9 @@ public class MaplePacket implements IMaplePacket {
         }
 
         public String getValue() {
-            TraceItem ti = new Trace.TraceGet(MapleMatchField.INPORT, null, MaplePacket.this.inPortId.getId().getBytes());
+            TraceItem ti = new Trace.TraceGet(MapleMatchField.INPORT, null, MaplePacket.this.inPortId.toString().getBytes());
             addTraceItem(ti);
-            return MaplePacket.this.inPortId.getId();
+            return MaplePacket.this.inPortId.toString();
         }
     }
 
@@ -229,7 +229,7 @@ public class MaplePacket implements IMaplePacket {
         public boolean is(String node) {
             Preconditions.checkArgument(MapleTopology.isValidNodeId(node));
             MapleTopology.NodeId owner = MaplePacket.this.inPortId.getNodeId();
-            boolean ret = owner.getId().equals(node);
+            boolean ret = owner.toString().equals(node);
             TraceItem ti = new Trace.TraceIs(MapleMatchField.INPORT, "mask".getBytes(), node.getBytes(), null, ret);
             addTraceItem(ti);
             return ret;
@@ -244,7 +244,7 @@ public class MaplePacket implements IMaplePacket {
             MapleTopology.NodeId owner = MaplePacket.this.inPortId.getNodeId();
             for (String s : nodes) {
                 values.add(s.getBytes());
-                if (owner.getId().equals(s)) {
+                if (owner.toString().equals(s)) {
                     ret = true;
                 }
             }
@@ -255,9 +255,9 @@ public class MaplePacket implements IMaplePacket {
 
         public String getValue(){
             MapleTopology.NodeId owner = MaplePacket.this.inPortId.getNodeId();
-            TraceItem ti = new Trace.TraceGet(MapleMatchField.INPORT, "mask".getBytes(), owner.getId().getBytes());
+            TraceItem ti = new Trace.TraceGet(MapleMatchField.INPORT, "mask".getBytes(), owner.toString().getBytes());
             addTraceItem(ti);
-            return owner.getId();
+            return owner.toString();
         }
     }
 

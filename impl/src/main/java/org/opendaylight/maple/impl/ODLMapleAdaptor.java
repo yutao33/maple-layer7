@@ -207,12 +207,12 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
         Match odlMatch=odlPktFieldMatch;
         if(port!=null) {
             MatchBuilder matchBuilder = new MatchBuilder(odlPktFieldMatch);
-            matchBuilder.setInPort(new NodeConnectorId(port.getId()));
+            matchBuilder.setInPort(new NodeConnectorId(port.toString()));
             odlMatch=matchBuilder.build();
         }
         Instructions instructions = buildODLInstructions(forward);
 
-        installODLRule(wt,node.getId(),priority,odlMatch,instructions);
+        installODLRule(wt,node.toString(),priority,odlMatch,instructions);
     }
 
     private void installODLRule(WriteTransaction wt,
@@ -370,9 +370,9 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
 
         for (ForwardAction.Action action : forward.getActions()) {
             if(action instanceof ForwardAction.OutPut){
-                MapleTopology.PortId outPort = ((ForwardAction.OutPut) action).getPort();
+                MapleTopology.PortId outPort = ((ForwardAction.OutPut) action).getPortId();
                 OutputAction outputAction = new OutputActionBuilder()
-                        .setOutputNodeConnector(new NodeConnectorId(outPort.getId()))
+                        .setOutputNodeConnector(new NodeConnectorId(outPort.toString()))
                         .build();
                 OutputActionCase outputActionCase = new OutputActionCaseBuilder()
                         .setOutputAction(outputAction)

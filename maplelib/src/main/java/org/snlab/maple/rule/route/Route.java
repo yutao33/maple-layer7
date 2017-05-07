@@ -68,9 +68,9 @@ public class Route {
             for (Map.Entry<MapleTopology.PortId, Forward> entry1 : entry.getValue().entrySet()) {
                 MapleTopology.PortId port = entry1.getKey();
                 sb.append("(");
-                sb.append(node==null?"*":node.getId());
+                sb.append(node==null?"*":node);
                 sb.append(";");
-                sb.append(port==null?"*":port.getId());
+                sb.append(port==null?"*":port);
                 sb.append(";");
                 sb.append(entry1.getValue());
                 sb.append("),");
@@ -80,9 +80,9 @@ public class Route {
             MapleTopology.NodeId node = entry.getKey();
             MapleTopology.PortId port = entry.getValue();
             sb.append("(");
-            sb.append(node==null?"*":node.getId());
+            sb.append(node==null?"*":node);
             sb.append(";");
-            sb.append(port==null?"*":port.getId());
+            sb.append(port==null?"*":port);
             sb.append(";");
             sb.append("Drop");
             sb.append("),");

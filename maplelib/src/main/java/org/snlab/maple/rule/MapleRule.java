@@ -112,7 +112,7 @@ public class MapleRule {
         for (ForwardAction.Action act : f.getActions()) {
             if(act instanceof ForwardAction.OutPut){
                 ForwardAction.OutPut act1 = (ForwardAction.OutPut) act;
-                return act1.getPort().getNodeId();
+                return act1.getPortId().getNodeId();
             }
         }
         return null;

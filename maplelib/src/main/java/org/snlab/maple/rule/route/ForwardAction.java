@@ -64,10 +64,10 @@ public final class ForwardAction {
     }
 
     public static class OutPut extends Action {
-        private PortId port;
+        private PortId portid;
 
         public OutPut(@Nonnull PortId port) {
-            this.port = port;
+            this.portid = port;
         }
 
         @Override
@@ -77,22 +77,22 @@ public final class ForwardAction {
 
             OutPut outPut = (OutPut) o;
 
-            return port.equals(outPut.port);
+            return portid.equals(outPut.portid);
         }
 
-        public PortId getPort() {
-            return port;
+        public PortId getPortId() {
+            return portid;
         }
 
         @Override
         public int hashCode() {
-            return port.hashCode();
+            return portid.hashCode();
         }
 
         @Override
         public String toString() {
             return "OutPut{" +
-                    "port=" + port.getId() +
+                    "portid=" + portid +
                     '}';
         }
     }

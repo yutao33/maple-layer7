@@ -16,11 +16,7 @@ import org.junit.rules.ExpectedException;
 import org.snlab.maple.rule.match.ByteArray;
 import org.snlab.maple.rule.match.ValueMaskPair;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
-public class Test1 {
+public class ByteArrayTest {
 
     @Rule
     public ExpectedException thrown=ExpectedException.none();
