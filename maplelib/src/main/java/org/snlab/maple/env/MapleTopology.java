@@ -72,6 +72,18 @@ public class MapleTopology {
         return null;
     }
 
+    public synchronized void shortestPath(PortId src,PortId dst){
+
+    }
+
+    public synchronized void spanningTree(){
+
+    }
+
+    public synchronized void getBorderPorts(){
+
+    }
+
     /**
      * for MapleEnv to update topology.
      *
@@ -79,7 +91,7 @@ public class MapleTopology {
      * @param deleteList delete elements.
      * @return return true if topology is changed.
      */
-    boolean update(List<MapleTopology.Element> putList, List<MapleTopology.Element> deleteList) {
+    synchronized boolean update(List<MapleTopology.Element> putList, List<MapleTopology.Element> deleteList) {
         boolean ischanged = false;
         if (updateDeleteList(deleteList)) {
             ischanged = true;

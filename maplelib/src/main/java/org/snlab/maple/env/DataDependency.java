@@ -9,4 +9,5 @@
 package org.snlab.maple.env;
 
 public class DataDependency {
+
 }

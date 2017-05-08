@@ -12,12 +12,18 @@ import org.snlab.maple.api.MapleAppBase;
 import org.snlab.maple.api.IMapleDataBroker;
 import org.snlab.maple.api.IMaplePacket;
 import org.snlab.maple.env.MapleTopology;
+import org.snlab.maple.rule.route.Forward;
 
 public class ArpHandler extends MapleAppBase {
     @Override
     public boolean onPacket(IMaplePacket pkt, IMapleDataBroker db) {
-        MapleTopology topo = db.getTopo();
-
+        MapleTopology topo = db.getTopology();
+        if(pkt.ethType().is(new byte[]{})) {
+            if (pkt.inport().in()) {
+                pkt.setRoute(Forward.PUNT);
+            }
+            pkt.addRoute("");
+        }
         return false;
     }
 }

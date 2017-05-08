@@ -8,7 +8,6 @@
 
 package org.snlab.maple.env;
 
-import com.google.common.base.Preconditions;
 import org.snlab.maple.api.IMapleDataBroker;
 
 import java.util.List;
@@ -19,7 +18,9 @@ public class MapleDataManager {
 
     private static final Logger LOG = Logger.getLogger(MapleDataManager.class.toString());
 
-    private MapleTopology topology = new MapleTopology();
+    private final MapleTopology topology = new MapleTopology();
+
+
 
     private MapleDataBroker[] dbs ;
 
@@ -44,7 +45,7 @@ public class MapleDataManager {
     }
 
 
-    public IMapleDataBroker allocBroker(){
+    public MapleDataBroker allocBroker(){
         if(dbs!=null){
             for (MapleDataBroker db : dbs) {
                 if(!db.isused.getAndSet(true)){
@@ -52,23 +53,27 @@ public class MapleDataManager {
                 }
             }
         }
-        return new MapleDataBroker();
+        return new MapleDataBroker(); //just in case
     }
 
-    public void freeBroker(IMapleDataBroker db){
-        Preconditions.checkArgument(db instanceof MapleDataBroker);
-        MapleDataBroker db1 = (MapleDataBroker) db;
-        db1.isused.set(false);
+    public void freeBroker(MapleDataBroker db){
+        db.isused.set(false);
     }
 
-    private class MapleDataBroker implements IMapleDataBroker{
+    public class MapleDataBroker implements IMapleDataBroker{
 
         private AtomicBoolean isused=new AtomicBoolean(false);
 
+        private MapleDataBroker(){
+
+        }
+
         @Override
-        public MapleTopology getTopo() {
+        public MapleTopology getTopology() {
+
             return topology;
         }
+
 
         @Override
         public Object readData(String url) {

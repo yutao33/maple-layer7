@@ -10,7 +10,6 @@ package org.snlab.maple.tracetree;
 
 
 import com.google.common.base.Preconditions;
-import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.packet.MaplePacket;
 import org.snlab.maple.rule.MapleRule;
 import org.snlab.maple.rule.field.MapleMatchField;
@@ -47,7 +46,7 @@ public class TraceTree {
 
     private Map<MapleMatchField, Set<ValueMaskPair>> unmatchMap = new EnumMap<>(MapleMatchField.class);//TODO for generate rules
 
-    public synchronized void update(List<Trace.TraceItem> items, MaplePacket pkt) {
+    public void update(List<Trace.TraceItem> items, MaplePacket pkt) {
         matchMap.clear();
         unmatchMap.clear();
 
@@ -240,7 +239,7 @@ public class TraceTree {
     private List<MapleRule> rules;
     private int globalpriority;
 
-    public synchronized List<MapleRule> generateRules() {
+    public List<MapleRule> generateRules() {
         rules = new ArrayList<>();
         globalpriority = 1;
         recurseUpdatePriority(treeroot);

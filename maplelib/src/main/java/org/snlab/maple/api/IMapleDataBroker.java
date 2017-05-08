@@ -12,6 +12,6 @@ import org.snlab.maple.env.MapleTopology;
 
 
 public interface IMapleDataBroker {
-    MapleTopology getTopo();
+    MapleTopology getTopology();
     Object readData(String url);
 }

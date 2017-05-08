@@ -9,7 +9,6 @@
 package org.snlab.maple;
 
 
-import org.snlab.maple.api.IMapleDataBroker;
 import org.snlab.maple.api.MapleAppBase;
 import org.snlab.maple.app.InPortTest;
 import org.snlab.maple.env.MapleDataManager;
@@ -36,7 +35,7 @@ public class MapleSystem {
     private final static int THREADPOOLSIZE = Runtime.getRuntime().availableProcessors();
 
     private final IMapleAdaptor mapleAdaptor;
-    private TraceTree traceTree;
+    private final TraceTree traceTree;
     private IMapleHandler handler;
     private List<MapleAppBase> mapleAppList;
     //private BlockingQueue<Runnable> pktBlockingQueue;
@@ -68,7 +67,7 @@ public class MapleSystem {
         }
 
         pkt.getTraceList().clear();
-        IMapleDataBroker db = dataManager.allocBroker();
+        MapleDataManager.MapleDataBroker db = dataManager.allocBroker();
 
         for (MapleAppBase app : mapleAppList) {
             if (app.onPacket(pkt,db)) {
@@ -76,10 +75,14 @@ public class MapleSystem {
             }
         }
 
-        traceTree.update(pkt.getTraceList(), pkt);
+        dataManager.freeBroker(db);
 
-        List<MapleRule> rules = traceTree.generateRules();
+        List<MapleRule> rules = null;
 
+        synchronized (traceTree) {
+            traceTree.update(pkt.getTraceList(), pkt);
+            rules = traceTree.generateRules();
+        }
         mapleAdaptor.updateRules(rules);
 
         LOG.info("packet=" + pkt + "\nrules=\n" + rules);
@@ -101,7 +104,9 @@ public class MapleSystem {
             case INSTALL:
                 try {
                     MapleAppBase app = appclass.newInstance();
-                    app.init(dataManager.allocBroker());
+                    MapleDataManager.MapleDataBroker db = dataManager.allocBroker();
+                    app.init(db);
+                    dataManager.freeBroker(db);
                     mapleAppList.add(0, app);
                 } catch (InstantiationException e) {
                     e.printStackTrace();
@@ -126,7 +131,10 @@ public class MapleSystem {
     private Object command(Class<? extends MapleAppBase> appclass, Object parm) {
         for (MapleAppBase app : mapleAppList) {
             if (app.getClass().equals(appclass)) {
-                return app.onCommand(parm, dataManager.allocBroker());  // 'return' is safe
+                MapleDataManager.MapleDataBroker db = dataManager.allocBroker();
+                Object ret = app.onCommand(parm, db);  // 'return' is safe
+                dataManager.freeBroker(db);
+                return ret;
             }
         }
         return null;
