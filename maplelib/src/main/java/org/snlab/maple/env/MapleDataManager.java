@@ -25,6 +25,9 @@ public class MapleDataManager {
 
     public MapleDataManager(int dbsize) {
         dbs = new MapleDataBroker[dbsize];
+        for(int i=0;i<dbsize;i++){
+            dbs[i]=new MapleDataBroker();
+        }
     }
 
     public void updateTopology(List<MapleTopology.Element> putList,

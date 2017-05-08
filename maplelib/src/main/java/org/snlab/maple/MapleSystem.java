@@ -39,7 +39,7 @@ public class MapleSystem {
     private TraceTree traceTree;
     private IMapleHandler handler;
     private List<MapleAppBase> mapleAppList;
-    private BlockingQueue<Runnable> pktBlockingQueue;
+    //private BlockingQueue<Runnable> pktBlockingQueue;
     private ThreadPoolExecutor pktThreadPool;
     private MapleDataManager dataManager;
 
@@ -49,7 +49,7 @@ public class MapleSystem {
         this.traceTree = new TraceTree();
         this.dataManager = new MapleDataManager(THREADPOOLSIZE);
         this.mapleAppList = new ArrayList<>();
-        this.pktBlockingQueue = new LinkedBlockingQueue<>();
+        BlockingQueue<Runnable> pktBlockingQueue = new LinkedBlockingQueue<>();
         this.pktThreadPool = new ThreadPoolExecutor(THREADPOOLSIZE, THREADPOOLSIZE, 1, TimeUnit.MINUTES, pktBlockingQueue);
         this.mapleAppList.add(new InPortTest());
     }
@@ -86,7 +86,7 @@ public class MapleSystem {
     }
 
     private void addPktRunnable(final MaplePacket pkt){
-        pktBlockingQueue.add(new Runnable() {
+        pktThreadPool.execute(new Runnable() {
             @Override
             public void run() {
                 MapleSystem.this.onPacket(pkt);
