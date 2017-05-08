@@ -9,7 +9,7 @@
 package org.snlab.maple.app;
 
 import org.snlab.maple.api.MapleAppBase;
-import org.snlab.maple.api.IMapleEnv;
+import org.snlab.maple.api.IMapleDataBroker;
 import org.snlab.maple.api.IMaplePacket;
 import org.snlab.maple.env.MapleTopology.PortId;
 
@@ -21,7 +21,7 @@ public class L2Switch extends MapleAppBase {
     Map<Long, PortId> hostTable = new HashMap<>();
 
     @Override
-    public boolean onPacket(IMaplePacket pkt, IMapleEnv env) {
+    public boolean onPacket(IMaplePacket pkt, IMapleDataBroker db) {
 
         long ethSrc = 0;
 

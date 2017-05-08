@@ -9,9 +9,10 @@
 package org.snlab.maple;
 
 
+import org.snlab.maple.api.IMapleDataBroker;
 import org.snlab.maple.api.MapleAppBase;
 import org.snlab.maple.app.InPortTest;
-import org.snlab.maple.env.MapleEnv;
+import org.snlab.maple.env.MapleDataManager;
 import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.packet.MaplePacket;
 import org.snlab.maple.packet.types.EthType;
@@ -22,27 +23,35 @@ import org.snlab.maple.tracetree.TraceTree;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class MapleSystem {
 
     private final static Logger LOG = Logger.getLogger(MapleSystem.class.toString());
 
+    private final static int THREADPOOLSIZE = Runtime.getRuntime().availableProcessors();
+
     private final IMapleAdaptor mapleAdaptor;
     private TraceTree traceTree;
-    private MapleEnv mapleEnv;
     private IMapleHandler handler;
     private List<MapleAppBase> mapleAppList;
+    private BlockingQueue<Runnable> pktBlockingQueue;
+    private ThreadPoolExecutor pktThreadPool;
+    private MapleDataManager dataManager;
+
 
     public MapleSystem(IMapleAdaptor mapleAdaptor) {
         this.mapleAdaptor = mapleAdaptor;
         this.traceTree = new TraceTree();
-        this.mapleEnv = new MapleEnv();
+        this.dataManager = new MapleDataManager(THREADPOOLSIZE);
         this.mapleAppList = new ArrayList<>();
-
-        //test
+        this.pktBlockingQueue = new LinkedBlockingQueue<>();
+        this.pktThreadPool = new ThreadPoolExecutor(THREADPOOLSIZE, THREADPOOLSIZE, 1, TimeUnit.MINUTES, pktBlockingQueue);
         this.mapleAppList.add(new InPortTest());
-
     }
 
     public IMapleHandler getHandler() {
@@ -59,9 +68,10 @@ public class MapleSystem {
         }
 
         pkt.getTraceList().clear();
+        IMapleDataBroker db = dataManager.allocBroker();
 
         for (MapleAppBase app : mapleAppList) {
-            if (app.onPacket(pkt, mapleEnv)) {
+            if (app.onPacket(pkt,db)) {
                 break;
             }
         }
@@ -70,10 +80,20 @@ public class MapleSystem {
 
         List<MapleRule> rules = traceTree.generateRules();
 
-        LOG.info("packet=" + pkt + "\nrules=\n" + rules);
-
         mapleAdaptor.updateRules(rules);
+
+        LOG.info("packet=" + pkt + "\nrules=\n" + rules);
     }
+
+    private void addPktRunnable(final MaplePacket pkt){
+        pktBlockingQueue.add(new Runnable() {
+            @Override
+            public void run() {
+                MapleSystem.this.onPacket(pkt);
+            }
+        });
+    }
+
 
     private boolean setupMapleApp(Class<? extends MapleAppBase> appclass, MapleAppSetup opt) {
 
@@ -81,7 +101,7 @@ public class MapleSystem {
             case INSTALL:
                 try {
                     MapleAppBase app = appclass.newInstance();
-                    app.init(mapleEnv);
+                    app.init(dataManager.allocBroker());
                     mapleAppList.add(0, app);
                 } catch (InstantiationException e) {
                     e.printStackTrace();
@@ -106,7 +126,7 @@ public class MapleSystem {
     private Object command(Class<? extends MapleAppBase> appclass, Object parm) {
         for (MapleAppBase app : mapleAppList) {
             if (app.getClass().equals(appclass)) {
-                return app.onCommand(parm, mapleEnv);  // 'return' is safe
+                return app.onCommand(parm, dataManager.allocBroker());  // 'return' is safe
             }
         }
         return null;
@@ -122,7 +142,7 @@ public class MapleSystem {
         @Override
         public void onPacket(String inportId, byte[] payload, MaplePacketInReason reason) {
             MaplePacket pkt = new MaplePacket(payload, new MapleTopology.PortId(inportId));
-            MapleSystem.this.onPacket(pkt);
+            MapleSystem.this.addPktRunnable(pkt);
         }
 
 
@@ -134,7 +154,7 @@ public class MapleSystem {
         @Override
         public void onTopologyChanged(List<MapleTopology.Element> putList,
                                       List<MapleTopology.Element> deleteList) {
-            MapleSystem.this.mapleEnv.updateTopology(putList, deleteList);
+            MapleSystem.this.dataManager.updateTopology(putList, deleteList);
         }
     }
 }

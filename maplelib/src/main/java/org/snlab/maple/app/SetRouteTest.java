@@ -9,7 +9,7 @@
 package org.snlab.maple.app;
 
 import org.snlab.maple.api.MapleAppBase;
-import org.snlab.maple.api.IMapleEnv;
+import org.snlab.maple.api.IMapleDataBroker;
 import org.snlab.maple.api.IMaplePacket;
 import org.snlab.maple.rule.route.Forward;
 
@@ -24,7 +24,7 @@ public class SetRouteTest extends MapleAppBase {
     private static final String[] path2 = {null, "openflow:3:3", null, "openflow:1:1", null, "openflow:2:1"};
 
     @Override
-    public boolean onPacket(IMaplePacket pkt, IMapleEnv env) {
+    public boolean onPacket(IMaplePacket pkt, IMapleDataBroker db) {
         if (pkt.ethType().is(new byte[]{0x8, 0}) ||
                 pkt.ethType().is(new byte[]{8, 6})) {
             pkt.setRoute(path1);

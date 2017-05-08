@@ -11,8 +11,7 @@ package org.snlab.maple.api;
 import org.snlab.maple.env.MapleTopology;
 
 
-public interface IMapleEnv {
+public interface IMapleDataBroker {
     MapleTopology getTopo();
-
-    boolean isReExec();
+    Object readData(String url);
 }

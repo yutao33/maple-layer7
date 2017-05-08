@@ -9,14 +9,14 @@
 package org.snlab.maple.app;
 
 import org.snlab.maple.api.MapleAppBase;
-import org.snlab.maple.api.IMapleEnv;
+import org.snlab.maple.api.IMapleDataBroker;
 import org.snlab.maple.api.IMaplePacket;
 import org.snlab.maple.env.MapleTopology;
 
 public class ArpHandler extends MapleAppBase {
     @Override
-    public boolean onPacket(IMaplePacket pkt, IMapleEnv env) {
-        MapleTopology topo = env.getTopo();
+    public boolean onPacket(IMaplePacket pkt, IMapleDataBroker db) {
+        MapleTopology topo = db.getTopo();
 
         return false;
     }

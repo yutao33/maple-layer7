@@ -9,7 +9,7 @@
 package org.snlab.maple.app;
 
 import org.snlab.maple.api.MapleAppBase;
-import org.snlab.maple.api.IMapleEnv;
+import org.snlab.maple.api.IMapleDataBroker;
 import org.snlab.maple.api.IMaplePacket;
 import org.snlab.maple.rule.route.Forward;
 
@@ -23,7 +23,7 @@ public class InPortTest extends MapleAppBase {
     private static final String[] path2 = {"openflow:3:1", "openflow:3:3", "openflow:1:2", "openflow:1:1", "openflow:2:3", "openflow:2:1"};
 
     @Override
-    public boolean onPacket(IMaplePacket pkt, IMapleEnv env) {
+    public boolean onPacket(IMaplePacket pkt, IMapleDataBroker db) {
         if(!pkt.ethType().is(new byte[]{(byte)0x88,(byte)0xcc})) {
             if (pkt.inport().in(Forward.extractInPort(path1))) {
                 pkt.setRoute(path1);
