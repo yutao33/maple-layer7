@@ -22,6 +22,7 @@ public class ArpHandler extends MapleAppBase {
             if (pkt.inport().in()) {
                 pkt.setRoute(Forward.PUNT);
             }
+            db.getTopology().spanningTree();
             pkt.addRoute("");
         }
         return false;

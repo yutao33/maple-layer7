@@ -9,10 +9,12 @@
 package org.snlab.maple.env;
 
 import com.google.common.base.Preconditions;
+import org.snlab.maple.rule.route.Forward;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -75,12 +77,13 @@ public class MapleTopology {
 
     }
 
-    public synchronized void spanningTree(){
+    public synchronized Forward[] spanningTree(){
 
+        return null;
     }
 
-    public synchronized void getBorderPorts(){
-
+    public synchronized String[] getBorderPorts(){
+        return null;
     }
 
     /**
