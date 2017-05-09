@@ -11,6 +11,7 @@ package org.snlab.maple;
 
 import org.snlab.maple.api.MapleAppBase;
 import org.snlab.maple.app.InPortTest;
+import org.snlab.maple.env.IReExecHandler;
 import org.snlab.maple.env.MapleDataManager;
 import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.packet.MaplePacket;
@@ -46,11 +47,17 @@ public class MapleSystem {
     public MapleSystem(IMapleAdaptor mapleAdaptor) {
         this.mapleAdaptor = mapleAdaptor;
         this.traceTree = new TraceTree();
-        this.dataManager = new MapleDataManager(THREADPOOLSIZE);
         this.mapleAppList = new ArrayList<>();
         BlockingQueue<Runnable> pktBlockingQueue = new LinkedBlockingQueue<>();
         this.pktThreadPool = new ThreadPoolExecutor(THREADPOOLSIZE, THREADPOOLSIZE, 1, TimeUnit.MINUTES, pktBlockingQueue);
         this.mapleAppList.add(new InPortTest());
+
+        this.dataManager = new MapleDataManager(THREADPOOLSIZE,new IReExecHandler(){
+            @Override
+            public void onReExec(MaplePacket pkt) {
+
+            }
+        });
     }
 
     public IMapleHandler getHandler() {
@@ -105,9 +112,10 @@ public class MapleSystem {
                 try {
                     MapleAppBase app = appclass.newInstance();
                     MapleDataManager.MapleDataBroker db = dataManager.allocBroker();
-                    app.init(db);
+                    if(app.init(db)){
+                        mapleAppList.add(0, app);
+                    };
                     dataManager.freeBroker(db);
-                    mapleAppList.add(0, app);
                 } catch (InstantiationException e) {
                     e.printStackTrace();
                 } catch (IllegalAccessException e) {

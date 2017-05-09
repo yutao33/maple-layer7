@@ -12,6 +12,7 @@ package org.snlab.maple.packet;
 import com.google.common.base.Preconditions;
 import org.snlab.maple.api.IMaplePacket;
 import org.snlab.maple.env.MapleTopology;
+import org.snlab.maple.env.TrackSet;
 import org.snlab.maple.packet.parser.Ethernet;
 import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.rule.route.Forward;
@@ -22,8 +23,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -42,6 +45,8 @@ public class MaplePacket implements IMaplePacket {
     private Map<MapleMatchField, byte[]> fieldMap;
 
     private List<Forward> route = null;  //when it is null, default to drop
+
+    private Set<TrackSet> trackSets=new HashSet<>();
 
     public MaplePacket(byte[] data, MapleTopology.PortId inPortId) {
         this.inPortId = inPortId;
@@ -174,6 +179,18 @@ public class MaplePacket implements IMaplePacket {
 
     public List<Forward> getRoute() {
         return route;
+    }
+
+
+
+    public void addTracked(TrackSet trackSet) {
+        trackSets.add(trackSet);
+    }
+
+    public void removeTrack(){
+        for (TrackSet trackSet : trackSets) {
+            trackSet.remove(this);
+        }
     }
 
 

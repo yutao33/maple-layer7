@@ -8,6 +8,8 @@
 
 package org.snlab.maple.env;
 
-public class DataDependency {
+import org.snlab.maple.packet.MaplePacket;
 
+public interface IReExecHandler {
+    void onReExec(MaplePacket pkt);
 }

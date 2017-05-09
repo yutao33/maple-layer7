@@ -8,20 +8,64 @@
 
 package org.snlab.maple.env;
 
+import com.google.common.base.Objects;
+import org.snlab.maple.packet.MaplePacket;
+
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
 public class TrackedMap<K,V> {
 
-    private Map<K,V> data = new HashMap<>();
+    private Map<K,TrackedUnit<V>> data = new HashMap<>();
+
+    private IReExecHandler handler;
+
+    private MaplePacket pkt;
+
+    public TrackedMap(IReExecHandler handler){
+        this.handler = handler;
+    }
+
+    public TrackedMap(MaplePacket pkt, TrackedMap<K,V> m1){
+        this.data = m1.data;
+        this.handler = m1.handler;
+    }
 
     @Nullable
     public V get(K key){
-        return data.get(key);
+        TrackedUnit<V> unit = data.get(key);
+        if(unit==null){
+            unit=new TrackedUnit<>(null);
+            data.put(key,unit);
+            if(pkt!=null){
+                unit.trackSet.track(pkt);
+            }
+        }
+        return unit.value;
     }
 
     public void put(K key, V value){
-        data.put(key,value);
+        TrackedUnit<V> unit = data.get(key);
+        if(unit==null){
+            unit=new TrackedUnit<>(value);
+            data.put(key,unit);
+        } else {
+            if(!Objects.equal(value,unit.value)){
+                if(unit.value!=null){
+                    unit.trackSet.reexec(handler);
+                }
+            }
+            unit.value = value;
+        }
+    }
+
+
+    private class TrackedUnit<TYPE>{
+        TrackSet trackSet = new TrackSet();
+        TYPE value;
+        TrackedUnit(TYPE v){
+            value=v;
+        }
     }
 }

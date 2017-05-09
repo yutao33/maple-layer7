@@ -9,6 +9,9 @@
 package org.snlab.maple.env;
 
 import org.snlab.maple.api.IMapleDataBroker;
+import org.snlab.maple.packet.MaplePacket;
+import org.snlab.maple.packet.types.IPv4Address;
+import org.snlab.maple.packet.types.MacAddress;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -18,17 +21,26 @@ public class MapleDataManager {
 
     private static final Logger LOG = Logger.getLogger(MapleDataManager.class.toString());
 
-    private final MapleTopology topology = new MapleTopology();
+    private final IReExecHandler handler;
 
+    private final MapleTopology topology;
 
+    private final TrackedMap<MacAddress,MapleTopology.Port> macHostTable;
 
-    private MapleDataBroker[] dbs ;
+    private final TrackedMap<IPv4Address,MapleTopology.Port> ipv4HostTable;
 
-    public MapleDataManager(int dbsize) {
+    private final MapleDataBroker[] dbs ;
+
+    public MapleDataManager(int dbsize, IReExecHandler handler) {
         dbs = new MapleDataBroker[dbsize];
         for(int i=0;i<dbsize;i++){
             dbs[i]=new MapleDataBroker();
         }
+
+        this.handler = handler;
+        topology = new MapleTopology();
+        macHostTable = new TrackedMap<>(handler);
+        ipv4HostTable = new TrackedMap<>(handler);
     }
 
     public void updateTopology(List<MapleTopology.Element> putList,
@@ -64,16 +76,24 @@ public class MapleDataManager {
 
         private AtomicBoolean isused=new AtomicBoolean(false);
 
+        private MaplePacket pkt;
+
         private MapleDataBroker(){
 
         }
 
         @Override
         public MapleTopology getTopology() {
-
             return topology;
         }
 
+        public TrackedMap<MacAddress, MapleTopology.Port> getMacHostTable(){
+            return new TrackedMap<>(pkt,macHostTable);
+        }
+
+        public TrackedMap<IPv4Address, MapleTopology.Port> getIPv4HostTable(){
+            return new TrackedMap<>(pkt,ipv4HostTable);
+        }
 
         @Override
         public Object readData(String url) {

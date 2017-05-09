@@ -187,7 +187,7 @@ public class TraceTree {
             }
         }
         recurseMarkDeleted(node);
-        TraceTreeLNode lNode = TraceTreeLNode.build(route, matchMap);
+        TraceTreeLNode lNode = TraceTreeLNode.build(route,pkt, matchMap);
         //NOTE generate drop rule if route is drop
         handleIfNeedDrop(lNode, pkt);
         return lNode;
@@ -204,7 +204,9 @@ public class TraceTree {
             return;
         }
         if (node instanceof TraceTreeLNode) {
-            ((TraceTreeLNode) node).getRule().setIsDeleted(true);
+            TraceTreeLNode l = (TraceTreeLNode) node;
+            l.getRule().setIsDeleted(true);
+            l.removePktTrack();
         } else if (node instanceof TraceTreeTNode) {
             TraceTreeTNode t = (TraceTreeTNode) node;
 //            recurseMarkDeleted(t.getBranch(false));

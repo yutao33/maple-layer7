@@ -8,6 +8,7 @@
 
 package org.snlab.maple.tracetree;
 
+import org.snlab.maple.packet.MaplePacket;
 import org.snlab.maple.rule.MapleRule;
 import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.rule.match.MapleMatch;
@@ -21,6 +22,7 @@ import java.util.Map;
 public class TraceTreeLNode extends TraceTreeNode {
     private List<Forward> route;
     private MapleRule rule;
+    private MaplePacket pkt;
 
     public TraceTreeLNode(List<Forward> route) {
         this.route = route;
@@ -39,7 +41,11 @@ public class TraceTreeLNode extends TraceTreeNode {
         return rule;
     }
 
-    public static TraceTreeLNode build(@Nonnull List<Forward> route, @Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
+    public void removePktTrack(){
+        pkt.removeTrack();
+    }
+
+    public static TraceTreeLNode build(@Nonnull List<Forward> route,@Nonnull MaplePacket pkt, @Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
         //route:
         //      inport=null, actions=output:openflow:2:3
         //      inport=null, actions=output:openflow:1:2
@@ -48,6 +54,7 @@ public class TraceTreeLNode extends TraceTreeNode {
         Map<MapleMatchField, MapleMatch> match = new EnumMap<>(matchMapBefore);
         TraceTreeLNode l = new TraceTreeLNode(route);
         l.rule = new MapleRule(match, route);
+        l.pkt = pkt;
         return l;
     }
 }
