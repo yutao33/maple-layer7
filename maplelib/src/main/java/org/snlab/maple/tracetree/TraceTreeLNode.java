@@ -57,4 +57,11 @@ public class TraceTreeLNode extends TraceTreeNode {
         l.pkt = pkt;
         return l;
     }
+
+    public void pktTrack(MaplePacket pkt) {
+        if(!pkt.equals(this.pkt)){
+            this.pkt.removeTrack();
+            this.pkt = pkt;
+        }
+    }
 }

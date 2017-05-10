@@ -24,9 +24,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 
 public class MapleTopology {
+
+    private static final Logger LOG = Logger.getLogger(MapleTopology.class.getName());
 
     private Map<NodeId, Node> nodes;
     private Map<Link, Link> links;
@@ -89,6 +92,13 @@ public class MapleTopology {
         }
         Forward[] ret=new Forward[list.size()];
         list.toArray(ret);
+        for(int i=1;i<ret.length;i++){
+            for(int j=0;j<i;j++){
+                if(ret[i].equals(ret[j])){
+                    throw new Error();
+                }
+            }
+        }
         return ret;
     }
 
@@ -100,15 +110,15 @@ public class MapleTopology {
         Set<Port> ports = node.getPorts();
         for (Port port : ports) {
             Link link = port.getLink();
-            if(link ==null){
+            if(link ==null||link.getEnd().getLink()==null){
                 list.add(new Forward(null, ForwardAction.output(port.getId())));
             } else {
                 Port end = link.getEnd();
                 Node endNode = end.getOwner();
-                if(endNode.flag==0){
-                    list.add(new Forward(null,ForwardAction.output(port.getId())));
-                    list.add(new Forward(null,ForwardAction.output(end.getId())));
-                    recurse(endNode,list);
+                if (endNode.flag == 0) {
+                    list.add(new Forward(null, ForwardAction.output(port.getId())));
+                    list.add(new Forward(null, ForwardAction.output(end.getId())));
+                    recurse(endNode, list);
                 }
             }
         }
@@ -143,6 +153,7 @@ public class MapleTopology {
         if (updatePutList(putList)) {
             ischanged = true;
         }
+        verify();
         return ischanged;
     }
 
@@ -291,6 +302,7 @@ public class MapleTopology {
         NodeId nodeid = port.getId().getNodeId();
         Node mynode = nodes.get(nodeid);
         if (mynode != null) {
+            port.owner=mynode;
             isadded = mynode.ports.add(port);
         } else {
             nodes.put(nodeid, new Node(nodeid, Collections.singletonList(port.getId())));
@@ -350,6 +362,23 @@ public class MapleTopology {
         }
         return sb.toString();
     }
+
+    public void verify(){
+        for (Node node : nodes.values()) {
+            for (Port port : node.ports) {
+                assert port.getId().equals(node.id);
+                if(port.link!=null){
+                    assert links.get(port.link)==port.link;
+                    assert port.link.start.getOwner()==node;
+                    assert node.ports.contains(port.link.start);
+                    assert port.link.end!=null;
+                    assert nodes.get(port.link.end.id.getNodeId())==port.link.end.getOwner();
+                }
+            }
+        }
+    }
+
+
 
     //-----------------------static inner class-----------------------
 

@@ -183,6 +183,7 @@ public class TraceTree {
             if (l.getRoute().equals(route)) {
                 //NOTE generate drop rule if route is drop
                 handleIfNeedDrop(l, pkt);
+                l.pktTrack(pkt);
                 return node;
             }
         }

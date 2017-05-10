@@ -45,7 +45,7 @@ public class MapleDataManager {
         ipv4HostTable = new TrackedMap<>(handler);
     }
 
-    public void updateTopology(List<MapleTopology.Element> putList,
+    public boolean updateTopology(List<MapleTopology.Element> putList,
                                List<MapleTopology.Element> deleteList) {
         boolean ret = topology.update(putList, deleteList);
         String info = "updateTopology:\nputList="
@@ -59,7 +59,7 @@ public class MapleDataManager {
         if(ret){
             topoTrackSet.reexec(handler);
         }
-
+        return ret;
     }
 
 

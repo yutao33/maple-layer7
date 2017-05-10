@@ -54,6 +54,7 @@ public class MapleSystem {
         this.dataManager = new MapleDataManager(THREADPOOLSIZE,new IReExecHandler(){
             @Override
             public void onReExec(MaplePacket pkt) {
+                LOG.info("reexec");
                 addPktRunnable(new MaplePacket(pkt));
             }
         });
@@ -92,13 +93,14 @@ public class MapleSystem {
         synchronized (traceTree) {
             traceTree.update(pkt.getTraceList(), pkt);
             rules = traceTree.generateRules();
+            mapleAdaptor.updateRules(rules);
+
         }
-        mapleAdaptor.updateRules(rules);
 
         LOG.info("packet=" + pkt + "\nrules=\n" + rules);
     }
 
-    private void addPktRunnable(final MaplePacket pkt){
+    private synchronized void addPktRunnable(final MaplePacket pkt){
         pktThreadPool.execute(new Runnable() {
             @Override
             public void run() {
@@ -158,10 +160,14 @@ public class MapleSystem {
 
     private class MapleSystemHandlerImpl implements IMapleHandler {
 
+        int i=0;
         @Override
         public void onPacket(String inportId, byte[] payload, MaplePacketInReason reason) {
             MaplePacket pkt = new MaplePacket(payload, new MapleTopology.PortId(inportId));
             MapleSystem.this.addPktRunnable(pkt);
+            String str="getpkt size="+pktThreadPool.getQueue().size()+" c="+i++;
+            LOG.info(str);
+            System.out.println(str);
         }
 
 
@@ -173,7 +179,10 @@ public class MapleSystem {
         @Override
         public void onTopologyChanged(List<MapleTopology.Element> putList,
                                       List<MapleTopology.Element> deleteList) {
-            MapleSystem.this.dataManager.updateTopology(putList, deleteList);
+            boolean ret=MapleSystem.this.dataManager.updateTopology(putList, deleteList);
+            if(ret){
+                LOG.info("pktthreadpool size"+pktThreadPool.getQueue().size());
+            }
         }
     }
 }

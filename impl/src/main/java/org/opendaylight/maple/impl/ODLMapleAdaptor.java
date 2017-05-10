@@ -189,23 +189,23 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
 
 
     private void rwtSubmit(ReadWriteTransaction rwt) {
-        CheckedFuture<Void, TransactionCommitFailedException> future = rwt.submit();
-        Futures.addCallback(future, new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(@Nullable Void result) {
-                LOG.info("success");
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                LOG.info("failed " + t.getMessage());
-            }
-        });
-//        try {
-//            rwt.submit().checkedGet();
-//        } catch (TransactionCommitFailedException e) {
-//            e.printStackTrace();
-//        }
+//        CheckedFuture<Void, TransactionCommitFailedException> future = rwt.submit();
+//        Futures.addCallback(future, new FutureCallback<Void>() {
+//            @Override
+//            public void onSuccess(@Nullable Void result) {
+//                LOG.info("success");
+//            }
+//
+//            @Override
+//            public void onFailure(Throwable t) {
+//                LOG.info("failed " + t.getMessage());
+//            }
+//        });
+        try {
+            rwt.submit().checkedGet();
+        } catch (TransactionCommitFailedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void deleteAllRules(ReadWriteTransaction rwt) {

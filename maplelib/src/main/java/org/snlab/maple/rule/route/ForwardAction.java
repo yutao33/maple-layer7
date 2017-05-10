@@ -70,6 +70,10 @@ public final class ForwardAction {
             this.portid = port;
         }
 
+        public PortId getPortId() {
+            return portid;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -78,10 +82,6 @@ public final class ForwardAction {
             OutPut outPut = (OutPut) o;
 
             return portid.equals(outPut.portid);
-        }
-
-        public PortId getPortId() {
-            return portid;
         }
 
         @Override
