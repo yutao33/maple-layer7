@@ -8,32 +8,23 @@
 
 package org.snlab.maple.env;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 
-public class TopologyAlgorithm<T> {
-    private int flag;
-    private T value;
+public class TopologyAlgorithm {
 
-    public TopologyAlgorithm(T value, int flag){
-        this.value = value;
-        this.flag = flag;
+    private List<Vertex> vertices=new ArrayList<>();
+    //private List<Arc> arcs=new ArrayList<>();
+
+
+
+    private class Arc{
+        Vertex end;
     }
 
-    public int getFlag() {
-        return flag;
-    }
-
-    public void setFlag(int flag) {
-        this.flag = flag;
-    }
-
-    public static <T1> TopologyAlgorithm<T1>[] constructArray(Collection<T1> collection, int flag){
-        TopologyAlgorithm<T1>[] ret = new TopologyAlgorithm[collection.size()];
-        int i = 0;
-        for (T1 t1 : collection) {
-            ret[i]=new TopologyAlgorithm<>(t1,flag);
-            ++i;
-        }
-        return ret;
+    private class Vertex{
+        MapleTopology.Node node;
+        int flag;
+        List<Arc> arcs;
     }
 }

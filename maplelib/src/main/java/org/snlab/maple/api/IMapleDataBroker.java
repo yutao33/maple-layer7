@@ -9,9 +9,17 @@
 package org.snlab.maple.api;
 
 import org.snlab.maple.env.MapleTopology;
+import org.snlab.maple.env.TrackedMap;
+import org.snlab.maple.packet.types.IPv4Address;
+import org.snlab.maple.packet.types.MacAddress;
 
 
 public interface IMapleDataBroker {
     MapleTopology getTopology();
+
+    TrackedMap<MacAddress, MapleTopology.PortId> getMacHostTable();
+
+    TrackedMap<IPv4Address, MapleTopology.PortId> getIPv4HostTable();
+
     Object readData(String url);
 }

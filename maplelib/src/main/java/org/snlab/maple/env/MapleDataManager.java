@@ -25,9 +25,11 @@ public class MapleDataManager {
 
     private final MapleTopology topology;
 
-    private final TrackedMap<MacAddress,MapleTopology.Port> macHostTable;
+    private final TrackSet topoTrackSet = new TrackSet();
 
-    private final TrackedMap<IPv4Address,MapleTopology.Port> ipv4HostTable;
+    private final TrackedMap<MacAddress,MapleTopology.PortId> macHostTable;
+
+    private final TrackedMap<IPv4Address,MapleTopology.PortId> ipv4HostTable;
 
     private final MapleDataBroker[] dbs ;
 
@@ -50,22 +52,29 @@ public class MapleDataManager {
                 + putList.toString()
                 + "\ndeleteList=" + deleteList.toString()
                 + "\nreturn=" + ret;
-        if (ret) {
+        if (true) {
             info += "\nTopology=\n" + topology.toString();
         }
         LOG.info(info + "\n");
+        if(ret){
+            topoTrackSet.reexec(handler);
+        }
+
     }
 
 
-    public MapleDataBroker allocBroker(){
+    public MapleDataBroker allocBroker(MaplePacket pkt){
         if(dbs!=null){
             for (MapleDataBroker db : dbs) {
                 if(!db.isused.getAndSet(true)){
+                    db.pkt=pkt;
                     return db;
                 }
             }
         }
-        return new MapleDataBroker(); //just in case
+        MapleDataBroker db = new MapleDataBroker();
+        db.pkt=pkt;
+        return db;
     }
 
     public void freeBroker(MapleDataBroker db){
@@ -78,20 +87,19 @@ public class MapleDataManager {
 
         private MaplePacket pkt;
 
-        private MapleDataBroker(){
-
-        }
-
         @Override
         public MapleTopology getTopology() {
+            topoTrackSet.track(pkt);
             return topology;
         }
 
-        public TrackedMap<MacAddress, MapleTopology.Port> getMacHostTable(){
+        @Override
+        public TrackedMap<MacAddress, MapleTopology.PortId> getMacHostTable(){
             return new TrackedMap<>(pkt,macHostTable);
         }
 
-        public TrackedMap<IPv4Address, MapleTopology.Port> getIPv4HostTable(){
+        @Override
+        public TrackedMap<IPv4Address, MapleTopology.PortId> getIPv4HostTable(){
             return new TrackedMap<>(pkt,ipv4HostTable);
         }
 

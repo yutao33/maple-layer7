@@ -90,6 +90,8 @@ import org.snlab.maple.tracetree.TraceTree;
 import javax.annotation.Nullable;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -130,6 +132,8 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
 
     @Override
     public void updateRules(List<MapleRule> rules) {
+        addDefaultLLDPRule(rules);
+
         ReadWriteTransaction rwt1 = dataBroker.newReadWriteTransaction();
         deleteAllRules(rwt1);
         rwtSubmit(rwt1);
@@ -172,6 +176,17 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
 
         rwtSubmit(rwt);
     }
+
+    private void addDefaultLLDPRule(List<MapleRule> rules) {
+        Map<MapleMatchField,MapleMatch> matches = new EnumMap<>(MapleMatchField.class);
+        ValueMaskPair value = new ValueMaskPair(new ByteArray(new byte[]{(byte)0x88,(byte)0xcc}), null);
+        MapleMatch match = new MapleMatch(MapleMatchField.ETH_TYPE, value);
+        matches.put(MapleMatchField.ETH_TYPE,match);
+        MapleRule lldprule=new MapleRule(matches, Collections.singletonList(Forward.PUNT));
+        lldprule.setPriority(65535);
+        rules.add(lldprule);
+    }
+
 
     private void rwtSubmit(ReadWriteTransaction rwt) {
         CheckedFuture<Void, TransactionCommitFailedException> future = rwt.submit();

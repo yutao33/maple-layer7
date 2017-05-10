@@ -10,6 +10,7 @@ package org.snlab.maple.env;
 
 import com.google.common.base.Preconditions;
 import org.snlab.maple.rule.route.Forward;
+import org.snlab.maple.rule.route.ForwardAction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -73,17 +74,58 @@ public class MapleTopology {
         return null;
     }
 
-    public synchronized void shortestPath(PortId src,PortId dst){
-
+    public synchronized Forward[] shortestPath(PortId src,PortId dst){
+        return null;
     }
 
     public synchronized Forward[] spanningTree(){
+        List<Forward> list = new ArrayList<>();
+        Collection<Node> nodes = this.nodes.values();
+        for (Node node : nodes) {
+            node.flag=0;
+        }
+        for (Node node : nodes) {
+            recurse(node,list);
+        }
+        Forward[] ret=new Forward[list.size()];
+        list.toArray(ret);
+        return ret;
+    }
 
-        return null;
+    private void recurse(Node node, List<Forward> list) {
+        if(node.flag==1){
+            return;
+        }
+        node.flag=1;
+        Set<Port> ports = node.getPorts();
+        for (Port port : ports) {
+            Link link = port.getLink();
+            if(link ==null){
+                list.add(new Forward(null, ForwardAction.output(port.getId())));
+            } else {
+                Port end = link.getEnd();
+                Node endNode = end.getOwner();
+                if(endNode.flag==0){
+                    list.add(new Forward(null,ForwardAction.output(port.getId())));
+                    list.add(new Forward(null,ForwardAction.output(end.getId())));
+                    recurse(endNode,list);
+                }
+            }
+        }
     }
 
     public synchronized String[] getBorderPorts(){
-        return null;
+        List<String> list=new ArrayList<>();
+        for(Node node:nodes.values()){
+            for (Port port : node.getPorts()) {
+                if(port.getLink()==null){
+                    list.add(port.getId().toString());
+                }
+            }
+        }
+        String[] ret=new String[list.size()];
+        list.toArray(ret);
+        return ret;
     }
 
     /**
@@ -388,6 +430,7 @@ public class MapleTopology {
     public static class Node extends Element {
         private final NodeId id;
         private Set<Port> ports;
+        private int flag;
 
         public Node(@Nonnull NodeId nodeid, List<PortId> ports) {
             this.id = nodeid;

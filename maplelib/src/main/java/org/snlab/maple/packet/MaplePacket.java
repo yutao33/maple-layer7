@@ -55,6 +55,14 @@ public class MaplePacket implements IMaplePacket {
         fieldMap = frame.buildMatchFieldMap();
     }
 
+    public MaplePacket(MaplePacket pkt1){
+        this.inPortId = pkt1.inPortId;
+        this.frame = new Ethernet();
+        byte[] bs = pkt1.frame.serialize();
+        frame.deserialize(bs,0,bs.length);
+        fieldMap = frame.buildMatchFieldMap();
+    }
+
     public List<TraceItem> getTraceList() {
         return traceList;
     }
@@ -187,10 +195,15 @@ public class MaplePacket implements IMaplePacket {
         trackSets.add(trackSet);
     }
 
+    public void removeTracked(TrackSet trackSet){
+        trackSets.remove(trackSet);
+    }
+
     public void removeTrack(){
         for (TrackSet trackSet : trackSets) {
             trackSet.remove(this);
         }
+        trackSets.clear();
     }
 
 

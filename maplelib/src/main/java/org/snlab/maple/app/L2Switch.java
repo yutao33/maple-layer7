@@ -11,25 +11,30 @@ package org.snlab.maple.app;
 import org.snlab.maple.api.MapleAppBase;
 import org.snlab.maple.api.IMapleDataBroker;
 import org.snlab.maple.api.IMaplePacket;
+import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.env.MapleTopology.PortId;
+import org.snlab.maple.env.TrackedMap;
+import org.snlab.maple.packet.types.MacAddress;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class L2Switch extends MapleAppBase {
 
-    Map<Long, PortId> hostTable = new HashMap<>();
-
     @Override
     public boolean onPacket(IMaplePacket pkt, IMapleDataBroker db) {
 
-        long ethSrc = 0;
+//        byte[] bs = pkt.ethSrc().get();
+//        MacAddress src = MacAddress.of(bs);
+//        bs = pkt.ethDst().get();
+//        MacAddress dst = MacAddress.of(bs);
+//        TrackedMap<MacAddress, MapleTopology.PortId> macHostTable = db.getMacHostTable();
+//        MapleTopology.PortId srcPort = macHostTable.get(src);
+//        MapleTopology.PortId dstPort = macHostTable.get(dst);
+        MapleTopology topology = db.getTopology();
+        pkt.setRoute(topology.spanningTree());
+        return true;
 
-        if (!hostTable.containsKey(ethSrc)) {
-
-        }
-
-        return false;
     }
 
 }

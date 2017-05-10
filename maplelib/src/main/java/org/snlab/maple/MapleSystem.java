@@ -10,7 +10,7 @@ package org.snlab.maple;
 
 
 import org.snlab.maple.api.MapleAppBase;
-import org.snlab.maple.app.InPortTest;
+import org.snlab.maple.app.SpanningTree;
 import org.snlab.maple.env.IReExecHandler;
 import org.snlab.maple.env.MapleDataManager;
 import org.snlab.maple.env.MapleTopology;
@@ -50,14 +50,17 @@ public class MapleSystem {
         this.mapleAppList = new ArrayList<>();
         BlockingQueue<Runnable> pktBlockingQueue = new LinkedBlockingQueue<>();
         this.pktThreadPool = new ThreadPoolExecutor(THREADPOOLSIZE, THREADPOOLSIZE, 1, TimeUnit.MINUTES, pktBlockingQueue);
-        this.mapleAppList.add(new InPortTest());
 
         this.dataManager = new MapleDataManager(THREADPOOLSIZE,new IReExecHandler(){
             @Override
             public void onReExec(MaplePacket pkt) {
-
+                addPktRunnable(new MaplePacket(pkt));
             }
         });
+
+        //test
+        this.mapleAppList.add(new SpanningTree());
+
     }
 
     public IMapleHandler getHandler() {
@@ -74,7 +77,7 @@ public class MapleSystem {
         }
 
         pkt.getTraceList().clear();
-        MapleDataManager.MapleDataBroker db = dataManager.allocBroker();
+        MapleDataManager.MapleDataBroker db = dataManager.allocBroker(pkt);
 
         for (MapleAppBase app : mapleAppList) {
             if (app.onPacket(pkt,db)) {
@@ -111,7 +114,7 @@ public class MapleSystem {
             case INSTALL:
                 try {
                     MapleAppBase app = appclass.newInstance();
-                    MapleDataManager.MapleDataBroker db = dataManager.allocBroker();
+                    MapleDataManager.MapleDataBroker db = dataManager.allocBroker(null);
                     if(app.init(db)){
                         mapleAppList.add(0, app);
                     };
@@ -139,7 +142,7 @@ public class MapleSystem {
     private Object command(Class<? extends MapleAppBase> appclass, Object parm) {
         for (MapleAppBase app : mapleAppList) {
             if (app.getClass().equals(appclass)) {
-                MapleDataManager.MapleDataBroker db = dataManager.allocBroker();
+                MapleDataManager.MapleDataBroker db = dataManager.allocBroker(null);
                 Object ret = app.onCommand(parm, db);  // 'return' is safe
                 dataManager.freeBroker(db);
                 return ret;
