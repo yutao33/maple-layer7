@@ -26,7 +26,7 @@ public class MapleRule {
     public enum Status {  //TODO UPDATE
         NONE,
         DELETE,
-        INSTALL,
+        INSTALL,  // new updatePriority
         DELETED,
         INSTALLED
     }
@@ -36,13 +36,10 @@ public class MapleRule {
 
     private int priority;
 
-    private int flags;
-    private static final int ISDELETED_MASK = 0x1;
-    private static final int ISNEW_MASK = 0x2;
+    private Status status = Status.NONE;
 
     public MapleRule(Map<MapleMatchField, MapleMatch> matches, List<Forward> route) {
         this.matches = new EnumMap<>(matches);
-        this.flags = 0;
         buildRoute(route);
     }
 
@@ -144,28 +141,12 @@ public class MapleRule {
         this.priority = priority;
     }
 
-    public boolean isDeleted() {
-        return (flags & ISDELETED_MASK) != 0;
+    public Status getStatus() {
+        return status;
     }
 
-    public boolean isNew() {
-        return (flags & ISNEW_MASK) != 0;
-    }
-
-    public void setIsDeleted(boolean isdeleted) {
-        if (isdeleted) {
-            flags |= ISDELETED_MASK;
-        } else {
-            flags &= ~ISDELETED_MASK;
-        }
-    }
-
-    public void setIsNew(boolean isnew) {
-        if (isnew) {
-            flags |= ISNEW_MASK;
-        } else {
-            flags &= ~ISNEW_MASK;
-        }
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     @Override

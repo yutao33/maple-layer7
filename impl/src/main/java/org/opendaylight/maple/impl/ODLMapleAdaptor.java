@@ -9,9 +9,7 @@
 package org.opendaylight.maple.impl;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
@@ -87,13 +85,15 @@ import org.snlab.maple.rule.route.ForwardAction;
 import org.snlab.maple.rule.route.Route;
 import org.snlab.maple.tracetree.TraceTree;
 
-import javax.annotation.Nullable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class ODLMapleAdaptor implements IMapleAdaptor {
@@ -108,9 +108,22 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
 
     private AtomicLong flowCookieInc = new AtomicLong(0x3a00000000000000L);
 
+
+
     public ODLMapleAdaptor(DataBroker dataBroker, SalFlowService salFlowService) {
         this.dataBroker = dataBroker;
         this.salFlowService = salFlowService;
+        initDefaultLLDPrule();
+    }
+
+    private void initDefaultLLDPrule(){
+        Map<MapleMatchField,MapleMatch> matches = new EnumMap<>(MapleMatchField.class);
+        ValueMaskPair value = new ValueMaskPair(new ByteArray(new byte[]{(byte)0x88,(byte)0xcc}), null);
+        MapleMatch match = new MapleMatch(MapleMatchField.ETH_TYPE, value);
+        matches.put(MapleMatchField.ETH_TYPE,match);
+        MapleRule lldprule=new MapleRule(matches, Collections.singletonList(Forward.PUNT));
+        lldprule.setPriority(65535);
+        lldprule.setStatus(MapleRule.Status.INSTALLED);
     }
 
     @Override
@@ -141,7 +154,7 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
         ReadWriteTransaction rwt = dataBroker.newReadWriteTransaction();
         //deleteAllRules(rwt);
 
-        List<MapleTopology.NodeId> allNodes = new ArrayList<>();
+        Set<MapleTopology.NodeId> allNodes = new HashSet<>();
 
         for (MapleRule rule : rules) {
             Match odlPktFieldMatch = buildODLPktFieldMatch(rule.getMatches());
@@ -158,6 +171,7 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
                     }
                 }
             }
+            rule.setStatus(MapleRule.Status.INSTALLED);
         }
 
         for (MapleRule rule : rules) {
@@ -184,6 +198,7 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
         matches.put(MapleMatchField.ETH_TYPE,match);
         MapleRule lldprule=new MapleRule(matches, Collections.singletonList(Forward.PUNT));
         lldprule.setPriority(65535);
+        lldprule.setStatus(MapleRule.Status.INSTALL);
         rules.add(lldprule);
     }
 

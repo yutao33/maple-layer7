@@ -46,6 +46,8 @@ public class TraceTree {
 
     private Map<MapleMatchField, Set<ValueMaskPair>> unmatchMap = new EnumMap<>(MapleMatchField.class);//TODO for generate rules
 
+    private List<MapleRule> deleteRules = new ArrayList<>();
+
     public void update(List<Trace.TraceItem> items, MaplePacket pkt) {
         matchMap.clear();
         unmatchMap.clear();
@@ -206,7 +208,9 @@ public class TraceTree {
         }
         if (node instanceof TraceTreeLNode) {
             TraceTreeLNode l = (TraceTreeLNode) node;
-            l.getRule().setIsDeleted(true);
+            MapleRule lrule = l.getRule();
+            lrule.setStatus(MapleRule.Status.DELETE);
+            this.deleteRules.add(lrule);
             l.removePktTrack();
         } else if (node instanceof TraceTreeTNode) {
             TraceTreeTNode t = (TraceTreeTNode) node;
@@ -219,7 +223,8 @@ public class TraceTree {
             Map<MapleMatch, TraceTreeTNode.TNodeEntry> bm = t.getBranchtrueMap();
             for (TraceTreeTNode.TNodeEntry te : bm.values()) {
                 if (te.barrierRule != null) {
-                    te.barrierRule.setIsDeleted(true);
+                    te.barrierRule.setStatus(MapleRule.Status.DELETE);
+                    deleteRules.add(te.barrierRule);
                     recurseMarkDeleted(te.child);
                 }
             }
@@ -239,14 +244,26 @@ public class TraceTree {
 
     //-------------------------------generateRules-----------------------------
 
-    private List<MapleRule> rules;
+    private List<MapleRule> incrementRules;
+
+    private List<MapleRule> allRules;
     private int globalpriority;
 
     public List<MapleRule> generateRules() {
-        rules = new ArrayList<>();
+
+        incrementRules = new ArrayList<>(deleteRules);
+
+        allRules = new ArrayList<>();
+
+        deleteRules.clear();
+
         globalpriority = 1;
         recurseUpdatePriority(treeroot);
-        return rules;
+
+        if(incrementRules.size()>0){
+            return allRules;
+        }
+        return incrementRules;
     }
 
     private void recurseUpdatePriority(TraceTreeNode node) {
@@ -256,20 +273,24 @@ public class TraceTree {
         if (node instanceof TraceTreeLNode) {
             node.priority = globalpriority;
             MapleRule rule = ((TraceTreeLNode) node).getRule();
-            rule.setPriority(globalpriority);
-            rules.add(rule);
+            MapleRule.Status ruleStatus = rule.getStatus();
+            if(ruleStatus.equals(MapleRule.Status.NONE)){
+                rule.setStatus(MapleRule.Status.INSTALL);
+                rule.setPriority(globalpriority);
+                incrementRules.add(rule);
+            } else if(ruleStatus.equals(MapleRule.Status.INSTALLED)){
+                int oldPri = rule.getPriority();
+                if(oldPri!=globalpriority){
+                    rule.setStatus(MapleRule.Status.INSTALL);
+                    rule.setPriority(globalpriority);
+                    incrementRules.add(rule);
+                }
+            } else {
+                throw new RuntimeException("update priority error");
+            }
+            allRules.add(rule);
         } else if (node instanceof TraceTreeTNode) {
             TraceTreeTNode t = (TraceTreeTNode) node;
-//            TraceTreeNode branchfalse = t.getBranch(false);
-//            if (branchfalse != null) {
-//                recurseUpdatePriority(branchfalse);
-//                globalpriority++;
-//                MapleRule barrierRule = t.getBarrierRule();
-//                barrierRule.setPriority(globalpriority);
-//                rules.add(barrierRule);
-//                globalpriority++;
-//            }
-//            recurseUpdatePriority(t.getBranch(true));
             TraceTreeNode branchfalse = t.getBranchFalse();
             if (branchfalse != null) {
                 recurseUpdatePriority(branchfalse);
@@ -281,7 +302,9 @@ public class TraceTree {
                 globalpriority = barrierpri;
                 if (te.barrierRule != null) {
                     te.barrierRule.setPriority(barrierpri);
-                    rules.add(te.barrierRule);
+                    te.barrierRule.setStatus(MapleRule.Status.INSTALL);
+                    incrementRules.add(te.barrierRule);
+                    allRules.add(te.barrierRule);
                     globalpriority++;
                 }
                 recurseUpdatePriority(te.child);

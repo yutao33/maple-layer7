@@ -38,6 +38,7 @@ public class TrackSet {
     }
 
     public synchronized void reexec(IReExecHandler handler){
+        LOG.info("pktssize"+pkts.size());
         Iterator<MaplePacket> iterator = pkts.iterator();
         while (iterator.hasNext()) {
             MaplePacket next = iterator.next();

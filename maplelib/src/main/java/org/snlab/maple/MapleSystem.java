@@ -76,6 +76,10 @@ public class MapleSystem {
             LOG.info("get LLDP");
             return;
         }
+        if (pkt._getFrame().getEtherType().equals(EthType.IPv6)) {
+            LOG.info("get IPv6");
+            return;
+        }
 
         pkt.getTraceList().clear();
         MapleDataManager.MapleDataBroker db = dataManager.allocBroker(pkt);
@@ -93,8 +97,8 @@ public class MapleSystem {
         synchronized (traceTree) {
             traceTree.update(pkt.getTraceList(), pkt);
             rules = traceTree.generateRules();
-            mapleAdaptor.updateRules(rules);
-
+            if(rules.size()>0)
+                mapleAdaptor.updateRules(rules);
         }
 
         LOG.info("packet=" + pkt + "\nrules=\n" + rules);
@@ -161,13 +165,17 @@ public class MapleSystem {
     private class MapleSystemHandlerImpl implements IMapleHandler {
 
         int i=0;
+        int lldpcount=0;
         @Override
         public void onPacket(String inportId, byte[] payload, MaplePacketInReason reason) {
             MaplePacket pkt = new MaplePacket(payload, new MapleTopology.PortId(inportId));
             MapleSystem.this.addPktRunnable(pkt);
             String str="getpkt size="+pktThreadPool.getQueue().size()+" c="+i++;
             LOG.info(str);
-            System.out.println(str);
+            //System.out.println(str);
+            if(pkt._getFrame().getEtherType().equals(EthType.LLDP)){
+                lldpcount++;
+            }
         }
 
 
@@ -182,6 +190,7 @@ public class MapleSystem {
             boolean ret=MapleSystem.this.dataManager.updateTopology(putList, deleteList);
             if(ret){
                 LOG.info("pktthreadpool size"+pktThreadPool.getQueue().size());
+                LOG.info("lldpcount="+lldpcount);
             }
         }
     }
