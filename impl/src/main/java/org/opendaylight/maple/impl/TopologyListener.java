@@ -28,6 +28,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class TopologyListener implements DataTreeChangeListener<NetworkTopology> {
 
@@ -76,8 +77,9 @@ public class TopologyListener implements DataTreeChangeListener<NetworkTopology>
                 }
             }
         }
-
-        mapleHandler.onTopologyChanged(putList, deleteList);
+        if(putList.size()+deleteList.size()>0) {
+            mapleHandler.onTopologyChanged(putList, deleteList);
+        }
     }
 
     private void modifyTopology(DataObjectModification<Topology> topo) {
@@ -103,7 +105,13 @@ public class TopologyListener implements DataTreeChangeListener<NetworkTopology>
                 switch (linkmod.getModificationType()) {
                     case WRITE:
                     case SUBTREE_MODIFIED:
-                        putLink(linkmod.getDataAfter());
+                        Link dataAfter = linkmod.getDataAfter();
+                        Link dataBefore = linkmod.getDataBefore();
+                        if(Objects.equals(dataAfter,dataBefore)){
+                            LOG.info("dataAfter == dataBefore");
+                        } else {
+                            putLink(dataAfter);
+                        }
                         break;
                     case DELETE:
                         deleteLink(linkmod.getDataBefore());

@@ -21,6 +21,8 @@ import org.snlab.maple.rule.MapleRule;
 import org.snlab.maple.tracetree.TraceTree;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -29,7 +31,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-public class MapleSystem {
+public class MapleSystem{
 
     private final static Logger LOG = Logger.getLogger(MapleSystem.class.toString());
 
@@ -71,15 +73,7 @@ public class MapleSystem {
         return handler;
     }
 
-    private void onPacket(MaplePacket pkt) {
-        if (pkt._getFrame().getEtherType().equals(EthType.LLDP)) {
-            LOG.info("get LLDP");
-            return;
-        }
-        if (pkt._getFrame().getEtherType().equals(EthType.IPv6)) {
-            LOG.info("get IPv6");
-            return;
-        }
+    private synchronized void onPacket(MaplePacket pkt) {
 
         pkt.getTraceList().clear();
         MapleDataManager.MapleDataBroker db = dataManager.allocBroker(pkt);
@@ -101,7 +95,7 @@ public class MapleSystem {
                 mapleAdaptor.updateRules(rules);
         }
 
-        LOG.info("packet=" + pkt + "\nrules=\n" + rules);
+        LOG.info("packet=" + pkt + "rules=" + rules);
     }
 
     private synchronized void addPktRunnable(final MaplePacket pkt){
@@ -164,18 +158,29 @@ public class MapleSystem {
 
     private class MapleSystemHandlerImpl implements IMapleHandler {
 
-        int i=0;
-        int lldpcount=0;
+        private int pktcount =0;
+        private int lldpcount = 0;
+
+        private final List<MapleTopology.Element> cachePutList =  new ArrayList<>();
+        private volatile boolean cacheThread = false;
+        private volatile long cacheThreadEndTime = 0;
+
         @Override
         public void onPacket(String inportId, byte[] payload, MaplePacketInReason reason) {
             MaplePacket pkt = new MaplePacket(payload, new MapleTopology.PortId(inportId));
-            MapleSystem.this.addPktRunnable(pkt);
-            String str="getpkt size="+pktThreadPool.getQueue().size()+" c="+i++;
+            int queueSize = pktThreadPool.getQueue().size();
+            String str="getpkt queueSize="+ queueSize +" count="+ pktcount++;
             LOG.info(str);
-            //System.out.println(str);
             if(pkt._getFrame().getEtherType().equals(EthType.LLDP)){
                 lldpcount++;
+                LOG.info("lldpcount="+lldpcount);
+                return;
             }
+            if(queueSize>100*THREADPOOLSIZE){
+                LOG.severe("got too much packets");
+                return ;
+            }
+            MapleSystem.this.addPktRunnable(pkt);
         }
 
 
@@ -187,11 +192,41 @@ public class MapleSystem {
         @Override
         public void onTopologyChanged(List<MapleTopology.Element> putList,
                                       List<MapleTopology.Element> deleteList) {
-            boolean ret=MapleSystem.this.dataManager.updateTopology(putList, deleteList);
-            if(ret){
-                LOG.info("pktthreadpool size"+pktThreadPool.getQueue().size());
-                LOG.info("lldpcount="+lldpcount);
+            if(deleteList.size()>0){
+                MapleSystem.this.dataManager.updateTopology(Collections.EMPTY_LIST, deleteList);
             }
+            if(putList.size()>0) {
+                synchronized (cachePutList) {
+                    cachePutList.addAll(putList);
+                    cacheThreadEndTime = Calendar.getInstance().getTimeInMillis()+1000;
+                }
+                if(!cacheThread){
+                    cacheThread = true;
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            while(true) {
+                                long deta = cacheThreadEndTime - Calendar.getInstance().getTimeInMillis();
+                                if (deta > 0) {
+                                    try {
+                                        Thread.sleep(deta);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                } else {
+                                    break;
+                                }
+                            }
+                            synchronized (cachePutList){
+                                MapleSystem.this.dataManager.updateTopology(cachePutList,Collections.EMPTY_LIST);
+                                cachePutList.clear();
+                                cacheThread = false;
+                            }
+                        }
+                    }).start();
+                }
+            }
+            LOG.info("pktthreadpool size"+pktThreadPool.getQueue().size());
         }
     }
 }

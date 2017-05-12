@@ -52,7 +52,7 @@ public class MapleDataManager {
                 + putList.toString()
                 + "\ndeleteList=" + deleteList.toString()
                 + "\nreturn=" + ret;
-        if (true) {
+        if (ret) {
             info += "\nTopology=\n" + topology.toString();
         }
         LOG.info(info + "\n");

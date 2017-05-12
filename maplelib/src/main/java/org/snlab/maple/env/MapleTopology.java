@@ -77,24 +77,24 @@ public class MapleTopology {
         return null;
     }
 
-    public synchronized Forward[] shortestPath(PortId src,PortId dst){
+    public synchronized Forward[] shortestPath(PortId src, PortId dst) {
         return null;
     }
 
-    public synchronized Forward[] spanningTree(){
+    public synchronized Forward[] spanningTree() {
         List<Forward> list = new ArrayList<>();
         Collection<Node> nodes = this.nodes.values();
         for (Node node : nodes) {
-            node.flag=0;
+            node.flag = 0;
         }
         for (Node node : nodes) {
-            recurse(node,list);
+            recurse(node, list);
         }
-        Forward[] ret=new Forward[list.size()];
+        Forward[] ret = new Forward[list.size()];
         list.toArray(ret);
-        for(int i=1;i<ret.length;i++){
-            for(int j=0;j<i;j++){
-                if(ret[i].equals(ret[j])){
+        for (int i = 1; i < ret.length; i++) {
+            for (int j = 0; j < i; j++) {
+                if (ret[i].equals(ret[j])) {
                     throw new Error();
                 }
             }
@@ -103,14 +103,14 @@ public class MapleTopology {
     }
 
     private void recurse(Node node, List<Forward> list) {
-        if(node.flag==1){
+        if (node.flag == 1) {
             return;
         }
-        node.flag=1;
+        node.flag = 1;
         Set<Port> ports = node.getPorts();
         for (Port port : ports) {
             Link link = port.getLink();
-            if(link ==null||link.getEnd().getLink()==null){
+            if (link == null || link.getEnd().getLink() == null) {
                 list.add(new Forward(null, ForwardAction.output(port.getId())));
             } else {
                 Port end = link.getEnd();
@@ -124,16 +124,16 @@ public class MapleTopology {
         }
     }
 
-    public synchronized String[] getBorderPorts(){
-        List<String> list=new ArrayList<>();
-        for(Node node:nodes.values()){
+    public synchronized String[] getBorderPorts() {
+        List<String> list = new ArrayList<>();
+        for (Node node : nodes.values()) {
             for (Port port : node.getPorts()) {
-                if(port.getLink()==null){
+                if (port.getLink() == null) {
                     list.add(port.getId().toString());
                 }
             }
         }
-        String[] ret=new String[list.size()];
+        String[] ret = new String[list.size()];
         list.toArray(ret);
         return ret;
     }
@@ -147,17 +147,17 @@ public class MapleTopology {
      */
     synchronized boolean update(List<MapleTopology.Element> putList, List<MapleTopology.Element> deleteList) {
         boolean ischanged = false;
-        if (updateDeleteList(deleteList)) {
+        if (deleteList != null && updateDeleteList(deleteList)) {
             ischanged = true;
         }
-        if (updatePutList(putList)) {
+        if (putList != null && updatePutList(putList)) {
             ischanged = true;
         }
         verify();
         return ischanged;
     }
 
-    private boolean updateDeleteList(List<MapleTopology.Element> deleteList) {
+    private boolean updateDeleteList(@Nonnull List<MapleTopology.Element> deleteList) {
         boolean ischanged = false;
         for (Element ele : deleteList) {
             if (ele instanceof Link) {
@@ -199,7 +199,7 @@ public class MapleTopology {
         return ischanged;
     }
 
-    private boolean updatePutList(List<MapleTopology.Element> putList) {
+    private boolean updatePutList(@Nonnull List<MapleTopology.Element> putList) {
         boolean ischanged = false;
 
         for (Element ele : putList) {
@@ -302,7 +302,7 @@ public class MapleTopology {
         NodeId nodeid = port.getId().getNodeId();
         Node mynode = nodes.get(nodeid);
         if (mynode != null) {
-            port.owner=mynode;
+            port.owner = mynode;
             isadded = mynode.ports.add(port);
         } else {
             nodes.put(nodeid, new Node(nodeid, Collections.singletonList(port.getId())));
@@ -363,21 +363,20 @@ public class MapleTopology {
         return sb.toString();
     }
 
-    public void verify(){
+    public void verify() {
         for (Node node : nodes.values()) {
             for (Port port : node.ports) {
                 assert port.getId().equals(node.id);
-                if(port.link!=null){
-                    assert links.get(port.link)==port.link;
-                    assert port.link.start.getOwner()==node;
+                if (port.link != null) {
+                    assert links.get(port.link) == port.link;
+                    assert port.link.start.getOwner() == node;
                     assert node.ports.contains(port.link.start);
-                    assert port.link.end!=null;
-                    assert nodes.get(port.link.end.id.getNodeId())==port.link.end.getOwner();
+                    assert port.link.end != null;
+                    assert nodes.get(port.link.end.id.getNodeId()) == port.link.end.getOwner();
                 }
             }
         }
     }
-
 
 
     //-----------------------static inner class-----------------------
