@@ -12,19 +12,34 @@ import org.snlab.maple.api.MapleAppBase;
 import org.snlab.maple.api.IMapleDataBroker;
 import org.snlab.maple.api.IMaplePacket;
 import org.snlab.maple.env.MapleTopology;
+import org.snlab.maple.env.TrackedMap;
+import org.snlab.maple.packet.types.MacAddress;
 import org.snlab.maple.rule.route.Forward;
 
 public class ArpHandler extends MapleAppBase {
     @Override
     public boolean onPacket(IMaplePacket pkt, IMapleDataBroker db) {
-        MapleTopology topo = db.getTopology();
-        if(pkt.ethType().is(new byte[]{})) {
-            if (pkt.inport().in()) {
-                pkt.setRoute(Forward.PUNT);
+
+        TrackedMap<MacAddress, MapleTopology.PortId> macHostTable = db.getMacHostTable();
+
+        MacAddress src = pkt._getFrame().getSourceMACAddress();
+        MapleTopology.PortId inPortId = pkt._getInPortId();
+        macHostTable.put(src,inPortId);
+
+        if(pkt.ethType().is(new byte[]{0x8,0x6})) {
+
+            MapleTopology topo = db.getTopology();
+
+            Forward[] spanningTree = db.getTopology().spanningTree();
+            pkt.setRoute(spanningTree);
+
+            if (pkt.inport().in(topo.getBorderPorts())) {
+                pkt.addRoute(Forward.PUNT);
             }
-            db.getTopology().spanningTree();
-            pkt.addRoute("");
+
+            return true;
         }
+
         return false;
     }
 }

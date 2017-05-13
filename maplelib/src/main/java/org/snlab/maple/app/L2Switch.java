@@ -24,15 +24,19 @@ public class L2Switch extends MapleAppBase {
     @Override
     public boolean onPacket(IMaplePacket pkt, IMapleDataBroker db) {
 
-//        byte[] bs = pkt.ethSrc().get();
-//        MacAddress src = MacAddress.of(bs);
-//        bs = pkt.ethDst().get();
-//        MacAddress dst = MacAddress.of(bs);
-//        TrackedMap<MacAddress, MapleTopology.PortId> macHostTable = db.getMacHostTable();
-//        MapleTopology.PortId srcPort = macHostTable.get(src);
-//        MapleTopology.PortId dstPort = macHostTable.get(dst);
-        MapleTopology topology = db.getTopology();
-        pkt.setRoute(topology.spanningTree());
+        byte[] bs = pkt.ethSrc().get();
+        MacAddress src = MacAddress.of(bs);
+        bs = pkt.ethDst().get();
+        MacAddress dst = MacAddress.of(bs);
+        if(dst.isBroadcast()){
+            pkt.setRoute(db.getTopology().spanningTree());
+        } else {
+            TrackedMap<MacAddress, MapleTopology.PortId> macHostTable = db.getMacHostTable();
+            MapleTopology.PortId srcPort = macHostTable.get(src);
+            MapleTopology.PortId dstPort = macHostTable.get(dst);
+            MapleTopology topology = db.getTopology();
+            pkt.setRoute(topology.shortestPath(srcPort, dstPort));
+        }
         return true;
 
     }

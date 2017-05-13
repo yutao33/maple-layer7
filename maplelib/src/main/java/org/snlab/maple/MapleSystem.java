@@ -10,7 +10,8 @@ package org.snlab.maple;
 
 
 import org.snlab.maple.api.MapleAppBase;
-import org.snlab.maple.app.SpanningTree;
+import org.snlab.maple.app.ArpHandler;
+import org.snlab.maple.app.L2Switch;
 import org.snlab.maple.env.IReExecHandler;
 import org.snlab.maple.env.MapleDataManager;
 import org.snlab.maple.env.MapleTopology;
@@ -62,7 +63,8 @@ public class MapleSystem{
         });
 
         //test
-        this.mapleAppList.add(new SpanningTree());
+        this.mapleAppList.add(new ArpHandler());
+        this.mapleAppList.add(new L2Switch());
 
     }
 
@@ -198,7 +200,7 @@ public class MapleSystem{
             if(putList.size()>0) {
                 synchronized (cachePutList) {
                     cachePutList.addAll(putList);
-                    cacheThreadEndTime = Calendar.getInstance().getTimeInMillis()+1000;
+                    cacheThreadEndTime = Calendar.getInstance().getTimeInMillis()+5000;
                 }
                 if(!cacheThread){
                     cacheThread = true;

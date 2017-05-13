@@ -8,6 +8,7 @@
 
 package org.opendaylight.maple.impl;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -289,6 +290,7 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
             if (field.equals(MapleMatchField.INPORT)) {
                 continue;
             }
+            Preconditions.checkState(entry.getValue()!=null);
             ValueMaskPair valuemask = entry.getValue().getMatch();
             ByteArray value = valuemask.getValue();
             ByteArray mask = valuemask.getMask();

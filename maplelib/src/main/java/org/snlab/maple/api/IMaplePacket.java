@@ -8,10 +8,16 @@
 
 package org.snlab.maple.api;
 
+import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.packet.MaplePacket;
+import org.snlab.maple.packet.parser.Ethernet;
 import org.snlab.maple.rule.route.Forward;
 
 public interface IMaplePacket {
+
+    Ethernet _getFrame();
+
+    MapleTopology.PortId _getInPortId();
 
     MaplePacket.PktFieldMaskable ethSrc();
 

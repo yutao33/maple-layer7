@@ -32,7 +32,7 @@ public class Route {
         if (portForwardMap != null) {
             Forward oldForward = portForwardMap.get(port);
             if (oldForward != null) {
-                oldForward.concat(forward);
+                portForwardMap.put(port,Forward.concat(oldForward,forward));
             } else {
                 portForwardMap.put(port, forward);
             }

@@ -81,10 +81,12 @@ public class MaplePacket implements IMaplePacket {
 
     //-------------------------------get Raw packet functions-----------------------------
 
+    @Override
     public Ethernet _getFrame() {
         return frame;
     }
 
+    @Override
     public MapleTopology.PortId _getInPortId() {
         return inPortId;
     }

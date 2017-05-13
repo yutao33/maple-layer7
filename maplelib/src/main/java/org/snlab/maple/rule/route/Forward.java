@@ -60,12 +60,6 @@ public class Forward {  //TODO actions sequence and only for one node
         this.bandwidthlimit = 0;
     }
 
-    public void concat(@Nonnull Forward n) {
-        Preconditions.checkArgument(Objects.equal(n.inport, this.inport));
-        this.actions.addAll(n.actions);
-        this.bandwidthlimit = n.bandwidthlimit;
-    }
-
     @Nullable
     public PortId getInport() {
         return inport;
@@ -105,6 +99,14 @@ public class Forward {  //TODO actions sequence and only for one node
                 "inport=" + inport +
                 ", actions=" + actions +
                 '}';
+    }
+
+
+    public static Forward concat(@Nonnull Forward a, @Nonnull Forward b) {
+        Preconditions.checkArgument(Objects.equal(a.inport, b.inport));
+        Forward ret = new Forward(b.inport, a.actions, b.bandwidthlimit, 0);
+        ret.actions.addAll(b.actions);
+        return ret;
     }
 
 

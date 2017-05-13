@@ -78,7 +78,7 @@ public class MapleTopology {
     }
 
     public synchronized Forward[] shortestPath(PortId src, PortId dst) {
-        return null;
+        return new Forward[0];
     }
 
     public synchronized Forward[] spanningTree() {

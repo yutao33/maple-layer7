@@ -8,6 +8,7 @@
 
 package org.snlab.maple.tracetree;
 
+import com.google.common.base.Preconditions;
 import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.rule.match.ByteArray;
@@ -36,10 +37,14 @@ public class TraceTreeVNode extends TraceTreeNode {
     }
 
     @Nonnull
-    VNodeEntry getEntryOrConstruct(@Nonnull ByteArray value) {
+    VNodeEntry getEntryOrConstruct(@Nonnull Trace.TraceGet item, @Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
+        ByteArray value = item.getValue();
         VNodeEntry v = matchentries.get(value);
         if (v == null) {
-            v = new VNodeEntry(null, null);//TODO no need
+            TraceTreeVNode fake = buildNodeIfNeedOrNull(item, matchMapBefore);
+            Preconditions.checkState(fake!=null);
+            v = fake.matchentries.get(item.getValue());
+            Preconditions.checkState(v!=null);
             matchentries.put(value, v);
         }
         return v;
@@ -173,7 +178,7 @@ public class TraceTreeVNode extends TraceTreeNode {
     public static class VNodeEntry {
         TraceTreeNode child;
 
-        MapleMatch match;//NOTE for generate rules
+        final MapleMatch match;//NOTE for generate rules
 
         private VNodeEntry(TraceTreeNode child, MapleMatch match) {
             this.child = child;

@@ -132,8 +132,7 @@ public class TraceTree {
             } else if (nodep instanceof TraceTreeVNode) {
                 Trace.TraceGet ti = (Trace.TraceGet) preitem;
                 TraceTreeVNode v = (TraceTreeVNode) nodep;
-                ByteArray value = ti.getValue();
-                TraceTreeVNode.VNodeEntry oldentry = v.getEntryOrConstruct(value);
+                TraceTreeVNode.VNodeEntry oldentry = v.getEntryOrConstruct(ti,matchMap);
 
                 matchMap.put(ti.getField(), oldentry.match);
 
@@ -164,19 +163,24 @@ public class TraceTree {
             return node;  //NOTE no need to update
         }
 
-        recurseMarkDeleted(node);
+        TraceTreeNode ret = null;
 
         if (item instanceof Trace.TestItem) {
 
             Trace.TestItem ti = (Trace.TestItem) item;
-            return TraceTreeTNode.buildNodeIfNeedOrNull(ti, matchMap); //NOTE will generate match
+            ret = TraceTreeTNode.buildNodeIfNeedOrNull(ti, matchMap); //NOTE will generate match
 
         } else if (item instanceof Trace.TraceGet) {
             Trace.TraceGet ti = (Trace.TraceGet) item;
-            return TraceTreeVNode.buildNodeIfNeedOrNull(ti, matchMap);
+            ret = TraceTreeVNode.buildNodeIfNeedOrNull(ti, matchMap);
         } else {
             throw new RuntimeException("impossible");
         }
+
+        if(ret != null){
+            recurseMarkDeleted(node);
+        }
+        return ret;
     }
 
     private TraceTreeNode testifLNodeexpected_ornew(@Nullable TraceTreeNode node, List<Forward> route, MaplePacket pkt) {
