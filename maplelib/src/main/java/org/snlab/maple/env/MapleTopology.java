@@ -15,6 +15,7 @@ import org.snlab.maple.rule.route.ForwardAction;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,6 +24,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -60,12 +62,12 @@ public class MapleTopology {
     }
 
     @Nullable
-    public Node getNode(@Nonnull NodeId nodeId) {
+    public Node findNode(@Nonnull NodeId nodeId) {
         return nodes.get(nodeId);
     }
 
     @Nullable
-    public Port getPort(@Nonnull PortId portId) {
+    public Port findPort(@Nonnull PortId portId) {
         Node node = nodes.get(portId.getNodeId());
         if (node != null) {
             for (Port port : node.getPorts()) {
@@ -78,7 +80,77 @@ public class MapleTopology {
     }
 
     public synchronized Forward[] shortestPath(PortId src, PortId dst) {
+        if(src==null||dst==null){
+            return new Forward[0];
+        }
+
+        Port srcPort = this.findPort(src);
+        Port dstPort = this.findPort(dst);
+        if(srcPort==null||dstPort==null){
+            return new Forward[0];
+        }
+
+        Node srcNode = srcPort.getOwner();
+        Node dstNode = dstPort.getOwner();
+        if(srcNode.equals(dstNode)){
+            return new Forward[]{
+                    new Forward(src,ForwardAction.output(dst))
+            };
+        }
+
+        Collection<Node> nodes = this.nodes.values();
+        for (Node node : nodes) {
+            node.flag = -1;
+        }
+        Map<NodeId,Link> path=new HashMap<>();
+        Queue<Node> queue= new ArrayDeque<>();
+
+        srcNode.flag=0;
+        queue.add(srcNode);
+        while(!queue.isEmpty()){
+            Node a = queue.poll();
+            for (Port port : a.getPorts()) {
+                Link link = port.getLink();
+                if(isBidirectional(link)){
+                    Node endNode = link.getEnd().getOwner();
+                    if(endNode.flag==-1){
+
+                        if(endNode.equals(dstNode)){
+                            List<Forward> list = new ArrayList<>();
+                            list.add(new Forward(link.getEnd().getId(),ForwardAction.output(dst)));
+                            Link ll=link;
+                            while(true){
+                                NodeId id1 = ll.getStart().getOwner().getId();
+                                if(id1.equals(srcNode.getId())){
+                                    list.add(new Forward(src,ForwardAction.output(ll.getStart().getId())));
+                                    break;
+                                }
+                                Link ll2 = path.get(id1);
+                                Preconditions.checkState(ll2!=null);
+                                list.add(new Forward(ll2.getEnd().getId(),ForwardAction.output(ll.getStart().getId())));
+                                ll=ll2;
+                            }
+                            Forward[] ret = new Forward[list.size()];
+                            list.toArray(ret);
+                            return ret;
+
+                        } else {
+                           endNode.flag=a.flag+1;
+                           queue.add(endNode);
+                           path.put(endNode.getId(),link);
+                        }
+                    }
+                }
+            }
+        }
+
         return new Forward[0];
+    }
+
+    private boolean isBidirectional(Link link){
+        return link!=null&&
+                link.getEnd().getLink()!=null&&
+                link.getEnd().getLink().getEnd().equals(link.getStart());
     }
 
     public synchronized Forward[] spanningTree() {
@@ -92,13 +164,6 @@ public class MapleTopology {
         }
         Forward[] ret = new Forward[list.size()];
         list.toArray(ret);
-        for (int i = 1; i < ret.length; i++) {
-            for (int j = 0; j < i; j++) {
-                if (ret[i].equals(ret[j])) {
-                    throw new Error();
-                }
-            }
-        }
         return ret;
     }
 

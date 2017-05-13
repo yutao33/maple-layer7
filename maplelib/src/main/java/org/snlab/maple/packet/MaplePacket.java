@@ -225,6 +225,9 @@ public class MaplePacket implements IMaplePacket {
         }
 
         public boolean in(String... inports) {
+            if(inports.length==0){
+                return false;
+            }
             for (String s : inports) {
                 Preconditions.checkArgument(MapleTopology.isValidPortId(s));
             }
@@ -268,6 +271,9 @@ public class MaplePacket implements IMaplePacket {
         }
 
         public boolean in(String... nodes) {
+            if(nodes.length==0){
+                return false;
+            }
             for (String s : nodes) {
                 Preconditions.checkArgument(MapleTopology.isValidNodeId(s));
             }
@@ -367,7 +373,7 @@ public class MaplePacket implements IMaplePacket {
         public byte[] get() {
             byte[] value = fieldMap.get(field);
             Preconditions.checkArgument(value != null);
-            byte[] value1 = new byte[value.length];
+            byte[] value1 = value.clone();
             if (mask != null) {
                 for (int i = 0; i < value1.length; i++) {
                     value1[i] = (byte) (value[i] & mask[i]);

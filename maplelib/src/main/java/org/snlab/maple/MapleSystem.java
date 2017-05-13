@@ -75,8 +75,8 @@ public class MapleSystem{
         return handler;
     }
 
-    private synchronized void onPacket(MaplePacket pkt) {
-
+    private void onPacket(MaplePacket pkt) {
+        synchronized (traceTree) {
         pkt.getTraceList().clear();
         MapleDataManager.MapleDataBroker db = dataManager.allocBroker(pkt);
 
@@ -90,14 +90,16 @@ public class MapleSystem{
 
         List<MapleRule> rules = null;
 
-        synchronized (traceTree) {
+
             traceTree.update(pkt.getTraceList(), pkt);
             rules = traceTree.generateRules();
             if(rules.size()>0)
                 mapleAdaptor.updateRules(rules);
+
+            LOG.info("packet=" + pkt + "rules=" + rules);
         }
 
-        LOG.info("packet=" + pkt + "rules=" + rules);
+
     }
 
     private synchronized void addPktRunnable(final MaplePacket pkt){

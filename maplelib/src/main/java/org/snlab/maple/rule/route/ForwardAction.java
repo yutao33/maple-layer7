@@ -58,6 +58,16 @@ public final class ForwardAction {
     public static abstract class Action {
 
         @Override
+        public boolean equals(Object obj) {
+            return this.getClass().isInstance(obj);
+        }
+
+        @Override
+        public int hashCode() {
+            return this.getClass().hashCode();
+        }
+
+        @Override
         public String toString() {
             return this.getClass().getSimpleName();
         }
