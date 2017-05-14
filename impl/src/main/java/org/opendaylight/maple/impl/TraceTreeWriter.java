@@ -30,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.odlmaple
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.odlmaple.rev170512.tracetree.v3.grouping.tracetree.v3.TtLinkV3Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.odlmaple.rev170512.tracetree.v3.grouping.tracetree.v3.TtNodeV3;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.odlmaple.rev170512.tracetree.v3.grouping.tracetree.v3.TtNodeV3Builder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.odlmaple.rev170512.tracetree.v3.grouping.tracetree.v3.tt.node.v3.Nodeattr;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.odlmaple.rev170512.tracetree.v3.grouping.tracetree.v3.tt.node.v3.nodeattr.Lnodeattr;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.odlmaple.rev170512.tracetree.v3.grouping.tracetree.v3.tt.node.v3.nodeattr.LnodeattrBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.odlmaple.rev170512.tracetree.v3.grouping.tracetree.v3.tt.node.v3.nodeattr.Tnodeattr;
@@ -50,6 +51,8 @@ import org.snlab.maple.tracetree.TraceTreeTNode;
 import org.snlab.maple.tracetree.TraceTreeVNode;
 
 import javax.annotation.Nullable;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -105,13 +108,61 @@ public class TraceTreeWriter {
             e.printStackTrace();
         }
         submit(wt);
-        writeDot();
+        writeDot(pkt.toString());
     }
 
-    private void writeDot() {
-        StringBuilder sb=new StringBuilder("");
+    private void writeDot(String pkt) {
+        StringBuilder sb=new StringBuilder("digraph{\n");
+        pkt = pkt.replaceAll("\n","\\\\n").replaceAll("\"","\\\"");
 
+        sb.append("nodepkt[shape=box,label=\"");
+        sb.append(pkt);
+        sb.append("\"];");
 
+        for (TtNodeV3 node : ttNodeList) {
+            String id = node.getId();
+            String shape="";
+            StringBuilder label=new StringBuilder();
+            Nodeattr nodeattr = node.getNodeattr();
+            if(nodeattr instanceof Lnodeattr){
+                shape="ellipse";
+                List<String> forwards = ((Lnodeattr) nodeattr).getForward();
+                int i=0;
+                for (String str : forwards) {
+                    if(i!=0){
+                        label.append("\\n");
+                    }
+                    label.append(str);
+                    i++;
+                }
+            } else if(nodeattr instanceof Tnodeattr){
+                shape="diamond";
+                Tnodeattr t = (Tnodeattr) nodeattr;
+                label.append(t.getTestfield());
+                label.append("\\n");
+                label.append(t.getTestcondition());
+            } else {
+                shape="box";
+                Vnodeattr v = (Vnodeattr) nodeattr;
+                label.append(v.getMatchfield());
+            }
+            sb.append(String.format("node%s[shape=%s,label=\"%s\"];\n",id,shape,label.toString()));
+        }
+
+        for (TtLinkV3 link : ttLinkList) {
+            sb.append(String.format("node%s->node%s[label=\"%s\"];\n",
+                    link.getPredicateId(),
+                    link.getDestinationId(),
+                    link.getCondition()));
+        }
+
+        sb.append("}\n");
+
+        try(FileWriter fw=new FileWriter("/home/yutao/Desktop/tracetree/tt"+this.historycount+".gv")){
+            fw.write(sb.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 

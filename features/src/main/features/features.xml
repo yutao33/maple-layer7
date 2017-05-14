@@ -42,7 +42,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <feature version="${project.version}">odl-odlmaple-rest</feature>
     <feature version="${restconf.version}">odl-mdsal-apidocs</feature>
     <!--<feature version="${mdsal.version}">odl-mdsal-xsql</feature>-->
-    <feature version="${dluxapps.version}">odl-dluxapps-yangman</feature>
+    <!--<feature version="${dluxapps.version}">odl-dluxapps-yangman</feature>-->
   </feature>
   <feature name='odl-odlmaple-cli' version='${project.version}' description='OpenDaylight :: odlmaple :: CLI'>
     <feature version="${project.version}">odl-odlmaple</feature>

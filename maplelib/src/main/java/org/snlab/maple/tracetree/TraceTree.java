@@ -307,9 +307,21 @@ public class TraceTree {
             for (TraceTreeTNode.TNodeEntry te : bm.values()) {
                 globalpriority = barrierpri;
                 if (te.barrierRule != null) {
-                    te.barrierRule.setPriority(barrierpri);
-                    te.barrierRule.setStatus(MapleRule.Status.INSTALL);
-                    incrementRules.add(te.barrierRule);
+                    MapleRule.Status status = te.barrierRule.getStatus();
+                    if(status.equals(MapleRule.Status.NONE)){
+                        te.barrierRule.setPriority(barrierpri);
+                        te.barrierRule.setStatus(MapleRule.Status.INSTALL);
+                        incrementRules.add(te.barrierRule);
+                    } else if(status.equals(MapleRule.Status.INSTALLED)){
+                        int oldPri = te.barrierRule.getPriority();
+                        if(oldPri!=barrierpri){
+                            te.barrierRule.setPriority(barrierpri);
+                            te.barrierRule.setStatus(MapleRule.Status.INSTALL);
+                            incrementRules.add(te.barrierRule);
+                        }
+                    } else {
+                        throw new RuntimeException("update priority error1");
+                    }
                     allRules.add(te.barrierRule);
                     globalpriority++;
                 }
