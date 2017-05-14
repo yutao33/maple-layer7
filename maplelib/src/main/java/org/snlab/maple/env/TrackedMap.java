@@ -30,6 +30,7 @@ public class TrackedMap<K,V> {
     public TrackedMap(MaplePacket pkt, TrackedMap<K,V> m1){
         this.data = m1.data;
         this.handler = m1.handler;
+        this.pkt = pkt;
     }
 
     @Nullable
@@ -38,9 +39,9 @@ public class TrackedMap<K,V> {
         if(unit==null){
             unit=new TrackedUnit<>(null);
             data.put(key,unit);
-            if(pkt!=null){
-                unit.trackSet.track(pkt);
-            }
+        }
+        if(pkt!=null){
+            unit.trackSet.track(pkt);
         }
         return unit.value;
     }

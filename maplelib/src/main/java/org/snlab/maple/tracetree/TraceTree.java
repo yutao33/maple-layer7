@@ -13,7 +13,6 @@ import com.google.common.base.Preconditions;
 import org.snlab.maple.packet.MaplePacket;
 import org.snlab.maple.rule.MapleRule;
 import org.snlab.maple.rule.field.MapleMatchField;
-import org.snlab.maple.rule.match.ByteArray;
 import org.snlab.maple.rule.match.MapleMatch;
 import org.snlab.maple.rule.match.ValueMaskPair;
 import org.snlab.maple.rule.route.Forward;
@@ -39,6 +38,9 @@ public class TraceTree {
 
     private TraceTreeNode treeroot;
 
+    public TraceTreeNode getTreeRoot() {
+        return treeroot;
+    }
 
     //-------------------------------update-----------------------------
 
@@ -90,7 +92,7 @@ public class TraceTree {
                         unmatchset = new HashSet<>();
                         unmatchMap.put(matchfield, unmatchset);
                     }
-                    for (MapleMatch mmatch : t.getBranchtrueMap().keySet()) {
+                    for (MapleMatch mmatch : t.getBranchTrueMap().keySet()) {
                         unmatchset.add(mmatch.getMatch());
                     }
 //                    Set<ValueMaskPair> unmatchset = unmatchMap.get(matchfield);
@@ -224,7 +226,7 @@ public class TraceTree {
 //            }
 //            recurseMarkDeleted(t.getBranch(true));
             recurseMarkDeleted(t.getBranchFalse());
-            Map<MapleMatch, TraceTreeTNode.TNodeEntry> bm = t.getBranchtrueMap();
+            Map<MapleMatch, TraceTreeTNode.TNodeEntry> bm = t.getBranchTrueMap();
             for (TraceTreeTNode.TNodeEntry te : bm.values()) {
                 if (te.barrierRule != null) {
                     te.barrierRule.setStatus(MapleRule.Status.DELETE);
@@ -301,7 +303,7 @@ public class TraceTree {
                 globalpriority++;
             }
             int barrierpri = globalpriority;
-            Map<MapleMatch, TraceTreeTNode.TNodeEntry> bm = t.getBranchtrueMap();
+            Map<MapleMatch, TraceTreeTNode.TNodeEntry> bm = t.getBranchTrueMap();
             for (TraceTreeTNode.TNodeEntry te : bm.values()) {
                 globalpriority = barrierpri;
                 if (te.barrierRule != null) {

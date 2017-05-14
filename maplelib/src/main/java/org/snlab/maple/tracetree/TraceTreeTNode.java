@@ -39,14 +39,27 @@ public class TraceTreeTNode extends TraceTreeNode {
         this.condition = condition;
     }
 
+    public MapleMatchField getField() {
+        return field;
+    }
+
+    public TestCondition getCondition() {
+        return condition;
+    }
+
     @Nullable
-    TraceTreeNode getBranchFalse() {
+    public TraceTreeNode getBranchFalse() {
         return branchfalse;
     }
 
     void setBranchFalse(TraceTreeNode branch) {
         branchfalse = branch;
     }
+
+    public Map<MapleMatch, TNodeEntry> getBranchTrueMap() {  //TODO unmodifiable
+        return branchtrueMap;
+    }
+
 
     @Nullable
     Map.Entry<MapleMatch, TNodeEntry> findEntry(ByteArray key) { //NOTE only when field==INPORT, key==null
@@ -62,24 +75,7 @@ public class TraceTreeTNode extends TraceTreeNode {
         return null;
     }
 
-    public MapleMatchField getField() {
-        return field;
-    }
-
-    public Map<MapleMatch, TNodeEntry> getBranchtrueMap() {
-        return branchtrueMap;
-    }
-
-    //    void setBranch(boolean b, TraceTreeNode branch) {
-//        if (b) branchtrue = branch;
-//        else branchfalse = branch;
-//    }
-//
-//    public MapleMatch getMatch() {
-//        return match;
-//    }
-//
-    public void genBarrierRule(@Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
+    void genBarrierRule(@Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
         //Map<MapleMatchField, MapleMatch> match = new EnumMap<>(matchMapBefore);
         //match.put(this.field, this.match);
         //this.barrierRule = new MapleRule(match, Forward.DEFAULT_PuntForwards);
@@ -250,6 +246,11 @@ public class TraceTreeTNode extends TraceTreeNode {
     public static class TNodeEntry {
         MapleRule barrierRule;
         TraceTreeNode child;
+
+        @Nullable
+        public TraceTreeNode getChild() {  //for output tracetree
+            return child;
+        }
     }
 
     /**

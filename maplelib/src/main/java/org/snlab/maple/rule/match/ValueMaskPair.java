@@ -129,9 +129,12 @@ public class ValueMaskPair {
 
     @Override
     public String toString() {
-        return "ValueMaskPair{" +
-                "mask=" + mask +
-                ", value=" + value +
-                '}';
+        StringBuilder sb=new StringBuilder();
+        sb.append(value.toString());
+        if(mask!=null){
+            sb.append("/");
+            sb.append(mask.toString());
+        }
+        return sb.toString();
     }
 }

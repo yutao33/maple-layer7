@@ -3,7 +3,105 @@ module odlmaple {
     namespace "urn:opendaylight:params:xml:ns:yang:odlmaple";
     prefix "odlmaple";
 
-    revision "2015-01-05" {
+    revision "2017-05-12" {
         description "Initial revision of odlmaple model";
+    }
+
+    typedef tt-node-type {
+        type enumeration {
+            enum LNODE {
+                description "LNode";
+            }
+            enum TNODE {
+                description "TNode";
+            }
+            enum VNODE {
+                description "VNODE";
+            }
+        }
+    }
+
+    grouping tracetree-v3-grouping {
+        container tracetree-v3 {
+            list tt-node-v3 {
+                key "id";
+                leaf id {
+                    type string;
+                }
+                leaf type {
+                    type tt-node-type;
+                }
+
+                choice nodeattr {
+                    mandatory true;
+                    case lnodeattr{
+                        when "type = 'LNODE'";
+                        leaf-list forward {
+                            type string;
+                        }
+                    }
+                    case tnodeattr{
+                        when "type = 'TNODE'";
+                        leaf testfield{
+                            type string;
+                        }
+                        leaf testcondition{
+                            type string;
+                        }
+                    }
+                    case vnodeattr{
+                        when "type = 'VNODE'";
+                        leaf matchfield{
+                            type string;
+                        }
+                    }
+                }
+            }
+            list tt-link-v3 {
+                key "id";
+                leaf id {
+                    type string;
+                }
+                leaf condition {
+                    type string;
+                }
+                leaf predicate-id {
+                    type string;
+                }
+                leaf destination-id {
+                    type string;
+                }
+            }
+        }
+    }
+
+    container tracetree-history {
+        config false;
+        container history-count{
+            leaf count{
+                type int64;
+            }
+        }
+        list history {
+            key "seq";
+            leaf seq {
+                type int64;
+            }
+            container pkt {
+                leaf pkt-str{
+                    type string;
+                }
+                leaf timestamp {
+                    type string;
+                }
+                /* list traceitemlist{
+                    key "seq";
+                    leaf seq{
+                        type int64;
+                    }
+                } */
+            }
+            uses tracetree-v3-grouping;
+        }
     }
 }

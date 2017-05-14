@@ -36,6 +36,40 @@ public class TraceTreeVNode extends TraceTreeNode {
         matchentries = new HashMap<>();
     }
 
+    public MapleMatchField getField() {
+        return field;
+    }
+
+    public ByteArray getMask() {
+        return mask;
+    }
+
+    public Map<ByteArray, VNodeEntry> getMatchEntries() { //TODO unmodifiable
+        return matchentries;
+    }
+
+    Iterator<TraceTreeNode> iterator() {  //TODO not use
+        return new Iterator<TraceTreeNode>() {
+
+            private Iterator<VNodeEntry> iter = matchentries.values().iterator();
+
+            @Override
+            public void remove() {
+                iter.remove();
+            }
+
+            @Override
+            public boolean hasNext() {
+                return iter.hasNext();
+            }
+
+            @Override
+            public TraceTreeNode next() {
+                return iter.next().child;
+            }
+        };
+    }
+
     @Nonnull
     VNodeEntry getEntryOrConstruct(@Nonnull Trace.TraceGet item, @Nonnull Map<MapleMatchField, MapleMatch> matchMapBefore) {
         ByteArray value = item.getValue();
@@ -57,28 +91,6 @@ public class TraceTreeVNode extends TraceTreeNode {
                     && Objects.equals(mask, item.getMask());
         }
         return false;
-    }
-
-    public Iterator<TraceTreeNode> iterator() {
-        return new Iterator<TraceTreeNode>() {
-
-            private Iterator<VNodeEntry> iter = matchentries.values().iterator();
-
-            @Override
-            public void remove() {
-                iter.remove();
-            }
-
-            @Override
-            public boolean hasNext() {
-                return iter.hasNext();
-            }
-
-            @Override
-            public TraceTreeNode next() {
-                return iter.next().child;
-            }
-        };
     }
 
 
@@ -183,6 +195,14 @@ public class TraceTreeVNode extends TraceTreeNode {
         private VNodeEntry(TraceTreeNode child, MapleMatch match) {
             this.child = child;
             this.match = match;
+        }
+
+        public TraceTreeNode getChild() {  //for output tracetree
+            return child;
+        }
+
+        public MapleMatch getMatch() {  //for output tracetree
+            return match;
         }
     }
 }

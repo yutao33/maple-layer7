@@ -109,11 +109,12 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
 
     private AtomicLong flowCookieInc = new AtomicLong(0x3a00000000000000L);
 
-
+    private TraceTreeWriter traceTreeWriter;
 
     public ODLMapleAdaptor(DataBroker dataBroker, SalFlowService salFlowService) {
         this.dataBroker = dataBroker;
         this.salFlowService = salFlowService;
+        this.traceTreeWriter = new TraceTreeWriter(dataBroker);
         initDefaultLLDPrule();
     }
 
@@ -138,9 +139,9 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
     }
 
     @Override
-    public void outPutTraceTree(TraceTree traceTree) {
+    public void outPutTraceTree(TraceTree traceTree, MaplePacket pkt) {
 
-        LOG.info("outPutTraceTree");
+        traceTreeWriter.writeTraceTree(traceTree,pkt);
 
     }
 

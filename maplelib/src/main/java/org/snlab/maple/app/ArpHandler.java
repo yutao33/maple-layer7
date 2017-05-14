@@ -20,12 +20,6 @@ public class ArpHandler extends MapleAppBase {
     @Override
     public boolean onPacket(IMaplePacket pkt, IMapleDataBroker db) {
 
-        TrackedMap<MacAddress, MapleTopology.PortId> macHostTable = db.getMacHostTable();
-
-        MacAddress src = pkt._getFrame().getSourceMACAddress();
-        MapleTopology.PortId inPortId = pkt._getInPortId();
-        macHostTable.put(src,inPortId);
-
         if(pkt.ethType().is(new byte[]{0x8,0x6})) {
 
             MapleTopology topo = db.getTopology();
@@ -34,6 +28,12 @@ public class ArpHandler extends MapleAppBase {
             pkt.setRoute(spanningTree);
 
             if (pkt.inport().in(topo.getBorderPorts())) {
+
+                TrackedMap<MacAddress, MapleTopology.PortId> macHostTable = db.getMacHostTable();
+                MacAddress src = pkt._getFrame().getSourceMACAddress();
+                MapleTopology.PortId inPortId = pkt._getInPortId();
+                macHostTable.put(src,inPortId);
+
                 pkt.addRoute(Forward.PUNT);
             }
 

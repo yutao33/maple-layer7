@@ -90,9 +90,21 @@ public class MapleMatchInPort extends MapleMatch {
 
     @Override
     public String toString() {
-        return "MapleMatchInPort{" +
-                "ports=" + ports +
-                ", nodes=" + nodes +
-                '}';
+        StringBuilder sb = new StringBuilder("MapleMatchInPort{");
+        if(this.ports.size()>0){
+            sb.append("ports=");
+            sb.append(ports.toString());
+            if(this.nodes.size()>0){
+                sb.append(", nodes=");
+                sb.append(nodes.toString());
+            }
+        } else {
+            if(this.nodes.size()>0){
+                sb.append("nodes=");
+                sb.append(nodes.toString());
+            }
+        }
+        sb.append("}");
+        return sb.toString();
     }
 }

@@ -97,8 +97,9 @@ public class MapleSystem{
                 mapleAdaptor.updateRules(rules);
 
             LOG.info("packet=" + pkt + "rules=" + rules);
-        }
 
+            mapleAdaptor.outPutTraceTree(traceTree,pkt);
+        }
 
     }
 
