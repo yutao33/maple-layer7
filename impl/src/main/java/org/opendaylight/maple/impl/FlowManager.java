@@ -83,7 +83,9 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -95,14 +97,16 @@ public class FlowManager {
 
     private AtomicLong flowIdInc = new AtomicLong(10L);
 
-    private AtomicLong flowCookieInc = new AtomicLong(0x3a00000000000000L);
+    private AtomicLong flowCookieInc = new AtomicLong(0x1200000000000000L);
 
     private final DataBroker dataBroker;
 
-
+    private Map<MapleTopology.NodeId, Map<MapleTopology.PortId,List<FlowEntry>>> installRules=new HashMap<>();
+    private Map<MapleRule,List<FlowEntry>> allNodeRules=new HashMap<>();
 
     public FlowManager(DataBroker dataBroker) {
         this.dataBroker = dataBroker;
+        initDefaultLLDPrule();
     }
 
     private void initDefaultLLDPrule(){
@@ -113,11 +117,14 @@ public class FlowManager {
         MapleRule lldprule=new MapleRule(matches, Collections.singletonList(Forward.PUNT));
         lldprule.setPriority(65535);
         lldprule.setStatus(MapleRule.Status.INSTALLED);
+        allNodeRules.put(lldprule,new ArrayList<>());
     }
 
 
     public void updateRules(List<MapleRule> rules) {
-        addDefaultLLDPRule(rules);
+        //addDefaultLLDPRule(rules);
+
+        deleteRules(rules);
 
         ReadWriteTransaction rwt1 = dataBroker.newReadWriteTransaction();
         deleteAllRules(rwt1);
@@ -163,6 +170,13 @@ public class FlowManager {
         rwtSubmit(rwt);
     }
 
+    private void deleteRules(List<MapleRule> rules) {
+        ReadWriteTransaction rwt = dataBroker.newReadWriteTransaction();
+
+        deleteAllRules(rwt);
+        rwtSubmit(rwt);
+    }
+
     private void addDefaultLLDPRule(List<MapleRule> rules) {
         Map<MapleMatchField,MapleMatch> matches = new EnumMap<>(MapleMatchField.class);
         ValueMaskPair value = new ValueMaskPair(new ByteArray(new byte[]{(byte)0x88,(byte)0xcc}), null);
@@ -200,12 +214,12 @@ public class FlowManager {
         rwt.delete(LogicalDatastoreType.CONFIGURATION, nodesIId);
     }
 
-    private void installRuleforNode(WriteTransaction wt,
-                                    MapleTopology.NodeId node,
-                                    MapleTopology.PortId port,
-                                    Match odlPktFieldMatch,
-                                    int priority,
-                                    Forward forward) {
+    private InstanceIdentifier<Flow> installRuleforNode(WriteTransaction wt,
+                                                        MapleTopology.NodeId node,
+                                                        MapleTopology.PortId port,
+                                                        Match odlPktFieldMatch,
+                                                        int priority,
+                                                        Forward forward) {
         Match odlMatch = odlPktFieldMatch;
         if (port != null) {
             MatchBuilder matchBuilder = new MatchBuilder(odlPktFieldMatch);
@@ -214,14 +228,14 @@ public class FlowManager {
         }
         Instructions instructions = buildODLInstructions(forward);
 
-        installODLRule(wt, node.toString(), priority, odlMatch, instructions);
+        return installODLRule(wt, node.toString(), priority, odlMatch, instructions);
     }
 
-    private void installODLRule(WriteTransaction wt,
-                                String nodeId,
-                                int priority,
-                                Match odlMatch,
-                                Instructions instructions) {
+    private InstanceIdentifier<Flow> installODLRule(WriteTransaction wt,
+                                                    String nodeId,
+                                                    int priority,
+                                                    Match odlMatch,
+                                                    Instructions instructions) {
         FlowId flowId = new FlowId("maple" + flowIdInc.getAndIncrement());
         InstanceIdentifier<Node> iid = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, new NodeKey(new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId(nodeId)))
@@ -245,6 +259,8 @@ public class FlowManager {
         Flow flow = flowBuilder.build();
 
         wt.put(LogicalDatastoreType.CONFIGURATION, flowPath, flow, true);
+
+        return flowPath;
 
     }
 
