@@ -76,7 +76,7 @@ public class MapleSystem{
     }
 
     private void onPacket(MaplePacket pkt) {
-        synchronized (traceTree) {
+        synchronized (traceTree) {  //TODO fix it
         pkt.getTraceList().clear();
         MapleDataManager.MapleDataBroker db = dataManager.allocBroker(pkt);
 

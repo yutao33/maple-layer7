@@ -46,7 +46,7 @@ public class MaplePacket implements IMaplePacket {
 
     private List<Forward> route = null;  //when it is null, default to drop
 
-    private Set<TrackSet> trackSets=new HashSet<>();
+    private Set<TrackSet> trackSets = new HashSet<>();
 
     public MaplePacket(byte[] data, MapleTopology.PortId inPortId) {
         this.inPortId = inPortId;
