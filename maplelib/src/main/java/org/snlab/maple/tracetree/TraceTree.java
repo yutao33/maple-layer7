@@ -266,9 +266,9 @@ public class TraceTree {
         globalpriority = 1;
         recurseUpdatePriority(treeroot);
 
-        if(incrementRules.size()>0){
-            return allRules;
-        }
+//        if(incrementRules.size()>0){
+//            return allRules;
+//        }
         return incrementRules;
     }
 
@@ -287,7 +287,7 @@ public class TraceTree {
             } else if(ruleStatus.equals(MapleRule.Status.INSTALLED)){
                 int oldPri = rule.getPriority();
                 if(oldPri!=globalpriority){
-                    rule.setStatus(MapleRule.Status.INSTALL);
+                    rule.setStatus(MapleRule.Status.UPDATE);
                     rule.setPriority(globalpriority);
                     incrementRules.add(rule);
                 }
@@ -316,7 +316,7 @@ public class TraceTree {
                         int oldPri = te.barrierRule.getPriority();
                         if(oldPri!=barrierpri){
                             te.barrierRule.setPriority(barrierpri);
-                            te.barrierRule.setStatus(MapleRule.Status.INSTALL);
+                            te.barrierRule.setStatus(MapleRule.Status.UPDATE);
                             incrementRules.add(te.barrierRule);
                         }
                     } else {

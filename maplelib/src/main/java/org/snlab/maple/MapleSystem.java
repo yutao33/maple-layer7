@@ -90,15 +90,16 @@ public class MapleSystem{
 
         List<MapleRule> rules = null;
 
-
             traceTree.update(pkt.getTraceList(), pkt);
             rules = traceTree.generateRules();
-            if(rules.size()>0)
+            if(rules.size()>0) {
                 mapleAdaptor.updateRules(rules);
+                mapleAdaptor.outPutTraceTree(traceTree,pkt);
 
+            }
             LOG.info("packet=" + pkt);
 
-            mapleAdaptor.outPutTraceTree(traceTree,pkt);
+
         }
 
     }

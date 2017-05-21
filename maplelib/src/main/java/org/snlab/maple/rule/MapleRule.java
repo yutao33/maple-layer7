@@ -26,7 +26,8 @@ public class MapleRule {
     public enum Status {  //TODO UPDATE
         NONE,
         DELETE,
-        INSTALL,  // new updatePriority
+        INSTALL,
+        UPDATE,
         DELETED,
         INSTALLED
     }

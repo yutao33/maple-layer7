@@ -9,22 +9,21 @@
 package org.opendaylight.maple.impl;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.snlab.maple.rule.MapleRule;
+import org.snlab.maple.env.MapleTopology;
 
 import javax.annotation.concurrent.Immutable;
 
 
 @Immutable
 class FlowEntry {
-    final MapleRule rule;
+    final MapleTopology.NodeId nodeId;
+    final MapleTopology.PortId portId;
     final InstanceIdentifier<Flow> flowPath;
 
-    public FlowEntry(MapleRule rule, InstanceIdentifier<Flow> flowPath) {
-        this.rule = rule;
+    FlowEntry(MapleTopology.NodeId nodeId, MapleTopology.PortId portId, InstanceIdentifier<Flow> flowPath) {
+        this.nodeId = nodeId;
+        this.portId = portId;
         this.flowPath = flowPath;
-        flowPath.firstKeyOf(Node.class);
     }
-
 }
