@@ -189,7 +189,7 @@ public class TraceTree {
         if (node instanceof TraceTreeLNode) {
             TraceTreeLNode l = (TraceTreeLNode) node;
             if (l.getRoute().equals(route)) {
-                //NOTE generate drop rule if route is drop
+                // NOTE generate drop rule if route is drop
                 handleIfNeedDrop(l, pkt);
                 l.pktTrack(pkt);
                 return node;
@@ -197,7 +197,7 @@ public class TraceTree {
         }
         recurseMarkDeleted(node);
         TraceTreeLNode lNode = TraceTreeLNode.build(route,pkt, matchMap);
-        //NOTE generate drop rule if route is drop
+        // NOTE generate drop rule if route is drop
         handleIfNeedDrop(lNode, pkt);
         return lNode;
     }
