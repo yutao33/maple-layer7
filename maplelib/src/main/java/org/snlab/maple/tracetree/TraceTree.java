@@ -191,6 +191,7 @@ public class TraceTree {
             if (l.getRoute().equals(route)) {
                 // NOTE generate drop rule if route is drop
                 handleIfNeedDrop(l, pkt);
+                holdLNodeRule(l);
                 l.pktTrack(pkt);
                 return node;
             }
@@ -199,6 +200,7 @@ public class TraceTree {
         TraceTreeLNode lNode = TraceTreeLNode.build(route,pkt, matchMap);
         // NOTE generate drop rule if route is drop
         handleIfNeedDrop(lNode, pkt);
+        holdLNodeRule(lNode);
         return lNode;
     }
 
@@ -246,6 +248,16 @@ public class TraceTree {
             throw new RuntimeException("impossible");
         }
     }
+
+    //------------------derive packets at LNode------------------------------
+
+    private MapleRule updatedLNodeRule;
+
+    private void holdLNodeRule(TraceTreeLNode lNode){  //TODO fix it
+        updatedLNodeRule =  lNode.getRule();
+    }
+
+    
 
 
     //-------------------------------generateRules-----------------------------

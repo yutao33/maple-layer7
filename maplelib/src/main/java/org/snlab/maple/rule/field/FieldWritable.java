@@ -13,7 +13,7 @@ import java.util.Set;
 
 
 public class FieldWritable {
-    public static MapleMatchField ETH_SRC = MapleMatchField.ETH_SRC;
+    public static final MapleMatchField ETH_SRC = MapleMatchField.ETH_SRC;
 
     public static Set<MapleMatchField> writableFields = new HashSet<>();
 
