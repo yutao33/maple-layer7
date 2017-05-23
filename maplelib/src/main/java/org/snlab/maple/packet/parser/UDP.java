@@ -21,11 +21,14 @@ package org.snlab.maple.packet.parser;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.snlab.maple.packet.types.IpProtocol;
 import org.snlab.maple.packet.types.TransportPort;
+import org.snlab.maple.packet.types.U16;
+import org.snlab.maple.rule.field.MapleMatchField;
 
 /**
  * @author David Erickson (daviderickson@cs.stanford.edu)
@@ -260,5 +263,15 @@ public class UDP extends BasePacket {
         this.payload = payload.deserialize(data, bb.position(), bb.limit() - bb.position());
         this.payload.setParent(this);
         return this;
+    }
+
+    @Override
+    public Map<MapleMatchField, byte[]> buildMatchFieldMap() {
+        Map<MapleMatchField, byte[]> map = new EnumMap<>(MapleMatchField.class);
+        int sport = sourcePort.getPort();
+        map.put(MapleMatchField.UDP_SPORT, U16.of(sport).getBytes());
+        int dport = destinationPort.getPort();
+        map.put(MapleMatchField.UDP_DPORT,U16.of(dport).getBytes());
+        return map;
     }
 }

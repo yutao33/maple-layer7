@@ -168,7 +168,7 @@ public class MaplePacket implements IMaplePacket {
     }
 
     @Override
-    public void setRoute(Forward... path) {
+    public void setRoute(Forward... path) {  //FIXME check path
         if (path.length == 0) {
             return;
         }

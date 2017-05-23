@@ -23,11 +23,11 @@ public class TrackedMap<K,V> {
 
     private MaplePacket pkt;
 
-    public TrackedMap(IReExecHandler handler){
+    TrackedMap(IReExecHandler handler){ //packet private
         this.handler = handler;
     }
 
-    public TrackedMap(MaplePacket pkt, TrackedMap<K,V> m1){
+    TrackedMap(MaplePacket pkt, TrackedMap<K,V> m1){ // packet private
         this.data = m1.data;
         this.handler = m1.handler;
         this.pkt = pkt;

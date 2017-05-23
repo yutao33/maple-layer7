@@ -10,6 +10,7 @@ package org.snlab.maple.tracetree;
 
 
 import com.google.common.base.Preconditions;
+import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.packet.MaplePacket;
 import org.snlab.maple.rule.MapleRule;
 import org.snlab.maple.rule.field.MapleMatchField;
@@ -253,11 +254,17 @@ public class TraceTree {
 
     private MapleRule updatedLNodeRule;
 
-    private void holdLNodeRule(TraceTreeLNode lNode){  //TODO fix it
+    private void holdLNodeRule(TraceTreeLNode lNode){  //FIXME
         updatedLNodeRule =  lNode.getRule();
     }
 
-    
+    public Object[] derivePackets(MapleTopology topo){  //FIXME
+        List<MaplePacket> genpkts = new ArrayList<>();
+        List<MaplePacket> outputpkts = new ArrayList<>();
+        List<MapleTopology.PortId> outputports = new ArrayList<>();
+        
+        return new Object[]{1,2};
+    }
 
 
     //-------------------------------generateRules-----------------------------

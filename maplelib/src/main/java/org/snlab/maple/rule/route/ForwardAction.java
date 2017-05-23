@@ -123,6 +123,35 @@ public final class ForwardAction {
         public SetField(MapleMatchField field, ByteArray value) {
             this.field = field;
             this.value = value;
+            Preconditions.checkArgument(field.getByteLength()==value.length());
+        }
+
+        public MapleMatchField getField() {
+            return field;
+        }
+
+        public ByteArray getValue() {
+            return value;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            if (!super.equals(o)) return false;
+
+            SetField setField = (SetField) o;
+
+            if (field != setField.field) return false;
+            return value.equals(setField.value);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = super.hashCode();
+            result = 31 * result + field.hashCode();
+            result = 31 * result + value.hashCode();
+            return result;
         }
     }
 
@@ -131,6 +160,24 @@ public final class ForwardAction {
 
         public PushVlan(short vlanId) {
             this.vlanId = vlanId;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            if (!super.equals(o)) return false;
+
+            PushVlan pushVlan = (PushVlan) o;
+
+            return vlanId == pushVlan.vlanId;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = super.hashCode();
+            result = 31 * result + (int) vlanId;
+            return result;
         }
     }
 

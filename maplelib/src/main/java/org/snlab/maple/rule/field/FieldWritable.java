@@ -14,11 +14,17 @@ import java.util.Set;
 
 public class FieldWritable {
     public static final MapleMatchField ETH_SRC = MapleMatchField.ETH_SRC;
+    public static final MapleMatchField ETH_DST = MapleMatchField.ETH_DST;
+    public static final MapleMatchField IPv4_SRC = MapleMatchField.IPv4_SRC;
+    public static final MapleMatchField IPv4_DST = MapleMatchField.IPv4_DST;
 
     public static Set<MapleMatchField> writableFields = new HashSet<>();
 
     static {
         writableFields.add(ETH_SRC);
+        writableFields.add(ETH_DST);
+        writableFields.add(IPv4_SRC);
+        writableFields.add(IPv4_DST);
     }
 
     public static boolean isWriteAble(MapleMatchField field) {
@@ -26,7 +32,7 @@ public class FieldWritable {
     }
 
     private FieldWritable() {
-
+        throw new UnsupportedOperationException();
     }
 
 }
