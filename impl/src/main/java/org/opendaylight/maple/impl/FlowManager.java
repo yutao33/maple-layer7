@@ -184,6 +184,9 @@ public class FlowManager {
                         List<FlowEntry> flows = ruleListMap.remove(rule); // !=null
                         for (FlowEntry flowEntry : flows) {
                             deleteODLRule(rwt,flowEntry.flowPath);
+                            if(flowEntry.portId!=null&&flowEntry.portId.toString().equals("openflow:3:2")){
+                                LOG.info("gotit");
+                            }
                         }
                         if(ruleListMap.size()==0&&!installNodes.contains(node)){
                             rulesForOneNode.remove(node);
@@ -228,7 +231,7 @@ public class FlowManager {
                             updateRuleForNode(rwt,node,fe.portId,fe.flowPath,odlPktFieldMatch,rule.getPriority(),forward);
                         }
                     } else {
-                        List<FlowEntry> flows = rulesForAllNodes.get(node);
+                        List<FlowEntry> flows = rulesForAllNodes.get(rule);
                         for (FlowEntry fe : flows) {
                             Preconditions.checkState(fe.portId==null);
                             Forward forward = portForward.get(null);
@@ -275,6 +278,10 @@ public class FlowManager {
                         Map<MapleTopology.PortId, Forward> portForwardMap = nodeMapEntry.getValue();
                         for (Map.Entry<MapleTopology.PortId, Forward> portForwardEntry : portForwardMap.entrySet()) {
                             MapleTopology.PortId port = portForwardEntry.getKey();
+
+                            if(port!=null&&port.toString().equals("openflow:3:2")){
+                                LOG.warn("gotit");
+                            }
                             Forward forward = portForwardEntry.getValue();
                             InstanceIdentifier<Flow> flowPath = installRuleforNode(rwt, node, port, odlPktFieldMatch, rule.getPriority(), forward);
                             flows.add(new FlowEntry(node,port,flowPath));
