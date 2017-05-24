@@ -80,10 +80,11 @@ public class TraceTreeTNode extends TraceTreeNode {
         //match.put(this.field, this.match);
         //this.barrierRule = new MapleRule(match, Forward.DEFAULT_PuntForwards);
         for (Map.Entry<MapleMatch, TNodeEntry> mentry : branchtrueMap.entrySet()) {
-            if(mentry.getValue()==null) {
+            TNodeEntry entry = mentry.getValue();
+            if(entry.barrierRule ==null) {
                 Map<MapleMatchField, MapleMatch> match = new EnumMap<>(matchMapBefore);
                 match.put(this.field, mentry.getKey());
-                mentry.getValue().barrierRule = new MapleRule(match, Forward.DEFAULT_PuntForwards);
+                entry.barrierRule = new MapleRule(match, Forward.DEFAULT_PuntForwards);
             }
         }
     }
