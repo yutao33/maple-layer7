@@ -14,6 +14,7 @@ import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.rule.match.ByteArray;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public final class ForwardAction {
 
@@ -39,9 +40,13 @@ public final class ForwardAction {
         return finalPunt;
     }
 
+    public static SetField setField(MapleMatchField field, ByteArray value, ByteArray mask) {
+        Preconditions.checkArgument(field.getByteLength() == value.length());
+        return new SetField(field, value, mask);
+    }
     public static SetField setField(MapleMatchField field, ByteArray value) {
-        Preconditions.checkArgument(field.getBitLength() == value.length());
-        return new SetField(field, value);
+        Preconditions.checkArgument(field.getByteLength() == value.length());
+        return new SetField(field, value, null);
     }
 
     public static PushVlan pushVlan(short vlanid) {
@@ -119,11 +124,16 @@ public final class ForwardAction {
     public static class SetField extends Action {
         private final MapleMatchField field;
         private final ByteArray value;
+        private final ByteArray mask;
 
-        public SetField(MapleMatchField field, ByteArray value) {
+        public SetField(MapleMatchField field,@Nonnull ByteArray value,@Nullable ByteArray mask) {
             this.field = field;
             this.value = value;
             Preconditions.checkArgument(field.getByteLength()==value.length());
+            this.mask = mask;
+            if(mask!=null){
+                Preconditions.checkArgument(field.getByteLength()==mask.length());
+            }
         }
 
         public MapleMatchField getField() {
@@ -132,6 +142,10 @@ public final class ForwardAction {
 
         public ByteArray getValue() {
             return value;
+        }
+
+        public ByteArray getMask() {
+            return mask;
         }
 
         @Override

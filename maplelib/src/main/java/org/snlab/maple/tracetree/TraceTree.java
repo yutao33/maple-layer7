@@ -12,9 +12,12 @@ package org.snlab.maple.tracetree;
 import com.google.common.base.Preconditions;
 import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.packet.MaplePacket;
+import org.snlab.maple.packet.OutPutPacket;
+import org.snlab.maple.packet.parser.Ethernet;
 import org.snlab.maple.rule.MapleRule;
 import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.rule.match.MapleMatch;
+import org.snlab.maple.rule.match.MapleMatchInPort;
 import org.snlab.maple.rule.match.ValueMaskPair;
 import org.snlab.maple.rule.route.Forward;
 import org.snlab.maple.rule.route.ForwardAction;
@@ -47,7 +50,7 @@ public class TraceTree {
 
     private Map<MapleMatchField, MapleMatch> matchMap = new EnumMap<>(MapleMatchField.class);
 
-    private Map<MapleMatchField, Set<ValueMaskPair>> unmatchMap = new EnumMap<>(MapleMatchField.class);//TODO for generate rules
+    private Map<MapleMatchField, Set<MapleMatch>> unmatchMap = new EnumMap<>(MapleMatchField.class);//TODO for generate rules
 
     private List<MapleRule> deleteRules = new ArrayList<>();
 
@@ -88,21 +91,12 @@ public class TraceTree {
                     matchMap.put(matchfield, mapEntry.getKey());
                 } else {
                     oldtestbranch = t.getBranchFalse();
-                    Set<ValueMaskPair> unmatchset = unmatchMap.get(matchfield);
+                    Set<MapleMatch> unmatchset = unmatchMap.get(matchfield);
                     if (unmatchset == null) {
                         unmatchset = new HashSet<>();
                         unmatchMap.put(matchfield, unmatchset);
                     }
-                    for (MapleMatch mmatch : t.getBranchTrueMap().keySet()) {
-                        unmatchset.add(mmatch.getMatch());
-                    }
-//                    Set<ValueMaskPair> unmatchset = unmatchMap.get(matchfield);
-//                    if (unmatchset == null) {
-//                        unmatchset = new HashSet<>(match.getMatchSet());
-//                        unmatchMap.put(matchfield, unmatchset);
-//                    } else {
-//                        unmatchset.addAll(match.getMatchSet());
-//                    }
+                    unmatchset.addAll(t.getBranchTrueMap().keySet());
                 }
 
 
@@ -223,11 +217,6 @@ public class TraceTree {
             l.removePktTrack();
         } else if (node instanceof TraceTreeTNode) {
             TraceTreeTNode t = (TraceTreeTNode) node;
-//            recurseMarkDeleted(t.getBranch(false));
-//            if (t.getBarrierRule() != null) {
-//                t.getBarrierRule().setIsDeleted(true);
-//            }
-//            recurseMarkDeleted(t.getBranch(true));
             recurseMarkDeleted(t.getBranchFalse());
             Map<MapleMatch, TraceTreeTNode.TNodeEntry> bm = t.getBranchTrueMap();
             for (TraceTreeTNode.TNodeEntry te : bm.values()) {
@@ -258,12 +247,91 @@ public class TraceTree {
         updatedLNodeRule =  lNode.getRule();
     }
 
-    public Object[] derivePackets(MapleTopology topo){  //FIXME
+    public Object[] derivePackets(MapleTopology topo, MaplePacket pkt){  //FIXME bad code
         List<MaplePacket> genpkts = new ArrayList<>();
-        List<MaplePacket> outputpkts = new ArrayList<>();
-        List<MapleTopology.PortId> outputports = new ArrayList<>();
-        
-        return new Object[]{1,2};
+        List<OutPutPacket> outputpkts = new ArrayList<>();
+        recursegenpkts(outputpkts,topo.findPort(pkt._getInPortId()),pkt._getFrame());
+        return new Object[]{outputpkts};
+    }
+
+    private void recursegenpkts(List<OutPutPacket> outputpkts, MapleTopology.Port inport, Ethernet ethernet) {
+        if(inport==null){
+            return;
+        }
+        MapleTopology.Node mynode = inport.getOwner();
+        MapleTopology.NodeId mynodeId = mynode.getId();
+        Map<MapleTopology.NodeId, Map<MapleTopology.PortId, Forward>> rulesMap = updatedLNodeRule.getRoute().getRulesMap();
+        Map<MapleTopology.PortId, Forward> portForwardMap = rulesMap.get(mynodeId);
+        if(portForwardMap==null){
+            portForwardMap = rulesMap.get(null);
+        }
+        if(portForwardMap==null){
+            return;
+        }
+        Forward forward = portForwardMap.get(inport.getId());
+        if(forward==null){
+            forward = portForwardMap.get(null);
+        }
+        List<MapleTopology.PortId> portIdList = new ArrayList<>();
+        byte[] holddata = ethernet.serialize();
+        List<ForwardAction.Action> actions = forward.getActions();
+        for (ForwardAction.Action action : actions) {
+            if(action instanceof ForwardAction.OutPut){
+                MapleTopology.PortId outportId = ((ForwardAction.OutPut) action).getPortId();
+                if(outportId.equals(inport.getId())){
+                    continue;
+                }
+                MapleTopology.Port topoport = null;
+                for (MapleTopology.Port p1 : mynode.getPorts()) {
+                    if(p1.getId().equals(outportId)){
+                        topoport=p1;
+                        break;
+                    }
+                }
+                if(topoport!=null){
+                    MapleTopology.Link topolink = topoport.getLink();
+                    if(topolink==null){
+                        portIdList.add(outportId);
+                    } else {
+                        MapleTopology.Port endport = topolink.getEnd();
+                        if(endportMatch(endport)){
+                            Ethernet ethernet1=new Ethernet();
+                            ethernet1.deserialize(holddata,0,holddata.length);//FIXME
+                            recursegenpkts(outputpkts,endport,ethernet1);
+                        }
+                    }
+                }
+            } else if(action instanceof ForwardAction.SetField){
+                //FIXME
+            } else if(action instanceof ForwardAction.Drop){
+                //nop
+            } else if(action instanceof ForwardAction.Punt){
+                //nop
+            } else {
+                throw new Error("type error");
+            }
+        }
+        if(portIdList.size()>0) {
+            outputpkts.add(new OutPutPacket(mynodeId, portIdList, holddata));
+        }
+    }
+
+    private boolean endportMatch(MapleTopology.Port endport) {
+        MapleTopology.PortId portId = endport.getId();
+        MapleMatchInPort match = (MapleMatchInPort)matchMap.get(MapleMatchField.INPORT);
+        if(match==null){
+            Set<MapleMatch> unmatches = unmatchMap.get(MapleMatchField.INPORT);
+            if(unmatches!=null) {
+                for (MapleMatch unmatch : unmatches) {
+                    MapleMatchInPort unmatchport = (MapleMatchInPort) unmatch;
+                    if (unmatchport.testMatch(portId)) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        return match.testMatch(portId);
     }
 
 

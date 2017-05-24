@@ -14,6 +14,7 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -66,7 +67,9 @@ public class ODLMapleProvider {
     public void init() {
         SalFlowService salFlowService = registry.getRpcService(SalFlowService.class);
 
-        ODLMapleAdaptor odlMapleAdaptor = new ODLMapleAdaptor(this.dataBroker, salFlowService);
+        PacketProcessingService packetProcessingService = registry.getRpcService(PacketProcessingService.class);
+
+        ODLMapleAdaptor odlMapleAdaptor = new ODLMapleAdaptor(this.dataBroker, salFlowService, packetProcessingService);
 
         MapleSystem mapleSystem = new MapleSystem(odlMapleAdaptor);
 

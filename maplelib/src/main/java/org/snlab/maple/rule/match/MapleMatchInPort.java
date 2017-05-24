@@ -39,6 +39,10 @@ public class MapleMatchInPort extends MapleMatch {
         return Collections.unmodifiableSet(nodes);
     }
 
+    public boolean testMatch(@Nonnull MapleTopology.PortId portId){
+        return ports.contains(portId) || nodes.contains(portId.getNodeId());
+    }
+
     @Nullable
     public MapleMatchInPort getSubMatchInPort(Set<MapleTopology.PortId> ports, Set<MapleTopology.NodeId> nodes) {
         Set<MapleTopology.PortId> subMatchPorts = new HashSet<>();

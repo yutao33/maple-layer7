@@ -28,6 +28,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlDstActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlSrcActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlSrcActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwDstActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwSrcActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwSrcActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropActionBuilder;
@@ -37,10 +39,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.dst.action._case.SetDlDstActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.src.action._case.SetDlSrcAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.src.action._case.SetDlSrcActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.dst.action._case.SetNwDstAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.dst.action._case.SetNwDstActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.src.action._case.SetNwSrcAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.src.action._case.SetNwSrcActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -403,9 +409,12 @@ public class FlowManager {
                                                     Match odlMatch,
                                                     Instructions instructions) {
         FlowId flowId = new FlowId("maple" + flowIdInc.getAndIncrement());
-        InstanceIdentifier<Node> iid = InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class, new NodeKey(new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId(nodeId)))
-                .build();
+//        InstanceIdentifier<Node> iid = InstanceIdentifier.builder(Nodes.class)
+//                .child(Node.class, new NodeKey(new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId(nodeId)))
+//                .build();
+
+        InstanceIdentifier<Node> iid = InstanceIdentifierUtils.genNodeIId(nodeId);
+
         InstanceIdentifier<Flow> flowPath = iid.builder().augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey((short) 0))
                 .child(Flow.class, new FlowKey(flowId))
@@ -540,6 +549,15 @@ public class FlowManager {
         return new Ipv4Prefix(ipstr + "/" + maskstr);
     }
 
+    private Ipv4Prefix buildIpv4Prefix(ByteArray ip, ByteArray mask) {
+        String ipstr = ip.toIpv4AddressString();
+        String maskstr = "32";
+        if (mask != null) {
+            maskstr = String.valueOf(mask.toPrefixMaskNum(32));
+        }
+        return new Ipv4Prefix(ipstr + "/" + maskstr);
+    }
+
     private Instructions buildODLInstructions(Forward forward) {
         ApplyActionsCase applyActionsCase = buildODLApplyActionsCase(forward);
         Instruction instruction = new InstructionBuilder()
@@ -600,6 +618,7 @@ public class FlowManager {
                 ForwardAction.SetField setField = (ForwardAction.SetField) action;
                 MapleMatchField field = setField.getField();
                 ByteArray value = setField.getValue();
+                ByteArray mask = setField.getMask();
                 org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action setFieldAction = null;
                 switch(field){
                     case ETH_SRC:
@@ -619,9 +638,26 @@ public class FlowManager {
                                 .build();
                         break;
                     case IPv4_SRC:
-
+                        Ipv4 ipv4 = new Ipv4Builder()
+                                .setIpv4Address(new Ipv4Prefix(buildIpv4Prefix(value, mask)))
+                                .build();
+                        SetNwSrcAction setNwSrcAction = new SetNwSrcActionBuilder()
+                                .setAddress(ipv4)
+                                .build();
+                        setFieldAction = new SetNwSrcActionCaseBuilder()
+                                .setSetNwSrcAction(setNwSrcAction)
+                                .build();
                         break;
                     case IPv4_DST:
+                        Ipv4 ipv4b = new Ipv4Builder()
+                                .setIpv4Address(new Ipv4Prefix(buildIpv4Prefix(value, mask)))
+                                .build();
+                        SetNwDstAction setNwDstAction = new SetNwDstActionBuilder()
+                                .setAddress(ipv4b)
+                                .build();
+                        setFieldAction = new SetNwDstActionCaseBuilder()
+                                .setSetNwDstAction(setNwDstAction)
+                                .build();
                         break;
                     default:
                         throw new Error("type error");

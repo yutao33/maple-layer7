@@ -12,10 +12,13 @@ package org.snlab.maple;
 import org.snlab.maple.api.MapleAppBase;
 import org.snlab.maple.app.ArpHandler;
 import org.snlab.maple.app.L2Switch;
+import org.snlab.maple.app.SetFieldTest;
 import org.snlab.maple.env.IReExecHandler;
 import org.snlab.maple.env.MapleDataManager;
 import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.packet.MaplePacket;
+import org.snlab.maple.packet.MaplePacketType;
+import org.snlab.maple.packet.OutPutPacket;
 import org.snlab.maple.packet.types.EthType;
 import org.snlab.maple.rule.MaplePacketInReason;
 import org.snlab.maple.rule.MapleRule;
@@ -58,13 +61,16 @@ public class MapleSystem{
             @Override
             public void onReExec(MaplePacket pkt) {
                 LOG.info("reexec");
-                addPktRunnable(new MaplePacket(pkt));
+                MaplePacket pkt1 = new MaplePacket(pkt);
+                pkt1.setType(MaplePacketType.REEXEC);
+                addPktRunnable(pkt1);
             }
         });
 
         //test
         this.mapleAppList.add(new ArpHandler());
         this.mapleAppList.add(new L2Switch());
+        //this.mapleAppList.add(new SetFieldTest());
 
     }
 
@@ -77,31 +83,35 @@ public class MapleSystem{
 
     private void onPacket(MaplePacket pkt) {
         synchronized (traceTree) {  //TODO fix it
-        pkt.getTraceList().clear();
-        MapleDataManager.MapleDataBroker db = dataManager.allocBroker(pkt);
+            pkt.getTraceList().clear();
+            MapleDataManager.MapleDataBroker db = dataManager.allocBroker(pkt);
 
-        for (MapleAppBase app : mapleAppList) {
-            if (app.onPacket(pkt,db)) {
-                break;
+            for (MapleAppBase app : mapleAppList) {
+                if (app.onPacket(pkt, db)) {
+                    break;
+                }
             }
-        }
 
-        dataManager.freeBroker(db);
+            dataManager.freeBroker(db);
 
-        List<MapleRule> rules = null;
+            List<MapleRule> rules = null;
 
             traceTree.update(pkt.getTraceList(), pkt);
             rules = traceTree.generateRules();
-            if(rules.size()>0) {
+            if (rules.size() > 0) {
                 mapleAdaptor.updateRules(rules);
-                mapleAdaptor.outPutTraceTree(traceTree,pkt);
-
+                mapleAdaptor.outPutTraceTree(traceTree, pkt);
             }
+
+            if(!pkt.getType().equals(MaplePacketType.REEXEC)) {
+                MapleTopology topo = dataManager.allocBroker(null).getTopology();//FIXME
+                Object[] objs = traceTree.derivePackets(topo, pkt);
+                List<OutPutPacket> outPutPackets = (List<OutPutPacket>) objs[0];
+                mapleAdaptor.sendPacket(outPutPackets);
+            }
+
             LOG.info("packet=" + pkt);
-
-
         }
-
     }
 
     private synchronized void addPktRunnable(final MaplePacket pkt){

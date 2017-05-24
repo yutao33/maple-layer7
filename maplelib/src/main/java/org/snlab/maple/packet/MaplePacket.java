@@ -48,6 +48,8 @@ public class MaplePacket implements IMaplePacket {
 
     private Set<TrackSet> trackSets = new HashSet<>();
 
+    private MaplePacketType type = MaplePacketType.NORMAL;
+
     public MaplePacket(byte[] data, MapleTopology.PortId inPortId) {
         this.inPortId = inPortId;
         this.frame = new Ethernet();
@@ -69,6 +71,14 @@ public class MaplePacket implements IMaplePacket {
 
     private void addTraceItem(TraceItem item) {
         this.traceList.add(item);
+    }
+
+    public MaplePacketType getType() {
+        return type;
+    }
+
+    public void setType(MaplePacketType type) {
+        this.type = type;
     }
 
     @Override
