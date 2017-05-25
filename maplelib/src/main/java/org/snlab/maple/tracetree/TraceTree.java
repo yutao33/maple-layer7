@@ -18,7 +18,6 @@ import org.snlab.maple.rule.MapleRule;
 import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.rule.match.MapleMatch;
 import org.snlab.maple.rule.match.MapleMatchInPort;
-import org.snlab.maple.rule.match.ValueMaskPair;
 import org.snlab.maple.rule.route.Forward;
 import org.snlab.maple.rule.route.ForwardAction;
 import org.snlab.maple.rule.route.Route;

@@ -11,6 +11,8 @@ package org.snlab.maple;
 
 import org.snlab.maple.api.MapleAppBase;
 import org.snlab.maple.app.ArpHandler;
+import org.snlab.maple.app.ArpHandler2;
+import org.snlab.maple.app.IPv4Switch;
 import org.snlab.maple.app.L2Switch;
 import org.snlab.maple.env.IReExecHandler;
 import org.snlab.maple.env.MapleDataManager;
@@ -67,10 +69,11 @@ public class MapleSystem{
         });
 
         //test
-        this.mapleAppList.add(new ArpHandler());
-        this.mapleAppList.add(new L2Switch());
+        //this.mapleAppList.add(new ArpHandler());
+        //this.mapleAppList.add(new L2Switch());
         //this.mapleAppList.add(new SetFieldTest());
-
+        this.mapleAppList.add(new ArpHandler2());
+        this.mapleAppList.add(new IPv4Switch());
     }
 
     public IMapleHandler getHandler() {
@@ -79,6 +82,8 @@ public class MapleSystem{
         }
         return handler;
     }
+
+    volatile int pktcount=0;
 
     private void onPacket(MaplePacket pkt) {
         synchronized (traceTree) {  //TODO fix it
@@ -109,7 +114,7 @@ public class MapleSystem{
                 mapleAdaptor.sendPacket(outPutPackets);
             }
 
-            LOG.info("packet=" + pkt);
+            LOG.info("pktcount="+(++pktcount)+" packet=" + pkt);
         }
     }
 
