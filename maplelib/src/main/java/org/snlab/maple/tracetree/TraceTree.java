@@ -211,8 +211,13 @@ public class TraceTree {
         if (node instanceof TraceTreeLNode) {
             TraceTreeLNode l = (TraceTreeLNode) node;
             MapleRule lrule = l.getRule();
-            lrule.setStatus(MapleRule.Status.DELETE);
-            this.deleteRules.add(lrule);
+            MapleRule.Status status = lrule.getStatus();
+            if(status.equals(MapleRule.Status.INSTALLED)) {
+                lrule.setStatus(MapleRule.Status.DELETE);
+                this.deleteRules.add(lrule);
+            } else {
+                lrule.setStatus(MapleRule.Status.DELETED);
+            }
             l.removePktTrack();
         } else if (node instanceof TraceTreeTNode) {
             TraceTreeTNode t = (TraceTreeTNode) node;
@@ -220,8 +225,13 @@ public class TraceTree {
             Map<MapleMatch, TraceTreeTNode.TNodeEntry> bm = t.getBranchTrueMap();
             for (TraceTreeTNode.TNodeEntry te : bm.values()) {
                 if (te.barrierRule != null) {
-                    te.barrierRule.setStatus(MapleRule.Status.DELETE);
-                    deleteRules.add(te.barrierRule);
+                    MapleRule.Status status = te.barrierRule.getStatus();
+                    if(status.equals(MapleRule.Status.INSTALLED)) {
+                        te.barrierRule.setStatus(MapleRule.Status.DELETE);
+                        this.deleteRules.add(te.barrierRule);
+                    } else {
+                        te.barrierRule.setStatus(MapleRule.Status.DELETED);
+                    }
                     recurseMarkDeleted(te.child);
                 }
             }
