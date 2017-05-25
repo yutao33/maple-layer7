@@ -12,7 +12,6 @@ package org.snlab.maple;
 import org.snlab.maple.api.MapleAppBase;
 import org.snlab.maple.app.ArpHandler;
 import org.snlab.maple.app.L2Switch;
-import org.snlab.maple.app.SetFieldTest;
 import org.snlab.maple.env.IReExecHandler;
 import org.snlab.maple.env.MapleDataManager;
 import org.snlab.maple.env.MapleTopology;

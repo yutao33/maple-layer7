@@ -272,6 +272,9 @@ public class TraceTree {
         if(forward==null){
             forward = portForwardMap.get(null);
         }
+        if(forward==null){
+            return;
+        }
         List<MapleTopology.PortId> portIdList = new ArrayList<>();
         byte[] holddata = ethernet.serialize();
         List<ForwardAction.Action> actions = forward.getActions();
