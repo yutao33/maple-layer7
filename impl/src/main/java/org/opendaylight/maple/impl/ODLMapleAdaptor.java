@@ -35,6 +35,8 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
 
     private FlowManager flowManager;
 
+    private SalFlowManager flowManager1;
+
     private PacketSender packetSender;
 
     public ODLMapleAdaptor(DataBroker dataBroker, SalFlowService salFlowService, PacketProcessingService packetProcessingService) {
@@ -42,7 +44,8 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
         this.salFlowService = salFlowService;
         this.packetProcessingService = packetProcessingService;
         this.traceTreeWriter = new TraceTreeWriter(dataBroker);
-        this.flowManager = new FlowManager(dataBroker);
+        //this.flowManager = new FlowManager(dataBroker);
+        this.flowManager1 = new SalFlowManager(salFlowService);
         this.packetSender = new PacketSender(packetProcessingService);
     }
 
@@ -65,7 +68,7 @@ public class ODLMapleAdaptor implements IMapleAdaptor {
     @Override
     public void updateRules(List<MapleRule> rules) {
 
-        flowManager.updateRules(rules);
+        flowManager1.updateRules(rules);
 
     }
 

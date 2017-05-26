@@ -10,10 +10,8 @@ package org.snlab.maple;
 
 
 import org.snlab.maple.api.MapleAppBase;
-import org.snlab.maple.app.ArpHandler;
 import org.snlab.maple.app.ArpHandler2;
 import org.snlab.maple.app.IPv4Switch;
-import org.snlab.maple.app.L2Switch;
 import org.snlab.maple.env.IReExecHandler;
 import org.snlab.maple.env.MapleDataManager;
 import org.snlab.maple.env.MapleTopology;
@@ -102,19 +100,27 @@ public class MapleSystem{
 
             traceTree.update(pkt.getTraceList(), pkt);
 
-            if(this.pktThreadPool.getQueue().size()<=1) {
-                rules = traceTree.generateRules();
-                if (rules.size() > 0) {
-                    mapleAdaptor.updateRules(rules);
-                    mapleAdaptor.outPutTraceTree(traceTree, pkt);
-                }
-            }
-
             if(!pkt.getType().equals(MaplePacketType.REEXEC)) {
                 MapleTopology topo = dataManager.allocBroker(null).getTopology();//FIXME
                 Object[] objs = traceTree.derivePackets(topo, pkt);
                 List<OutPutPacket> outPutPackets = (List<OutPutPacket>) objs[0];
+                List<MaplePacket> genpkts = (List<MaplePacket>) objs[1];
+                for (MaplePacket genpkt : genpkts) {
+                    addPktRunnable(genpkt);
+                }
                 mapleAdaptor.sendPacket(outPutPackets);
+                LOG.info("sendpacket="+outPutPackets);
+            }
+
+            if(this.pktThreadPool.getQueue().size()<=1) {
+                rules = traceTree.generateRules();
+                if (rules.size() > 0) {
+                    mapleAdaptor.updateRules(rules);
+//                    for (MapleRule rule : rules) {
+//                        rule.setStatus(MapleRule.Status.INSTALLED);
+//                    }
+                    mapleAdaptor.outPutTraceTree(traceTree, pkt);
+                }
             }
 
             LOG.info("pktcount="+(++pktcount)+" packet=" + pkt);
@@ -249,7 +255,7 @@ public class MapleSystem{
                     }).start();
                 }
             }
-            LOG.info("pktthreadpool size"+pktThreadPool.getQueue().size());
+            LOG.info("putList="+putList.toString()+" deleteList="+deleteList.toString()+" pktthreadpool size"+pktThreadPool.getQueue().size());
         }
     }
 }

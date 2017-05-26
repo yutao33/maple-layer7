@@ -259,11 +259,11 @@ public class TraceTree {
     public Object[] derivePackets(MapleTopology topo, MaplePacket pkt){  //FIXME bad code
         List<MaplePacket> genpkts = new ArrayList<>();
         List<OutPutPacket> outputpkts = new ArrayList<>();
-        recursegenpkts(outputpkts,topo.findPort(pkt._getInPortId()),pkt._getFrame());
-        return new Object[]{outputpkts};
+        recursegenpkts(genpkts, outputpkts,topo.findPort(pkt._getInPortId()),pkt._getFrame());
+        return new Object[]{outputpkts, genpkts};
     }
 
-    private void recursegenpkts(List<OutPutPacket> outputpkts, MapleTopology.Port inport, Ethernet ethernet) {
+    private void recursegenpkts(List<MaplePacket> genpkts, List<OutPutPacket> outputpkts, MapleTopology.Port inport, Ethernet ethernet) {
         if(inport==null){
             return;
         }
@@ -309,7 +309,9 @@ public class TraceTree {
                         if(endportMatch(endport)){
                             Ethernet ethernet1=new Ethernet();
                             ethernet1.deserialize(holddata,0,holddata.length);//FIXME
-                            recursegenpkts(outputpkts,endport,ethernet1);
+                            recursegenpkts(genpkts, outputpkts,endport,ethernet1);
+                        } else {
+                            genpkts.add(new MaplePacket(holddata,endport.getId()));
                         }
                     }
                 }

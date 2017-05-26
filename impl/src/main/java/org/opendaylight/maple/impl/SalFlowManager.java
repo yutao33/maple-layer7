@@ -10,17 +10,8 @@ package org.opendaylight.maple.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpVersion;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
@@ -29,10 +20,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlDstActionCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlSrcActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlSrcActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwDstActionCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwSrcActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwSrcActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropActionBuilder;
@@ -58,8 +47,21 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowTableRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
@@ -73,9 +75,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
@@ -97,9 +98,7 @@ import org.snlab.maple.rule.match.MapleMatch;
 import org.snlab.maple.rule.match.ValueMaskPair;
 import org.snlab.maple.rule.route.Forward;
 import org.snlab.maple.rule.route.ForwardAction;
-import org.snlab.maple.rule.route.Route;
 
-import javax.annotation.Nullable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -113,21 +112,21 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class FlowManager {
+public class SalFlowManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger(FlowManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SalFlowManager.class);
 
     private AtomicLong flowIdInc = new AtomicLong(10L);
 
     private AtomicLong flowCookieInc = new AtomicLong(0x1200000000000000L);
 
-    private final DataBroker dataBroker;
+    private final SalFlowService salFlowService;
 
-    private Map<MapleTopology.NodeId, Map<MapleRule,List<FlowEntry>>> rulesForOneNode = new HashMap<>();
-    private Map<MapleRule,List<FlowEntry>> rulesForAllNodes =new HashMap<>();
+    private Map<MapleTopology.NodeId, Map<MapleRule,List<SalFlowEntry>>> rulesForOneNode = new HashMap<>();
+    private Map<MapleRule,List<SalFlowEntry>> rulesForAllNodes =new HashMap<>();
 
-    public FlowManager(DataBroker dataBroker) {
-        this.dataBroker = dataBroker;
+    public SalFlowManager(SalFlowService salFlowService) {
+        this.salFlowService = salFlowService;
         initDefaultLLDPrule();
     }
 
@@ -171,7 +170,6 @@ public class FlowManager {
     }
 
     private void updateDeleteRules(List<MapleRule> rules, Set<MapleTopology.NodeId> installNodes) {
-        ReadWriteTransaction rwt = dataBroker.newReadWriteTransaction();   //TODO write only
 
         for (MapleRule rule : rules) {
             if(rule.getStatus().equals(MapleRule.Status.DELETE)){
@@ -179,27 +177,24 @@ public class FlowManager {
                 for (Map.Entry<MapleTopology.NodeId, Map<MapleTopology.PortId, Forward>> entry : rulesMap.entrySet()) {
                     MapleTopology.NodeId node = entry.getKey();
                     if(node==null){
-                        List<FlowEntry> flows = rulesForAllNodes.remove(rule); // != null
-                        for (FlowEntry flowEntry : flows) {
-                            deleteODLRule(rwt,flowEntry.flowPath);
+                        List<SalFlowEntry> flows = rulesForAllNodes.remove(rule); // != null
+                        for (SalFlowEntry flowEntry : flows) {
+                            deleteODLRule(flowEntry);
                         }
                     } else {
-                        Map<MapleRule, List<FlowEntry>> ruleListMap = rulesForOneNode.get(node); // !=null
-                        List<FlowEntry> flows = ruleListMap.remove(rule); // !=null
-                        for (FlowEntry flowEntry : flows) {
-                            deleteODLRule(rwt,flowEntry.flowPath);
-                            if(flowEntry.portId!=null&&flowEntry.portId.toString().equals("openflow:3:2")){
-                                LOG.info("gotit");
-                            }
+                        Map<MapleRule, List<SalFlowEntry>> ruleListMap = rulesForOneNode.get(node); // !=null
+                        List<SalFlowEntry> flows = ruleListMap.remove(rule); // !=null
+                        for (SalFlowEntry flowEntry : flows) {
+                            deleteODLRule(flowEntry);
                         }
                         if(ruleListMap.size()==0&&!installNodes.contains(node)){
                             rulesForOneNode.remove(node);
-                            for (List<FlowEntry> entry1 : rulesForAllNodes.values()) {
-                                Iterator<FlowEntry> iterator = entry1.iterator();
+                            for (List<SalFlowEntry> entry1 : rulesForAllNodes.values()) {
+                                Iterator<SalFlowEntry> iterator = entry1.iterator();
                                 while (iterator.hasNext()) {
-                                    FlowEntry next = iterator.next();
+                                    SalFlowEntry next = iterator.next();
                                     if(next.nodeId.equals(node)){
-                                        deleteODLRule(rwt,next.flowPath);
+                                        deleteODLRule(next);
                                         iterator.remove();
                                     }
                                 }
@@ -210,13 +205,9 @@ public class FlowManager {
                 rule.setStatus(MapleRule.Status.DELETED);
             }
         }
-
-        rwtSubmit(rwt);
     }
 
     private void updateUpdateRules(List<MapleRule> rules) {
-        ReadWriteTransaction rwt = dataBroker.newReadWriteTransaction();
-
         for (MapleRule rule : rules) {
             if(rule.getStatus().equals(MapleRule.Status.UPDATE)) {
                 Match odlPktFieldMatch = buildODLPktFieldMatch(rule.getMatches());
@@ -229,17 +220,21 @@ public class FlowManager {
                     Map<MapleTopology.PortId, Forward> portForward = nodeMapEntry.getValue();
 
                     if (node != null) {
-                        List<FlowEntry> flows = rulesForOneNode.get(node).get(rule);  // !=null
-                        for (FlowEntry fe : flows) {
+                        List<SalFlowEntry> flows = rulesForOneNode.get(node).get(rule);  // !=null
+                        for (SalFlowEntry fe : flows) {
                             Forward forward = portForward.get(fe.portId);
-                            updateRuleForNode(rwt,node,fe.portId,fe.flowPath,odlPktFieldMatch,rule.getPriority(),forward);
+                            fe.priority = rule.getPriority();
+                            fe.forward = forward;
+                            updateRuleForNode(fe,odlPktFieldMatch);
                         }
                     } else {
-                        List<FlowEntry> flows = rulesForAllNodes.get(rule);
-                        for (FlowEntry fe : flows) {
+                        List<SalFlowEntry> flows = rulesForAllNodes.get(rule);
+                        for (SalFlowEntry fe : flows) {
                             Preconditions.checkState(fe.portId==null);
                             Forward forward = portForward.get(null);
-                            updateRuleForNode(rwt,null,null,fe.flowPath,odlPktFieldMatch,rule.getPriority(),forward);
+                            fe.priority = rule.getPriority();
+                            fe.forward = forward;
+                            updateRuleForNode(fe,odlPktFieldMatch);
                         }
                     }
 
@@ -248,12 +243,9 @@ public class FlowManager {
                 rule.setStatus(MapleRule.Status.INSTALLED);
             }
         }
-
-        rwtSubmit(rwt);
     }
 
     private void updateInstallRules(List<MapleRule> rules){
-        ReadWriteTransaction rwt = dataBroker.newReadWriteTransaction();
 
         List<MapleTopology.NodeId> incNodes = new ArrayList<>();
 
@@ -266,14 +258,14 @@ public class FlowManager {
                 for (Map.Entry<MapleTopology.NodeId, Map<MapleTopology.PortId, Forward>> nodeMapEntry : rulesMap.entrySet()) {
                     MapleTopology.NodeId node = nodeMapEntry.getKey();
                     if (node != null) {
-                        Map<MapleRule, List<FlowEntry>> ruleFlowsMap = rulesForOneNode.get(node);
+                        Map<MapleRule, List<SalFlowEntry>> ruleFlowsMap = rulesForOneNode.get(node);
                         if(ruleFlowsMap==null){
                             ruleFlowsMap=new HashMap<>();
                             rulesForOneNode.put(node,ruleFlowsMap);
                             incNodes.add(node);
                         }
 
-                        List<FlowEntry> flows = ruleFlowsMap.get(rule);
+                        List<SalFlowEntry> flows = ruleFlowsMap.get(rule);
                         if(flows==null){
                             flows=new LinkedList<>();
                             ruleFlowsMap.put(rule,flows);
@@ -287,8 +279,9 @@ public class FlowManager {
                                 LOG.warn("gotit");
                             }
                             Forward forward = portForwardEntry.getValue();
-                            InstanceIdentifier<Flow> flowPath = installRuleforNode(rwt, node, port, odlPktFieldMatch, rule.getPriority(), forward);
-                            flows.add(new FlowEntry(node,port,flowPath));
+                            SalFlowEntry salFlowEntry = new SalFlowEntry(node, port, rule.getPriority(), forward);
+                            installRuleforNode(salFlowEntry, odlPktFieldMatch);
+                            flows.add(salFlowEntry);
                         }
                     }
                 }
@@ -296,14 +289,15 @@ public class FlowManager {
             }
         }
 
-        for (Map.Entry<MapleRule, List<FlowEntry>> entry : rulesForAllNodes.entrySet()) {
+        for (Map.Entry<MapleRule, List<SalFlowEntry>> entry : rulesForAllNodes.entrySet()) {
             MapleRule rule = entry.getKey();
-            List<FlowEntry> flows = entry.getValue();
+            List<SalFlowEntry> flows = entry.getValue();
             Match odlPktFieldMatch = buildODLPktFieldMatch(rule.getMatches());
             Forward forward = rule.getRoute().getRulesMap().get(null).get(null);
             for (MapleTopology.NodeId incNode : incNodes) {
-                InstanceIdentifier<Flow> flowPath = installRuleforNode(rwt, incNode, null, odlPktFieldMatch, rule.getPriority(), forward);
-                flows.add(new FlowEntry(incNode,null,flowPath));
+                SalFlowEntry salFlowEntry = new SalFlowEntry(incNode, null, rule.getPriority(), forward);
+                installRuleforNode(salFlowEntry, odlPktFieldMatch);
+                flows.add(salFlowEntry);
             }
         }
 
@@ -315,13 +309,14 @@ public class FlowManager {
                     Forward allNodesForward = portForwardMap.get(null);
                     if (allNodesForward != null) {
 
-                        List<FlowEntry> flows = new LinkedList<>();
+                        List<SalFlowEntry> flows = new LinkedList<>();
                         rulesForAllNodes.put(rule,flows);
 
                         Match odlPktFieldMatch = buildODLPktFieldMatch(rule.getMatches());
                         for (MapleTopology.NodeId node : rulesForOneNode.keySet()) {
-                            InstanceIdentifier<Flow> flowPath = installRuleforNode(rwt, node, null, odlPktFieldMatch, rule.getPriority(), allNodesForward);
-                            flows.add(new FlowEntry(node,null,flowPath));
+                            SalFlowEntry salFlowEntry = new SalFlowEntry(node, null, rule.getPriority(), allNodesForward);
+                            installRuleforNode(salFlowEntry, odlPktFieldMatch);
+                            flows.add(salFlowEntry);
                         }
                     }
                 }
@@ -329,64 +324,39 @@ public class FlowManager {
                 rule.setStatus(MapleRule.Status.INSTALLED);
             }
         }
-
-        rwtSubmit(rwt);
     }
 
 
 
-    private void deleteODLRule(WriteTransaction wt, InstanceIdentifier<Flow> flowPath) {
-        wt.delete(LogicalDatastoreType.CONFIGURATION,flowPath);
+    private void deleteODLRule(SalFlowEntry entry) {
+        RemoveFlowInputBuilder builder = new RemoveFlowInputBuilder(entry.flow);
+        InstanceIdentifier<Flow> flowPath = entry.flowPath;
+        FlowId flowId = entry.flow.getId();
+
+        RemoveFlowInput input = builder.setNode(new NodeRef(flowPath.firstIdentifierOf(Node.class)))
+                .setFlowRef(new FlowRef(flowPath))
+                .setFlowTable(new FlowTableRef(flowPath.firstIdentifierOf(Table.class)))
+                .setTransactionUri(new Uri(flowId))
+                .build();
+        salFlowService.removeFlow(input);
     }
 
-
-    private void rwtSubmit(ReadWriteTransaction rwt) {
-//        CheckedFuture<Void, TransactionCommitFailedException> future = rwt.submit();
-//        Futures.addCallback(future, new FutureCallback<Void>() {
-//            @Override
-//            public void onSuccess(@Nullable Void result) {
-//                LOG.info("success");
-//            }
-//
-//            @Override
-//            public void onFailure(Throwable t) {
-//                LOG.info("failed " + t.getMessage());
-//            }
-//        });
-        try {
-            rwt.submit().checkedGet();
-        } catch (TransactionCommitFailedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void deleteAllRules(ReadWriteTransaction rwt) {
-        InstanceIdentifier<Nodes> nodesIId = InstanceIdentifier.builder(Nodes.class).build();
-        rwt.delete(LogicalDatastoreType.CONFIGURATION, nodesIId);
-    }
-
-    private void updateRuleForNode(WriteTransaction wt,
-                                   MapleTopology.NodeId node,
-                                   MapleTopology.PortId port,
-                                   InstanceIdentifier<Flow> flowPath,
-                                   Match odlPktFieldMatch,
-                                   int priority,
-                                   Forward forward) {
+    private void updateRuleForNode(SalFlowEntry entry, Match odlPktFieldMatch) {
         Match odlMatch = odlPktFieldMatch;
-        if (port != null) {
+        if (entry.portId != null) {
             MatchBuilder matchBuilder = new MatchBuilder(odlPktFieldMatch);
-            matchBuilder.setInPort(new NodeConnectorId(port.toString()));
+            matchBuilder.setInPort(new NodeConnectorId(entry.portId.toString()));
             odlMatch = matchBuilder.build();
         }
-        Instructions instructions = buildODLInstructions(forward);
+        Instructions instructions = buildODLInstructions(entry.forward);
 
-        FlowId flowId=flowPath.firstKeyOf(Flow.class).getId();
+        FlowId flowId=entry.flowPath.firstKeyOf(Flow.class).getId();
         FlowBuilder flowBuilder = new FlowBuilder()
                 .setId(flowId)
                 .setTableId((short) 0)
                 .setMatch(odlMatch)
                 .setInstructions(instructions)
-                .setPriority(priority)
+                .setPriority(entry.priority)
                 .setBufferId(OFConstants.OFP_NO_BUFFER)
                 .setHardTimeout(null)
                 .setIdleTimeout(null)
@@ -394,37 +364,34 @@ public class FlowManager {
                 .setFlags(new FlowModFlags(false, false, false, false, false));
         Flow flow = flowBuilder.build();
 
-        wt.put(LogicalDatastoreType.CONFIGURATION, flowPath, flow, true);
+        OriginalFlow originalFlow = new OriginalFlowBuilder(entry.flow).build();
+        UpdatedFlow updatedFlow = new UpdatedFlowBuilder(flow).build();
+
+        UpdateFlowInputBuilder builder = new UpdateFlowInputBuilder();
+        UpdateFlowInput input = builder.setFlowRef(new FlowRef(entry.flowPath))
+                .setNode(new NodeRef(entry.flowPath.firstIdentifierOf(Node.class)))
+                .setOriginalFlow(originalFlow)
+                .setUpdatedFlow(updatedFlow)
+                .setTransactionUri(new Uri(flowId))
+                .build();
+
+        salFlowService.updateFlow(input);
+
+        entry.flow = flow;
     }
 
-    private InstanceIdentifier<Flow> installRuleforNode(WriteTransaction wt,
-                                                        MapleTopology.NodeId node,
-                                                        MapleTopology.PortId port,
-                                                        Match odlPktFieldMatch,
-                                                        int priority,
-                                                        Forward forward) {
+    private void installRuleforNode(SalFlowEntry entry, Match odlPktFieldMatch) {
         Match odlMatch = odlPktFieldMatch;
-        if (port != null) {
+        if (entry.portId != null) {
             MatchBuilder matchBuilder = new MatchBuilder(odlPktFieldMatch);
-            matchBuilder.setInPort(new NodeConnectorId(port.toString()));
+            matchBuilder.setInPort(new NodeConnectorId(entry.portId.toString()));
             odlMatch = matchBuilder.build();
         }
-        Instructions instructions = buildODLInstructions(forward);
+        Instructions instructions = buildODLInstructions(entry.forward);
 
-        return installODLRule(wt, node.toString(), priority, odlMatch, instructions);
-    }
-
-    private InstanceIdentifier<Flow> installODLRule(WriteTransaction wt,
-                                                    String nodeId,
-                                                    int priority,
-                                                    Match odlMatch,
-                                                    Instructions instructions) {
         FlowId flowId = new FlowId("maple" + flowIdInc.getAndIncrement());
-//        InstanceIdentifier<Node> iid = InstanceIdentifier.builder(Nodes.class)
-//                .child(Node.class, new NodeKey(new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId(nodeId)))
-//                .build();
 
-        InstanceIdentifier<Node> iid = InstanceIdentifierUtils.genNodeIId(nodeId);
+        InstanceIdentifier<Node> iid = InstanceIdentifierUtils.genNodeIId(entry.nodeId.toString());
 
         InstanceIdentifier<Flow> flowPath = iid.builder().augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey((short) 0))
@@ -436,7 +403,7 @@ public class FlowManager {
                 .setTableId((short) 0)
                 .setMatch(odlMatch)
                 .setInstructions(instructions)
-                .setPriority(priority)
+                .setPriority(entry.priority)
                 .setBufferId(OFConstants.OFP_NO_BUFFER)
                 .setHardTimeout(null)
                 .setIdleTimeout(null)
@@ -444,10 +411,17 @@ public class FlowManager {
                 .setFlags(new FlowModFlags(false, false, false, false, false));
         Flow flow = flowBuilder.build();
 
-        wt.put(LogicalDatastoreType.CONFIGURATION, flowPath, flow, true);
+        entry.flowPath = flowPath;
+        entry.flow = flow;
 
-        return flowPath;
+        AddFlowInputBuilder builder = new AddFlowInputBuilder(flow);
+        AddFlowInput input = builder.setNode(new NodeRef(iid))
+                .setFlowRef(new FlowRef(flowPath))
+                .setFlowTable(new FlowTableRef(flowPath.<Table>firstIdentifierOf(Table.class)))
+                .setTransactionUri(new Uri(flowId))
+                .build();
 
+        salFlowService.addFlow(input);
     }
 
     private Match buildODLPktFieldMatch(Map<MapleMatchField, MapleMatch> matches) {
