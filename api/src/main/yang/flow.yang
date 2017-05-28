@@ -1,0 +1,52 @@
+module odlmaple-flow {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:odlmaple:flow";
+    prefix "flow";
+
+    import ietf-inet-types {
+        prefix inet;
+        revision-date "2013-07-15";
+    }
+
+    revision "2017-05-12" {
+        description "Initial revision";
+    }
+
+    grouping flow-tuple {
+        leaf src-ip {
+            type inet:ipv4-address;
+        }
+
+        leaf dst-ip {
+            type inet:ipv4-address;
+        }
+
+        leaf src-port {
+            type inet:port-number;
+        }
+
+        leaf dst-port {
+            type inet:port-number;
+        }
+
+        leaf ip-proto {
+            type uint8;
+        }
+    }
+
+    container baseflow {
+        list flow-metadata {
+            key flow-id;
+
+            leaf flow-id {
+                type string;
+            }
+
+            uses flow-tuple;
+
+            leaf flow-type {
+                type string;
+            }
+        }
+    }
+}

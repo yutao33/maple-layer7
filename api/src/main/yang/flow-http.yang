@@ -1,0 +1,59 @@
+module flow-http {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:odlmaple:flow:http";
+    prefix "flowhttp";
+
+    import yang-ext {
+        prefix ext;
+        revision-date "2013-07-09";
+    }
+
+    import odlmaple-flow {
+        prefix flow;
+        revision-date "2017-05-12";
+    }
+
+    revision "2017-05-12" {
+        description "Initial revision";
+    }
+
+    augment "/flow:baseflow/flow:flow-metadata/" {
+        ext:augment-identifier "http-flow-metadata";
+
+        container http-metadata {
+
+            leaf method {
+                type string;
+            }
+
+            leaf requestURL {
+                type string;
+            }
+
+            list requestHeader {
+                key name;
+                leaf name {
+                    type string;
+                }
+                leaf value {
+                    type string;
+                }
+            }
+
+            leaf responseStatus {
+                type string;
+            }
+
+            list responseHeader {
+                key name;
+                leaf name {
+                    type string;
+                }
+                leaf value {
+                    type string;
+                }
+            }
+
+        }
+    }
+}
