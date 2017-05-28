@@ -10,8 +10,10 @@ package org.snlab.maple;
 
 
 import org.snlab.maple.api.MapleAppBase;
+import org.snlab.maple.app.ArpHandler;
 import org.snlab.maple.app.ArpHandler2;
 import org.snlab.maple.app.IPv4Switch;
+import org.snlab.maple.app.L2Switch;
 import org.snlab.maple.env.IReExecHandler;
 import org.snlab.maple.env.MapleDataManager;
 import org.snlab.maple.env.MapleTopology;
@@ -38,7 +40,7 @@ public class MapleSystem{
 
     private final static Logger LOG = Logger.getLogger(MapleSystem.class.toString());
 
-    private final static int THREADPOOLSIZE = Runtime.getRuntime().availableProcessors();
+    private final static int THREADPOOLSIZE = 1;//Runtime.getRuntime().availableProcessors();
 
     private final IMapleAdaptor mapleAdaptor;
     private final TraceTree traceTree;
@@ -67,11 +69,11 @@ public class MapleSystem{
         });
 
         //test
-        //this.mapleAppList.add(new ArpHandler());
-        //this.mapleAppList.add(new L2Switch());
+        this.mapleAppList.add(new ArpHandler());
+        this.mapleAppList.add(new L2Switch());
         //this.mapleAppList.add(new SetFieldTest());
-        this.mapleAppList.add(new ArpHandler2());
-        this.mapleAppList.add(new IPv4Switch());
+        //this.mapleAppList.add(new ArpHandler2());
+        //this.mapleAppList.add(new IPv4Switch());
     }
 
     public IMapleHandler getHandler() {
@@ -111,11 +113,13 @@ public class MapleSystem{
                 mapleAdaptor.sendPacket(outPutPackets);
                 LOG.info("sendpacket="+outPutPackets);
             }
-
-            if(this.pktThreadPool.getQueue().size()<=1) {
+            int k=this.pktThreadPool.getQueue().size();
+            if(k<=1) {
                 rules = traceTree.generateRules();
+                LOG.warning("queuesize="+k+" rules="+rules.size());
                 if (rules.size() > 0) {
                     mapleAdaptor.updateRules(rules);
+                    LOG.warning("updateRules="+rules);
 //                    for (MapleRule rule : rules) {
 //                        rule.setStatus(MapleRule.Status.INSTALLED);
 //                    }
@@ -227,7 +231,7 @@ public class MapleSystem{
             if(putList.size()>0) {
                 synchronized (cachePutList) {
                     cachePutList.addAll(putList);
-                    cacheThreadEndTime = Calendar.getInstance().getTimeInMillis()+5000;
+                    cacheThreadEndTime = Calendar.getInstance().getTimeInMillis()+1000;
                 }
                 if(!cacheThread){
                     cacheThread = true;

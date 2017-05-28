@@ -48,10 +48,10 @@ public class MapleDataManager {
     public boolean updateTopology(List<MapleTopology.Element> putList,
                                List<MapleTopology.Element> deleteList) {
         boolean ret = topology.update(putList, deleteList);
-        String info = "updateTopology:\nputList="
+        String info = "updateTopology:putList="
                 + putList.toString()
-                + "\ndeleteList=" + deleteList.toString()
-                + "\nreturn=" + ret;
+                + " ,deleteList=" + deleteList.toString()
+                + " ,return=" + ret;
         if (ret) {
             info += "\nTopology=\n" + topology.toString();
         }

@@ -153,9 +153,10 @@ public class MapleRule {
     @Override
     public String toString() {
         return "MapleRule{" +
-                "priority=" + priority +
+                "status=" + status +
                 ", matches=" + matches +
                 ", route=" + route +
+                ", priority=" + priority +
                 '}';
     }
 }

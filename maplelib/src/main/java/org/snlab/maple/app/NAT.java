@@ -14,11 +14,7 @@ import org.snlab.maple.api.MapleAppBase;
 
 public class NAT extends MapleAppBase{
 
-    @Override
-    public boolean init(IMapleDataBroker env) {
 
-        return true;
-    }
 
     @Override
     public boolean onPacket(IMaplePacket pkt, IMapleDataBroker db) {

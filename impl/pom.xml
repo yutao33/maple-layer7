@@ -82,6 +82,11 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
           <artifactId>openflowplugin-api</artifactId>
           <version>${openflowplugin.version}</version>
       </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.applications</groupId>
+      <artifactId>lldp-speaker</artifactId>
+      <version>${openflowplugin.version}</version>
+    </dependency>
   </dependencies>
 
 </project>
