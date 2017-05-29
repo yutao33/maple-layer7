@@ -133,6 +133,31 @@ public class MaplePacket implements IMaplePacket {
     }
 
     @Override
+    public PktField ipProto(){
+        return new PktField(MapleMatchField.IP_PROTO);
+    }
+
+    @Override
+    public PktField tcpSPort(){
+        return new PktField(MapleMatchField.TCP_SPORT);
+    }
+
+    @Override
+    public PktField tcpDPort(){
+        return new PktField(MapleMatchField.TCP_DPORT);
+    }
+
+    @Override
+    public PktField udpSPort(){
+        return new PktField(MapleMatchField.UDP_SPORT);
+    }
+
+    @Override
+    public PktField udpDPort(){
+        return new PktField(MapleMatchField.UDP_DPORT);
+    }
+
+    @Override
     public PktInPort inport() {
         return new PktInPort();
     }

@@ -15,6 +15,8 @@ import org.snlab.maple.app.ArpHandler2;
 import org.snlab.maple.app.IPv4Switch;
 import org.snlab.maple.app.L2Switch;
 import org.snlab.maple.app.L7Test;
+import org.snlab.maple.app.M2;
+import org.snlab.maple.app.TCPPortTest;
 import org.snlab.maple.env.IReExecHandler;
 import org.snlab.maple.env.MapleDataManager;
 import org.snlab.maple.env.MapleTopology;
@@ -75,7 +77,9 @@ public class MapleSystem{
         //this.mapleAppList.add(new SetFieldTest());
         this.mapleAppList.add(new ArpHandler2());
         //this.mapleAppList.add(new IPv4Switch());
-        this.mapleAppList.add(new L7Test());
+        //this.mapleAppList.add(new L7Test());
+        //this.mapleAppList.add(new TCPPortTest());
+        this.mapleAppList.add(new M2());
     }
 
     public IMapleHandler getHandler() {

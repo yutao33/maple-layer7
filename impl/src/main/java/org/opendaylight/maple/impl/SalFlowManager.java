@@ -13,6 +13,7 @@ import com.google.common.collect.ImmutableList;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCase;
@@ -87,6 +88,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -432,6 +435,8 @@ public class SalFlowManager {
         Ipv6MatchBuilder ipv6MatchBuilder = null;
         ArpMatchBuilder arpMatchBuilder = null;
         IpMatchBuilder ipMatchBuilder = null;
+        TcpMatchBuilder tcpMatchBuilder = null;
+        UdpMatchBuilder udpMatchBuilder = null;
 
         for (Map.Entry<MapleMatchField, MapleMatch> entry : matches.entrySet()) {
             MapleMatchField field = entry.getKey();
@@ -495,15 +500,49 @@ public class SalFlowManager {
                     if (ipMatchBuilder == null) {
                         ipMatchBuilder = new IpMatchBuilder();
                     }
-                    ipMatchBuilder.setIpProtocol(value.toShort());
+                    short val = (short) (value.toByte() & 0xff);
+                    ipMatchBuilder.setIpProtocol(val);
+                    break;
                 case IPv6_SRC:
                     if (ipv6MatchBuilder == null) {
                         ipv6MatchBuilder = new Ipv6MatchBuilder();
                     }
                     //ipv6MatchBuilder.setIpv6Source(new IPv6Prefix())
-                    break;
+                    throw new UnsupportedOperationException();
+                    //break;
                 case IPv6_DST:
+                    throw new UnsupportedOperationException();
+                    //break;
+                case TCP_SPORT:
+                    //FIXME
+                    if(tcpMatchBuilder==null){
+                        tcpMatchBuilder = new TcpMatchBuilder();
+                    }
+                    tcpMatchBuilder.setTcpSourcePort(new PortNumber(value.toShort()&0xffff));
                     break;
+                case TCP_DPORT:
+                    //FIXME
+                    if(tcpMatchBuilder==null){
+                        tcpMatchBuilder = new TcpMatchBuilder();
+                    }
+                    tcpMatchBuilder.setTcpDestinationPort(new PortNumber(value.toShort()&0xffff));
+                    break;
+                case UDP_SPORT:
+                    //FIXME
+                    if(udpMatchBuilder==null){
+                        udpMatchBuilder= new UdpMatchBuilder();
+                    }
+                    udpMatchBuilder.setUdpSourcePort(new PortNumber(value.toShort()&0xffff));
+                    break;
+                case UDP_DPORT:
+                    //FIXME
+                    if(udpMatchBuilder==null){
+                        udpMatchBuilder= new UdpMatchBuilder();
+                    }
+                    udpMatchBuilder.setUdpDestinationPort(new PortNumber(value.toShort()&0xffff));
+                    break;
+                default:
+                    throw new Error("type error");
             }
         }
 
@@ -519,6 +558,12 @@ public class SalFlowManager {
             matchBuilder.setLayer3Match(ipv6MatchBuilder.build());
         } else if (arpMatchBuilder != null) {
             matchBuilder.setLayer3Match(arpMatchBuilder.build());
+        }
+
+        if(tcpMatchBuilder!=null){
+            matchBuilder.setLayer4Match(tcpMatchBuilder.build());
+        } else if(udpMatchBuilder!=null){
+            matchBuilder.setLayer4Match(udpMatchBuilder.build());
         }
 
         return matchBuilder.build();

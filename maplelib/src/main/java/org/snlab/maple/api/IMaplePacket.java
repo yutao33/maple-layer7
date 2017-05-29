@@ -29,6 +29,16 @@ public interface IMaplePacket {
 
     MaplePacket.PktFieldMaskable ipDst();
 
+    MaplePacket.PktField ipProto();
+
+    MaplePacket.PktField tcpSPort();
+
+    MaplePacket.PktField tcpDPort();
+
+    MaplePacket.PktField udpSPort();
+
+    MaplePacket.PktField udpDPort();
+
     MaplePacket.PktInPort inport();
 
     void setRoute(String... path);

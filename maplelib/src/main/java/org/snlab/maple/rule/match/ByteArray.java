@@ -111,6 +111,10 @@ public class ByteArray {
         return c;
     }
 
+    public byte toByte(){
+        Preconditions.checkState(value.length==1);
+        return value[0];
+    }
 
     public short toShort() {
         Preconditions.checkState(value.length == 2);

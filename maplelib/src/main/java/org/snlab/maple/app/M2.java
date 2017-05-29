@@ -9,87 +9,74 @@
 package org.snlab.maple.app;
 
 
+import org.snlab.maple.api.IMapleDataBroker;
+import org.snlab.maple.api.IMaplePacket;
 import org.snlab.maple.api.MapleAppBase;
-import org.snlab.maple.packet.parser.IPv4;
+import org.snlab.maple.env.MapleTopology;
+import org.snlab.maple.env.TrackedMap;
+import org.snlab.maple.packet.types.IPv4Address;
+import org.snlab.maple.rule.route.Forward;
 
 public class M2 extends MapleAppBase {
 
-    private static final String TOPO_URL = "/root/network-topology/topology";
-    private static final String HOST_TABLE_URL = "/root/host-table";
-
     private static final String H1 = "10.0.0.1";
-    private static final int H1_IP = IPv4.toIPv4Address(H1);
+    private static final byte[] H1_IP = IPv4Address.of(H1).getBytes();
 
     private static final String H2 = "10.0.0.2";
-    private static final int H2_IP = IPv4.toIPv4Address(H2);
+    private static final byte[] H2_IP = IPv4Address.of(H2).getBytes();
 
-    private static final int HTTP_PORT = 80;
+    private static final byte[] HTTPPORT=new byte[]{0,80};
+    private static final byte[] TCP=new byte[]{6};
 
-    private static final String[] H12_HIGH_PATH = {H1, "openflow:1:3", "openflow:2:2", "openflow:4:1"};
-    private static final String[] H12_LOW_PATH = {H1, "openflow:1:4", "openflow:3:2", "openflow:4:1"};
-    private static final String[] H21_HIGH_PATH = {H2, "openflow:4:4", "openflow:2:1", "openflow:1:1"};
-    private static final String[] H21_LOW_PATH = {H2, "openflow:4:5", "openflow:3:1", "openflow:1:1"};
+    private static final String[] H12_HIGH_PATH = {null, "openflow:1:3",null, "openflow:2:2",null, "openflow:4:1"};
+    private static final String[] H12_LOW_PATH = {null, "openflow:1:4", null,"openflow:3:2", null, "openflow:4:1"};
+    private static final String[] H21_HIGH_PATH = {null, "openflow:4:4",null, "openflow:2:1", null, "openflow:1:1"};
+    private static final String[] H21_LOW_PATH = {null, "openflow:4:5", null, "openflow:3:1", null, "openflow:1:1"};
 
-//	public void staticRoute(MaplePacket pkt) {
-//		// H1 (client) -> H2 (server)
-//		if ( pkt.IPv4SrcIs(H1_IP) && pkt.IPv4DstIs(H2_IP) ) {
-//
-//			String[] path = null;
-//
-//			if ( ! pkt.TCPDstPortIs(HTTP_PORT) ) {  // All non HTTP IP, e.g., UDP, PING, SSH
-//				path = H12_LOW_PATH;
-//			} else {                                // Only HTTP traffic
-//				path = H12_HIGH_PATH;
-//			}
-//
-//			pkt.setRoute(path);
-//
-//			// Reverse: H2 -> H1
-//		} else if ( pkt.IPv4SrcIs(H2_IP) && pkt.IPv4DstIs(H1_IP) ) {
-//
-//				String[] path = null;
-//
-//				if ( ! pkt.TCPSrcPortIs(HTTP_PORT) ) {
-//					path = H21_LOW_PATH;
-//				} else {
-//					path = H21_HIGH_PATH;
-//				}
-//				pkt.setRoute(path);
-//
-//			// Other host pairs
-//			}
-//	} // end of staticRoute
-//
-//	@Override
-//	public boolean onPacket(MaplePacket pkt) {
-//
-//		int ethType = pkt.ethType();
-//
-//		// For IPv4 traffic only
-//		if ( ethType == Ethernet.TYPE_IPv4 ) {
-//			staticRoute( pkt );
-//
-//			if (pkt.route() == null) {
-////				if (pkt.TCPDstPortIs(80) || pkt.TCPSrcPortIs(80)) {
-////					int srcIP = pkt.IPv4Src();
-////					int dstIP = pkt.IPv4Dst();
-////
-////					Topology topo = (Topology) readData(TOPO_URL);
-////					Map<Integer, Port> hostTable = (Map<Integer, Port>) readData(HOST_TABLE_URL);
-////					Port srcPort = hostTable.get(srcIP);
-////					Port dstPort = hostTable.get(dstIP);
-////
-////					pkt.setRoute(MapleUtil.shortestPath(topo.getLink(), srcPort, dstPort));
-////				} else {
-////					pkt.setRoute(Route.DROP);
-////				}
-//			}
-//
-//		}
-//
-//		return false;
-//
-//	}
+	public boolean staticRoute(IMaplePacket pkt) {
+
+		if ( pkt.ipSrc().is(H1_IP) && pkt.ipDst().is(H2_IP) ) {
+			if (pkt.ipProto().is(TCP) && pkt.tcpDPort().is(HTTPPORT) ) {
+				pkt.setRoute(H12_HIGH_PATH);
+			} else {
+				pkt.setRoute(H12_LOW_PATH);
+			}
+			return true;
+		} else if ( pkt.ipSrc().is(H2_IP) && pkt.ipDst().is(H1_IP) ) {
+            if (pkt.ipProto().is(TCP) && pkt.tcpSPort().is(HTTPPORT)) {
+                pkt.setRoute(H21_HIGH_PATH);
+            } else {
+                pkt.setRoute(H21_LOW_PATH);
+            }
+            return true;
+        }
+        return false;
+	}
+
+	@Override
+	public boolean onPacket(IMaplePacket pkt, IMapleDataBroker db) {
+		if ( pkt.ethType().is(new byte[]{8,0}) ) {
+			boolean ret = staticRoute( pkt );
+			if (! ret ) {
+				if (pkt.ipProto().is(TCP) && pkt.tcpDPort().is(HTTPPORT)
+                        || pkt.ipProto().is(TCP) && pkt.tcpSPort().is(HTTPPORT)) {
+                    byte[] bs = pkt.ipSrc().get();
+                    IPv4Address src = IPv4Address.of(bs);
+                    byte[] bs1 = pkt.ipDst().get();
+                    IPv4Address dst = IPv4Address.of(bs1);
+                    TrackedMap<IPv4Address, MapleTopology.PortId> iPv4HostTable = db.getIPv4HostTable();
+                    MapleTopology.PortId srcPort = iPv4HostTable.get(src);
+                    MapleTopology.PortId dstPort = iPv4HostTable.get(dst);
+                    MapleTopology topo = db.getTopology();
+                    pkt.setRoute(topo.shortestPath(srcPort,dstPort));
+				} else {
+					pkt.setRoute(Forward.DROP);
+				}
+			}
+
+		}
+		return true;
+	}
 
 }
 

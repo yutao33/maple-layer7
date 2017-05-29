@@ -8,7 +8,9 @@
 package org.opendaylight.maple.impl;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -22,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.odlmaple.flow.rev170512.Baseflow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.LldpSpeakerService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.SetLldpFloodIntervalInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.SetLldpFloodIntervalInputBuilder;
@@ -32,7 +35,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snlab.maple.IMapleHandler;
 import org.snlab.maple.MapleSystem;
+import org.snlab.maple.packet.MapleFlow;
 
+import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 
 public class ODLMapleProvider {
@@ -130,6 +136,14 @@ public class ODLMapleProvider {
         DataTreeIdentifier<State> dti = new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, stateiid);
 
         dataBroker.registerDataTreeChangeListener(dti,new NodesListener());
+
+        InstanceIdentifier<Baseflow> baseflowIId = InstanceIdentifier.builder(Baseflow.class).build();
+        DataTreeIdentifier<Baseflow> baseflowDTId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, baseflowIId);
+        dataBroker.registerDataTreeChangeListener(baseflowDTId,(e)->{
+            for (DataTreeModification<Baseflow> baseflowDataTreeModification : e) {
+                LOG.warn(baseflowDataTreeModification.toString());
+            }
+        });
 
     }
 
