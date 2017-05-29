@@ -17,6 +17,7 @@
 
 package org.snlab.maple.packet.types;
 
+import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import org.snlab.maple.packet.exceptions.OFParseError;
 import org.snlab.maple.packet.protocol.OFMessageReader;
@@ -39,6 +40,11 @@ public class U16 implements Writeable, OFValueType<U16> {
 
     public static short t(final int l) {
         return (short) l;
+    }
+
+    public static short bytesToShort(byte[] value) {
+        Preconditions.checkState(value.length == 2);
+        return (short) ((value[0] << 8) | (value[1] & 0xff));
     }
 
     private final short raw;

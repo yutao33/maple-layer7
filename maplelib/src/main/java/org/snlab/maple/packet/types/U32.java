@@ -17,6 +17,7 @@
 
 package org.snlab.maple.packet.types;
 
+import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import org.snlab.maple.packet.exceptions.OFParseError;
 import org.snlab.maple.packet.protocol.OFMessageReader;
@@ -49,6 +50,14 @@ public class U32 implements Writeable, OFValueType<U32> {
         if (raw == NO_MASK_VAL)
             return NO_MASK;
         return new U32(raw);
+    }
+
+    public static int bytesToInt(byte[] value) {
+        Preconditions.checkState(value.length == 4);
+        return ((value[0] << 24)&0xff000000)
+                | ((value[1]<<16)&0xff0000)
+                | ((value[2]<<8)&0xff00)
+                | (value[3] & 0xff);
     }
 
     public long getValue() {

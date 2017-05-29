@@ -9,6 +9,8 @@
 package org.snlab.maple;
 
 import org.snlab.maple.env.MapleTopology;
+import org.snlab.maple.flow.IPFiveTuple;
+import org.snlab.maple.flow.flowinfo.AbstractFlowInfo;
 import org.snlab.maple.rule.MaplePacketInReason;
 
 import java.util.List;
@@ -20,4 +22,6 @@ public interface IMapleHandler {
 
     void onTopologyChanged(List<MapleTopology.Element> putList,
                            List<MapleTopology.Element> deleteList);
+
+    void onFlowChanged(IPFiveTuple key, AbstractFlowInfo flowInfo);
 }

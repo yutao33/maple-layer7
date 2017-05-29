@@ -13,7 +13,11 @@ import com.google.common.base.Preconditions;
 import org.snlab.maple.api.IMaplePacket;
 import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.env.TrackSet;
+import org.snlab.maple.flow.IPFiveTuple;
+import org.snlab.maple.flow.MapleFlow;
 import org.snlab.maple.packet.parser.Ethernet;
+import org.snlab.maple.packet.types.U16;
+import org.snlab.maple.packet.types.U32;
 import org.snlab.maple.rule.field.MapleMatchField;
 import org.snlab.maple.rule.route.Forward;
 import org.snlab.maple.tracetree.Trace;
@@ -69,10 +73,6 @@ public class MaplePacket implements IMaplePacket {
         return traceList;
     }
 
-    private void addTraceItem(TraceItem item) {
-        this.traceList.add(item);
-    }
-
     public MaplePacketType getType() {
         return type;
     }
@@ -88,6 +88,14 @@ public class MaplePacket implements IMaplePacket {
                 ", frame=" + frame +
                 '}';
     }
+
+
+    //------------------add traceitem, for inner class--------------------
+
+    private void addTraceItem(TraceItem item) {
+        this.traceList.add(item);
+    }
+
 
     //-------------------------------get Raw packet functions-----------------------------
 
@@ -167,6 +175,33 @@ public class MaplePacket implements IMaplePacket {
         throw new UnsupportedOperationException();
     }
 
+
+    //-------------------------------flow function-----------------------------
+
+
+
+    @Override
+    @Nullable
+    public MapleFlow flow(){
+        byte[] ethtype = this.ethType().get();
+        if(ethtype[0]==8&&ethtype[1]==0){    //FIXME bad code
+            byte[] ipproto = this.ipProto().get();
+            byte[] src = this.ipSrc().get();
+            byte[] dst = this.ipDst().get();
+            int src1 = U32.bytesToInt(src);
+            int dst1 = U32.bytesToInt(dst);
+            if(ipproto[0]==6){ //tcp
+                short sport = U16.bytesToShort(this.tcpSPort().get());
+                short dport = U16.bytesToShort(this.tcpDPort().get());
+                IPFiveTuple key = new IPFiveTuple(ipproto[0], src1, dst1, sport, dport);
+            } else if(ipproto[0]==17){//udp
+                short sport = U16.bytesToShort(this.udpSPort().get());
+                short dport = U16.bytesToShort(this.udpDPort().get());
+                IPFiveTuple key = new IPFiveTuple(ipproto[0], src1, dst1, sport, dport);
+            }
+        }
+        return null;
+    }
 
     //-------------------------------Route functions-----------------------------
 

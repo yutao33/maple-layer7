@@ -20,6 +20,9 @@ import org.snlab.maple.app.TCPPortTest;
 import org.snlab.maple.env.IReExecHandler;
 import org.snlab.maple.env.MapleDataManager;
 import org.snlab.maple.env.MapleTopology;
+import org.snlab.maple.flow.IPFiveTuple;
+import org.snlab.maple.flow.MapleFlowManager;
+import org.snlab.maple.flow.flowinfo.AbstractFlowInfo;
 import org.snlab.maple.packet.MaplePacket;
 import org.snlab.maple.packet.MaplePacketType;
 import org.snlab.maple.packet.OutPutPacket;
@@ -52,6 +55,7 @@ public class MapleSystem{
     //private BlockingQueue<Runnable> pktBlockingQueue;
     private ThreadPoolExecutor pktThreadPool;
     private MapleDataManager dataManager;
+    private MapleFlowManager l7flowManager;
 
 
     public MapleSystem(IMapleAdaptor mapleAdaptor) {
@@ -70,6 +74,8 @@ public class MapleSystem{
                 addPktRunnable(pkt1);
             }
         });
+
+        this.l7flowManager = new MapleFlowManager();
 
         //test
         //this.mapleAppList.add(new ArpHandler());
@@ -266,6 +272,12 @@ public class MapleSystem{
                 }
             }
             LOG.info("putList="+putList.toString()+" deleteList="+deleteList.toString()+" pktthreadpool size"+pktThreadPool.getQueue().size());
+        }
+
+
+        @Override
+        public void onFlowChanged(IPFiveTuple key, AbstractFlowInfo flowInfo) {
+            l7flowManager.updateFlow(key,flowInfo);
         }
     }
 }

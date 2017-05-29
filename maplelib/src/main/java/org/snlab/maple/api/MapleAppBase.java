@@ -11,6 +11,11 @@ package org.snlab.maple.api;
 
 public abstract class MapleAppBase {
 
+    protected static final byte[] ARP=new byte[]{8,6};
+    protected static final byte[] IPv4=new byte[]{8,0};
+    protected static final byte[] TCP=new byte[]{6};
+    protected static final byte[] UDP=new byte[]{17};
+
     public boolean init(IMapleDataBroker env) {
         return true;
     }

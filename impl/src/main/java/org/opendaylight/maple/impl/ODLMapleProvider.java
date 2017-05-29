@@ -8,7 +8,6 @@
 package org.opendaylight.maple.impl;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
@@ -17,7 +16,6 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.flow.capable.port.State;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -25,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.odlmaple.flow.rev170512.Baseflow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.odlmaple.flow.rev170512.baseflow.FlowMetadata;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.LldpSpeakerService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.SetLldpFloodIntervalInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.SetLldpFloodIntervalInputBuilder;
@@ -35,10 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snlab.maple.IMapleHandler;
 import org.snlab.maple.MapleSystem;
-import org.snlab.maple.packet.MapleFlow;
 
-import javax.annotation.Nonnull;
-import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 
 public class ODLMapleProvider {
@@ -52,6 +48,7 @@ public class ODLMapleProvider {
 
     private ListenerRegistration<PacketHandler> packetHandlerListenerRegistration;
     private ListenerRegistration<TopologyListener> topologyListenerListenerRegistration;
+    private ListenerRegistration<BaseflowListener> baseflowListenerListenerRegistration;
 
 //    public ODLMapleProvider(DataBroker dataBroker,
 //                            RpcProviderRegistry registry,
@@ -112,21 +109,20 @@ public class ODLMapleProvider {
 
         packetHandlerListenerRegistration = notificationService.registerNotificationListener(packetHandler);
 
-        InstanceIdentifier<NetworkTopology> iid = InstanceIdentifier.builder(NetworkTopology.class).build();
+        InstanceIdentifier<NetworkTopology> networkTopologyIId = InstanceIdentifier.builder(NetworkTopology.class).build();
         //dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,iid,new TopologyListener(), AsyncDataBroker.DataChangeScope.BASE);
+        DataTreeIdentifier<NetworkTopology> networkTopologyDTId = new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, networkTopologyIId);
+        topologyListenerListenerRegistration = dataBroker.registerDataTreeChangeListener(networkTopologyDTId, new TopologyListener(mapleHandler));
 
-        DataTreeIdentifier<NetworkTopology> ntti = new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, iid);
+        InstanceIdentifier<Baseflow> baseflowIId = InstanceIdentifier.builder(Baseflow.class).build();
+        DataTreeIdentifier<Baseflow> baseflowDTId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, baseflowIId);
+        baseflowListenerListenerRegistration = dataBroker.registerDataTreeChangeListener(baseflowDTId, new BaseflowListener(mapleHandler));
 
-        topologyListenerListenerRegistration = dataBroker.registerDataTreeChangeListener(ntti, new TopologyListener(mapleHandler));
 
-        LOG.info("ODLMapleProvider Session Initiated");
-
-        notificationService.registerNotificationListener(new PortEventListener());
+        //notificationService.registerNotificationListener(new PortEventListener());
         InstanceIdentifier<Nodes> iid1 = InstanceIdentifier.builder(Nodes.class).build();
-
         InstanceIdentifier<FlowCapableNode> iid2 = InstanceIdentifier.builder(Nodes.class).child(Node.class)
                 .augmentation(FlowCapableNode.class).build();
-
         InstanceIdentifier<State> stateiid = iid1.child(Node.class).child(NodeConnector.class).augmentation(FlowCapableNodeConnector.class).child(State.class);
 
         DataTreeIdentifier<Nodes> ntti1 = new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, iid1);
@@ -137,14 +133,8 @@ public class ODLMapleProvider {
 
         dataBroker.registerDataTreeChangeListener(dti,new NodesListener());
 
-        InstanceIdentifier<Baseflow> baseflowIId = InstanceIdentifier.builder(Baseflow.class).build();
-        DataTreeIdentifier<Baseflow> baseflowDTId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, baseflowIId);
-        dataBroker.registerDataTreeChangeListener(baseflowDTId,(e)->{
-            for (DataTreeModification<Baseflow> baseflowDataTreeModification : e) {
-                LOG.warn(baseflowDataTreeModification.toString());
-            }
-        });
-
+        LOG.info("ODLMapleProvider Session Initiated");
+        System.out.println("ODLMapleProvider Session Initiated");
     }
 
     /**
@@ -153,6 +143,7 @@ public class ODLMapleProvider {
     public void close() {
         packetHandlerListenerRegistration.close();
         topologyListenerListenerRegistration.close();
+        baseflowListenerListenerRegistration.close();
         LOG.info("ODLMapleProvider Closed");
     }
 }

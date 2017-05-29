@@ -6,7 +6,16 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.snlab.maple.packet;
+package org.snlab.maple.flow.flowinfo;
 
-public class MapleFlow {
+public abstract class AbstractFlowInfo {
+    protected FlowType type;
+
+    public AbstractFlowInfo(FlowType type) {
+        this.type = type;
+    }
+
+    public FlowType getType() {
+        return type;
+    }
 }
