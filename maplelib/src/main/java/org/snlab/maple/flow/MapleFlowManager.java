@@ -8,9 +8,13 @@
 
 package org.snlab.maple.flow;
 
+import org.snlab.maple.env.IReExecHandler;
 import org.snlab.maple.flow.flowinfo.AbstractFlowInfo;
+import org.snlab.maple.flow.flowinfo.FlowType;
+import org.snlab.maple.flow.flowinfo.UNKNOWNFlowInfo;
 import org.snlab.maple.packet.MaplePacket;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -20,16 +24,45 @@ public class MapleFlowManager {
     private final static Logger LOG = Logger.getLogger(MapleFlowManager.class.toString());
 
 
-    private Map<IPFiveTuple,MapleFlow> flowMap;
+    private Map<IPFiveTuple,AbstractFlowInfo> flowMap = new HashMap<>();
+    private IReExecHandler reExecHandler;
 
-    public MapleFlow findFlow(MaplePacket pkt){
-        //MapleFlow mapleFlow = flowMap.get(key);
-        //return mapleFlow;
-        return null;
+    public MapleFlowManager(IReExecHandler reExecHandler) {
+        this.reExecHandler = reExecHandler;
     }
 
-    public void updateFlow(IPFiveTuple key, AbstractFlowInfo flowInfo){
+    public synchronized MapleFlowBroker findFlow(MaplePacket pkt, IPFiveTuple key){
+        AbstractFlowInfo flowInfo = flowMap.get(key);
+        if(flowInfo==null){
+            flowInfo=new UNKNOWNFlowInfo();
+            flowMap.put(key,flowInfo);
+        }
+        return new MapleFlowBroker(flowInfo,pkt);
+    }
+
+    public synchronized void updateFlow(IPFiveTuple key, AbstractFlowInfo flowInfo){
+
+        updateSingleFlow(key,flowInfo);
+
+        if(flowInfo.getType(null).equals(FlowType.HTTP)){
+            updateSingleFlow(key.reverse(),flowInfo);
+        }
+
         LOG.info(flowInfo.toString());
+    }
+
+    private void updateSingleFlow(IPFiveTuple key, AbstractFlowInfo flowInfo) {
+        AbstractFlowInfo oldFlowInfo = flowMap.get(key);
+        Set<MaplePacket> pkts=null;
+        if(oldFlowInfo.getType(null).equals(flowInfo.getType(null))){
+            pkts = oldFlowInfo.updateAndreturnTrack(flowInfo);
+        } else {
+            flowMap.put(key, flowInfo);
+            pkts = oldFlowInfo.getAndremoveAllTrack();
+        }
+        for (MaplePacket pkt : pkts) {
+            reExecHandler.onReExec(pkt);
+        }
     }
 
 }

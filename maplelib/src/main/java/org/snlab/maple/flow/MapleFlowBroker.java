@@ -13,23 +13,38 @@ import org.snlab.maple.flow.flowinfo.AbstractFlowInfo;
 import org.snlab.maple.flow.flowinfo.FlowType;
 import org.snlab.maple.flow.flowinfo.HTTPFlowInfo;
 import org.snlab.maple.flow.flowinfo.SSHFlowInfo;
+import org.snlab.maple.packet.MaplePacket;
 
-public class MapleFlow {
+public class MapleFlowBroker {
 
-    private AbstractFlowInfo flowInfo;
+    private final AbstractFlowInfo flowInfo;
 
-    public FlowType type(){
-        return flowInfo.getType();
+    private final MaplePacket pkt;
+
+    public MapleFlowBroker(AbstractFlowInfo flowInfo, MaplePacket pkt) {
+        this.flowInfo = flowInfo;
+        this.pkt = pkt;
     }
 
-    public HTTPFlowInfo http(){
+    public FlowType type(){
+        return flowInfo.getType(this.pkt);
+    }
+
+    private HTTPFlowInfo http(){
         Preconditions.checkState(flowInfo instanceof HTTPFlowInfo);
         return (HTTPFlowInfo)flowInfo;
     }
 
-    public SSHFlowInfo ssh(){
+    private SSHFlowInfo ssh(){
         Preconditions.checkState(flowInfo instanceof SSHFlowInfo);
         return (SSHFlowInfo)flowInfo;
     }
 
+    public String httpMethod(){
+        return http().getMethod(this.pkt);
+    }
+
+    public String httpRequestURL(){
+        return http().getRequestURL(this.pkt);
+    }
 }

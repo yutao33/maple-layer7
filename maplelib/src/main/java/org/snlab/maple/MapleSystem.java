@@ -65,7 +65,7 @@ public class MapleSystem{
         BlockingQueue<Runnable> pktBlockingQueue = new LinkedBlockingQueue<>();
         this.pktThreadPool = new ThreadPoolExecutor(THREADPOOLSIZE, THREADPOOLSIZE, 1, TimeUnit.MINUTES, pktBlockingQueue);
 
-        this.dataManager = new MapleDataManager(THREADPOOLSIZE,new IReExecHandler(){
+        IReExecHandler reExecHandler = new IReExecHandler() {
             @Override
             public void onReExec(MaplePacket pkt) {
                 LOG.info("reexec");
@@ -73,9 +73,11 @@ public class MapleSystem{
                 pkt1.setType(MaplePacketType.REEXEC);
                 addPktRunnable(pkt1);
             }
-        });
+        };
 
-        this.l7flowManager = new MapleFlowManager();
+        this.dataManager = new MapleDataManager(THREADPOOLSIZE,reExecHandler);
+
+        this.l7flowManager = new MapleFlowManager(reExecHandler);
 
         //test
         //this.mapleAppList.add(new ArpHandler());
@@ -85,7 +87,7 @@ public class MapleSystem{
         //this.mapleAppList.add(new IPv4Switch());
         //this.mapleAppList.add(new L7Test());
         //this.mapleAppList.add(new TCPPortTest());
-        this.mapleAppList.add(new M2());
+        this.mapleAppList.add(new L7Test());
     }
 
     public IMapleHandler getHandler() {
@@ -101,6 +103,8 @@ public class MapleSystem{
         synchronized (traceTree) {  //TODO fix it
             pkt.getTraceList().clear();
             MapleDataManager.MapleDataBroker db = dataManager.allocBroker(pkt);
+
+            pkt.setFlowManager(l7flowManager);
 
             for (MapleAppBase app : mapleAppList) {
                 if (app.onPacket(pkt, db)) {

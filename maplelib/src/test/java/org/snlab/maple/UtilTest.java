@@ -11,10 +11,9 @@ package org.snlab.maple;
 import org.junit.Assert;
 import org.junit.Test;
 import org.snlab.maple.packet.types.U32;
-import org.snlab.maple.packet.util.HexString;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class UtilTest {
@@ -31,5 +30,13 @@ public class UtilTest {
             //System.out.println(bytes[0]);
             Assert.assertEquals(rand,ret);
         }
+
+        Map<String,String> test=new HashMap<>();
+        test.put("2","1");
+        test.put("1","2");
+        Map<String,String> test1=new HashMap<>();
+        test1.put("1","2");
+        test1.put("2","1");
+        System.out.println(test1.equals(test));
     }
 }

@@ -45,7 +45,7 @@ public class TraceTree {
         return treeroot;
     }
 
-    //-------------------------------update-----------------------------
+    //-------------------------------updateAndreturnTrack-----------------------------
 
     private Map<MapleMatchField, MapleMatch> matchMap = new EnumMap<>(MapleMatchField.class);
 
@@ -156,7 +156,7 @@ public class TraceTree {
     @Nullable
     private TraceTreeNode testifexpected_ornew(@Nullable TraceTreeNode node, @Nonnull Trace.TraceItem item) {
         if (node != null && node.isConsistentWith(item)) {
-            return node;  //NOTE no need to update
+            return node;  //NOTE no need to updateAndreturnTrack
         }
 
         TraceTreeNode ret = null;
@@ -393,7 +393,7 @@ public class TraceTree {
                     incrementRules.add(rule);
                 }
             } else {
-                throw new RuntimeException("update priority error");
+                throw new RuntimeException("updateAndreturnTrack priority error");
             }
             allRules.add(rule);
         } else if (node instanceof TraceTreeTNode) {
@@ -421,7 +421,7 @@ public class TraceTree {
                             incrementRules.add(te.barrierRule);
                         }
                     } else {
-                        throw new RuntimeException("update priority error1");
+                        throw new RuntimeException("updateAndreturnTrack priority error1");
                     }
                     allRules.add(te.barrierRule);
                     globalpriority++;

@@ -204,7 +204,7 @@ public class MapleTopology {
     }
 
     /**
-     * for MapleEnv to update topology.
+     * for MapleEnv to updateAndreturnTrack topology.
      *
      * @param putList    add elements.
      * @param deleteList delete elements.

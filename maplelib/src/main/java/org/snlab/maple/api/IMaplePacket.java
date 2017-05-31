@@ -9,12 +9,10 @@
 package org.snlab.maple.api;
 
 import org.snlab.maple.env.MapleTopology;
-import org.snlab.maple.flow.MapleFlow;
+import org.snlab.maple.flow.MapleFlowBroker;
 import org.snlab.maple.packet.MaplePacket;
 import org.snlab.maple.packet.parser.Ethernet;
 import org.snlab.maple.rule.route.Forward;
-
-import javax.annotation.Nullable;
 
 public interface IMaplePacket {
 
@@ -44,8 +42,9 @@ public interface IMaplePacket {
 
     MaplePacket.PktInPort inport();
 
-    @Nullable
-    MapleFlow flow();
+    boolean ipSrcOrDstIs(byte[] ip);
+
+    MapleFlowBroker flow();
 
     void setRoute(String... path);
 

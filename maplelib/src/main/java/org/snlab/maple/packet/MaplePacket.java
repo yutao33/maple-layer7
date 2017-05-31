@@ -14,7 +14,8 @@ import org.snlab.maple.api.IMaplePacket;
 import org.snlab.maple.env.MapleTopology;
 import org.snlab.maple.env.TrackSet;
 import org.snlab.maple.flow.IPFiveTuple;
-import org.snlab.maple.flow.MapleFlow;
+import org.snlab.maple.flow.MapleFlowBroker;
+import org.snlab.maple.flow.MapleFlowManager;
 import org.snlab.maple.packet.parser.Ethernet;
 import org.snlab.maple.packet.types.U16;
 import org.snlab.maple.packet.types.U32;
@@ -176,13 +177,28 @@ public class MaplePacket implements IMaplePacket {
     }
 
 
-    //-------------------------------flow function-----------------------------
-
-
+    //-------------------------------multi function-----------------------------
 
     @Override
-    @Nullable
-    public MapleFlow flow(){
+    public boolean ipSrcOrDstIs(byte[] ip){
+        return this.ipSrc().is(ip)||this.ipDst().is(ip);
+    }
+
+    //-------------------------------pktflow function-----------------------------
+
+    private MapleFlowManager flowManager;
+
+    public void setFlowManager(MapleFlowManager flowManager) {
+        this.flowManager = flowManager;
+    }
+
+    private MapleFlowBroker pktflow =null;
+
+    @Override
+    public MapleFlowBroker flow(){
+        if(pktflow !=null){
+            return pktflow;
+        }
         byte[] ethtype = this.ethType().get();
         if(ethtype[0]==8&&ethtype[1]==0){    //FIXME bad code
             byte[] ipproto = this.ipProto().get();
@@ -194,13 +210,15 @@ public class MaplePacket implements IMaplePacket {
                 short sport = U16.bytesToShort(this.tcpSPort().get());
                 short dport = U16.bytesToShort(this.tcpDPort().get());
                 IPFiveTuple key = new IPFiveTuple(ipproto[0], src1, dst1, sport, dport);
+                pktflow =flowManager.findFlow(this,key);
             } else if(ipproto[0]==17){//udp
                 short sport = U16.bytesToShort(this.udpSPort().get());
                 short dport = U16.bytesToShort(this.udpDPort().get());
                 IPFiveTuple key = new IPFiveTuple(ipproto[0], src1, dst1, sport, dport);
+                pktflow =flowManager.findFlow(this,key);
             }
         }
-        return null;
+        return pktflow;
     }
 
     //-------------------------------Route functions-----------------------------
