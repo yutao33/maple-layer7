@@ -189,6 +189,43 @@ public class MapleTopology {
         }
     }
 
+    public synchronized Forward[] spanningTreeToHost(PortId dst) {
+        if(dst==null){
+            return new Forward[0];
+        }
+        Port dstport = findPort(dst);
+        if(dstport==null){
+            return new Forward[0];
+        }
+        for (Node node : this.nodes.values()) {
+            node.flag = 0;
+        }
+        List<Forward> list = new ArrayList<>();
+        recurse1(dstport,list);
+        Forward[] ret = new Forward[list.size()];
+        list.toArray(ret);
+        return ret;
+    }
+
+    private void recurse1(Port dstport, List<Forward> list) {
+        Node node = dstport.getOwner();
+        if(node.flag==1){
+            return;
+        }
+        list.add(new Forward(null,ForwardAction.output(dstport.getId())));
+        node.flag=1;
+        Set<Port> ports = node.getPorts();
+        for (Port port : ports) {
+            if(!port.equals(dstport)){
+                Link link = port.getLink();
+                if(isBidirectional(link)){
+                    Port end = link.getEnd();
+                    recurse1(end,list);
+                }
+            }
+        }
+    }
+
     public synchronized String[] getBorderPorts() {
         List<String> list = new ArrayList<>();
         for (Node node : nodes.values()) {

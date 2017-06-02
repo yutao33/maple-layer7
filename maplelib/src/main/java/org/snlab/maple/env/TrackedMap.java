@@ -53,9 +53,9 @@ public class TrackedMap<K,V> {
             data.put(key,unit);
         } else {
             if(!Objects.equal(value,unit.value)){
-                if(unit.value!=null){
+                //if(unit.value!=null){
                     unit.trackSet.reexec(handler);
-                }
+                //}
             }
             unit.value = value;
         }

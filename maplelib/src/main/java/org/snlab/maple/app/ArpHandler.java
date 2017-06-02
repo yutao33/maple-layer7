@@ -34,6 +34,8 @@ public class ArpHandler extends MapleAppBase {
                 MapleTopology.PortId inPortId = pkt._getInPortId();
                 macHostTable.put(src,inPortId);
 
+                //System.out.println("src="+src+" inport="+inPortId);
+
                 pkt.addRoute(Forward.PUNT);
             }
 

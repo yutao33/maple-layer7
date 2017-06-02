@@ -14,8 +14,11 @@ import org.snlab.maple.app.ArpHandler;
 import org.snlab.maple.app.ArpHandler2;
 import org.snlab.maple.app.IPv4Switch;
 import org.snlab.maple.app.L2Switch;
+import org.snlab.maple.app.L2SwitchDstSpanningTree;
+import org.snlab.maple.app.L2SwitchMaskTest;
 import org.snlab.maple.app.L7Test;
 import org.snlab.maple.app.M2;
+import org.snlab.maple.app.TAPTest;
 import org.snlab.maple.app.TCPPortTest;
 import org.snlab.maple.env.IReExecHandler;
 import org.snlab.maple.env.MapleDataManager;
@@ -80,14 +83,17 @@ public class MapleSystem{
         this.l7flowManager = new MapleFlowManager(reExecHandler);
 
         //test
-        //this.mapleAppList.add(new ArpHandler());
+        this.mapleAppList.add(new ArpHandler());
         //this.mapleAppList.add(new L2Switch());
         //this.mapleAppList.add(new SetFieldTest());
-        this.mapleAppList.add(new ArpHandler2());
+        //this.mapleAppList.add(new ArpHandler2());
         //this.mapleAppList.add(new IPv4Switch());
         //this.mapleAppList.add(new L7Test());
         //this.mapleAppList.add(new TCPPortTest());
-        this.mapleAppList.add(new L7Test());
+        //this.mapleAppList.add(new L7Test());
+        //this.mapleAppList.add(new TAPTest());
+        //this.mapleAppList.add(new L2SwitchMaskTest());
+        this.mapleAppList.add(new L2SwitchDstSpanningTree());
     }
 
     public IMapleHandler getHandler() {
@@ -118,7 +124,7 @@ public class MapleSystem{
 
             traceTree.update(pkt.getTraceList(), pkt);
 
-            if(!pkt.getType().equals(MaplePacketType.REEXEC)) {
+            //if(!pkt.getType().equals(MaplePacketType.REEXEC)) {      // FIXME
                 MapleTopology topo = dataManager.allocBroker(null).getTopology();//FIXME
                 Object[] objs = traceTree.derivePackets(topo, pkt);
                 List<OutPutPacket> outPutPackets = (List<OutPutPacket>) objs[0];
@@ -128,7 +134,7 @@ public class MapleSystem{
                 }
                 mapleAdaptor.sendPacket(outPutPackets);
                 LOG.info("sendpacket="+outPutPackets);
-            }
+            //}
             int k=this.pktThreadPool.getQueue().size();
             if(k<=1) {
                 rules = traceTree.generateRules();
@@ -139,7 +145,7 @@ public class MapleSystem{
 //                    for (MapleRule rule : rules) {
 //                        rule.setStatus(MapleRule.Status.INSTALLED);
 //                    }
-                    mapleAdaptor.outPutTraceTree(traceTree, pkt);
+                    //mapleAdaptor.outPutTraceTree(traceTree, pkt);
                 }
             }
 
