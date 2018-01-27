@@ -38,7 +38,6 @@ public class L2SwitchMaskTest extends MapleAppBase {
             MapleTopology topology = db.getTopology();
             Forward[] ret = topology.shortestPath(srcPort, dstPort);
             pkt.setRoute(ret);
-            //System.out.println("pkt="+pkt+" ret"+Arrays.toString(ret));
         }
         return true;
 

@@ -88,12 +88,11 @@ public class MapleSystem{
         //this.mapleAppList.add(new SetFieldTest());
         //this.mapleAppList.add(new ArpHandler2());
         //this.mapleAppList.add(new IPv4Switch());
-        //this.mapleAppList.add(new L7Test());
         //this.mapleAppList.add(new TCPPortTest());
-        //this.mapleAppList.add(new L7Test());
+        this.mapleAppList.add(new L7Test());
         //this.mapleAppList.add(new TAPTest());
         //this.mapleAppList.add(new L2SwitchMaskTest());
-        this.mapleAppList.add(new L2SwitchDstSpanningTree());
+        //this.mapleAppList.add(new L2SwitchDstSpanningTree());
     }
 
     public IMapleHandler getHandler() {
